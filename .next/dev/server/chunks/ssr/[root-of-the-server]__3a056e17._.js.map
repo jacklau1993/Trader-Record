@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 14, "column": 0}, "map": {"version":3,"sources":["file:///Users/jacklau/Documents/GitHub/Trading-app/app/settings/page.tsx"],"sourcesContent":["export default function SettingsPage() {\n    return (\n        <div className=\"flex-1 p-8 pt-6\">\n            <h2 className=\"text-3xl font-bold tracking-tight mb-4\">Settings</h2>\n            <div className=\"p-4 border border-zinc-800 rounded-lg text-zinc-400\">\n                Settings functionality (Profile, Data Export, Theme) coming soon.\n            </div>\n        </div>\n    );\n}\n"],"names":[],"mappings":";;;;;;AAAe,SAAS;IACpB,qBACI,8OAAC;QAAI,WAAU;;0BACX,8OAAC;gBAAG,WAAU;0BAAyC;;;;;;0BACvD,8OAAC;gBAAI,WAAU;0BAAsD;;;;;;;;;;;;AAKjF"}}]
+}

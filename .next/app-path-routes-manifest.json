@@ -1,0 +1,11 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/notebook/page": "/notebook",
+  "/page": "/",
+  "/reports/page": "/reports",
+  "/settings/page": "/settings",
+  "/tags/page": "/tags",
+  "/trades/[id]/page": "/trades/[id]",
+  "/trades/page": "/trades"
+}
