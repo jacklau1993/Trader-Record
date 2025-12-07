@@ -12,10 +12,12 @@ export default function SignUpPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
     const router = useRouter();
 
     const handleSignUp = async () => {
         setLoading(true);
+        setError("");
         await authClient.signUp.email({
             email,
             password,
@@ -25,7 +27,7 @@ export default function SignUpPage() {
                 router.push("/");
             },
             onError: (ctx) => {
-                alert(ctx.error.message);
+                setError(ctx.error.message);
                 setLoading(false);
             }
         });
@@ -39,6 +41,11 @@ export default function SignUpPage() {
                     <CardDescription>Enter your details to start trading.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                    {error && (
+                        <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+                            {error}
+                        </div>
+                    )}
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Name</label>
                         <input
@@ -62,11 +69,12 @@ export default function SignUpPage() {
                             className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                             value={password} onChange={(e) => setPassword(e.target.value)}
                             type="password"
+                            placeholder="••••••••"
                         />
                     </div>
                     <button
                         onClick={handleSignUp}
-                        disabled={loading}
+                        disabled={loading || !email || !password}
                         className="inline-flex h-9 w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                     >
                         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -80,3 +88,5 @@ export default function SignUpPage() {
         </div>
     );
 }
+
+

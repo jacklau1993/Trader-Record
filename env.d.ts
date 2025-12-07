@@ -3,6 +3,7 @@ interface CloudflareEnv {
     DB: D1Database;
     BETTER_AUTH_SECRET?: string;
     BETTER_AUTH_URL?: string;
+    RESEND_API_KEY?: string;
 }
 
 declare module "@cloudflare/next-on-pages" {
@@ -12,3 +13,13 @@ declare module "@cloudflare/next-on-pages" {
         ctx: ExecutionContext;
     };
 }
+
+// Extend Node.js process.env
+declare namespace NodeJS {
+    interface ProcessEnv {
+        RESEND_API_KEY?: string;
+        BETTER_AUTH_SECRET?: string;
+        BETTER_AUTH_URL?: string;
+    }
+}
+

@@ -2,14 +2,16 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { getDb } from "./db";
 import * as schema from "../db/schema";
-
-// Cache for the auth instance
-let _auth: ReturnType<typeof betterAuth> | null = null;
+// import { Resend } from "resend"; // Uncomment when you have a verified domain
 
 // Function to get or create auth instance with proper DB binding
 export const getAuth = () => {
     // Always get fresh DB in case context changed
     const db = getDb();
+
+    // Note: Email verification is disabled because Resend's test domain (onboarding@resend.dev)
+    // can only send to the email registered with your Resend account.
+    // To enable, verify a custom domain in Resend and uncomment the email sections below.
 
     // Create auth instance with current DB
     return betterAuth({
@@ -19,15 +21,31 @@ export const getAuth = () => {
         }),
         emailAndPassword: {
             enabled: true,
-        }
+            // requireEmailVerification: true, // Enable when you have a verified domain
+        },
+        // Uncomment this section when you have a verified domain in Resend:
+        // emailVerification: {
+        //     sendOnSignUp: true,
+        //     autoSignInAfterVerification: true,
+        //     sendVerificationEmail: async ({ user, url }) => {
+        //         const resend = new Resend(process.env.RESEND_API_KEY);
+        //         await resend.emails.send({
+        //             from: "TradeJournal <noreply@yourdomain.com>",
+        //             to: user.email,
+        //             subject: "Verify Your Email",
+        //             html: `<a href="${url}">Verify Email</a>`
+        //         });
+        //     }
+        // }
     });
 };
 
 // For backward compatibility, export a lazy getter
-// This will be called during request handling, not module initialization
 export const auth = new Proxy({} as ReturnType<typeof betterAuth>, {
     get(target, prop) {
         const authInstance = getAuth();
         return (authInstance as any)[prop];
     }
 });
+
+
