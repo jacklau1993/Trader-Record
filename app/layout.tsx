@@ -6,8 +6,11 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Trading Journal",
+    title: "TraderRecord",
     description: "Advanced Trading Journal and Notebook",
+    icons: {
+        icon: "/favicon.png",
+    },
 };
 
 export default function RootLayout({

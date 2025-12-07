@@ -8,3 +8,8 @@ binding = "DB"
 database_name = "trading-app-db"
 database_id = "b622591d-de94-46f6-9128-53fc17d567ac" # Placeholder for local dev
 migrations_dir = "drizzle"
+
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "trading-app-images"
+

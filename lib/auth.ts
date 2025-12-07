@@ -30,7 +30,7 @@ export const getAuth = () => {
         //     sendVerificationEmail: async ({ user, url }) => {
         //         const resend = new Resend(process.env.RESEND_API_KEY);
         //         await resend.emails.send({
-        //             from: "TradeJournal <noreply@yourdomain.com>",
+        //             from: "TraderRecord <noreply@yourdomain.com>",
         //             to: user.email,
         //             subject: "Verify Your Email",
         //             html: `<a href="${url}">Verify Email</a>`

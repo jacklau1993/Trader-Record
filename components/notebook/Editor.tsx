@@ -1,24 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { List, Tag as TagIcon, Save, Check, Settings, Plus, Trash } from "lucide-react";
-// import { Note, saveNote, getTemplates, saveTemplates, Template } from "@/lib/storage"; // REMOVED
+import { List, Save, Check, Settings, Plus, Trash } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { updateNote } from "@/app/actions/note-actions";
 import { getTemplates, createTemplate, updateTemplate, deleteTemplate } from "@/app/actions/template-actions";
+import { RichTextEditor } from "./RichTextEditor";
 
-// Define compatible types locally or import
 interface Template {
     id: string;
     name: string;
     content: string;
-}
-
-interface Note {
-    id: string;
-    title: string;
-    content: string;
-    date: string;
 }
 
 export function Editor({ selectedNote, onSave }: { selectedNote: any | null, onSave: () => void }) {
@@ -40,7 +32,7 @@ export function Editor({ selectedNote, onSave }: { selectedNote: any | null, onS
     useEffect(() => {
         if (selectedNote) {
             setTitle(selectedNote.title);
-            setContent(selectedNote.content);
+            setContent(selectedNote.content || "");
             setIsSaved(false);
         } else {
             setTitle("");
@@ -50,14 +42,14 @@ export function Editor({ selectedNote, onSave }: { selectedNote: any | null, onS
 
     const handleSave = async () => {
         if (!selectedNote) return;
-        setIsSaved(true); // Optimistic UI
+        setIsSaved(true);
 
         await updateNote(selectedNote.id, {
             title,
             content
         });
 
-        onSave(); // Refresh parent list
+        onSave();
         setTimeout(() => setIsSaved(false), 2000);
     };
 
@@ -69,7 +61,6 @@ export function Editor({ selectedNote, onSave }: { selectedNote: any | null, onS
     const saveTemplate = async () => {
         if (!editingTemplate) return;
 
-        // Optimistic Update
         let newTemplates = [...templates];
         const existingIndex = newTemplates.findIndex(t => t.id === editingTemplate.id);
         if (existingIndex >= 0) {
@@ -86,8 +77,6 @@ export function Editor({ selectedNote, onSave }: { selectedNote: any | null, onS
 
         setTemplates(newTemplates);
         setEditingTemplate(null);
-
-        // Refresh triggers implicit re-fetch if needed, but local state is fine.
     };
 
     const handleDeleteTemplate = async (id: string) => {
@@ -96,13 +85,6 @@ export function Editor({ selectedNote, onSave }: { selectedNote: any | null, onS
             setTemplates(newTemplates);
             await deleteTemplate(id);
             if (editingTemplate?.id === id) setEditingTemplate(null);
-        }
-    };
-
-    const insertImage = () => {
-        const url = prompt("Enter Image URL:");
-        if (url) {
-            setContent(prev => prev + `\n<img src="${url}" alt="Image" style="max-width: 100%; border-radius: 8px; margin-top: 10px;" />\n`);
         }
     };
 
@@ -116,6 +98,7 @@ export function Editor({ selectedNote, onSave }: { selectedNote: any | null, onS
 
     return (
         <div className="flex h-full flex-col">
+            {/* Title & Date Header */}
             <div className="border-b border-border p-4">
                 <input
                     type="text"
@@ -129,11 +112,14 @@ export function Editor({ selectedNote, onSave }: { selectedNote: any | null, onS
                 </div>
             </div>
 
-            {/* Toolbar */}
-            <div className="flex items-center border-b border-border bg-muted/20 px-4 py-2 space-x-2 relative">
+            {/* Quick Actions Bar */}
+            <div className="flex items-center border-b border-border bg-muted/20 px-4 py-2 space-x-2">
                 {/* Templates Dropdown */}
                 <div className="relative">
-                    <button onClick={() => setShowTemplates(!showTemplates)} className="flex items-center space-x-1 px-2 py-1 text-xs bg-background border border-border rounded hover:bg-muted transition-colors">
+                    <button
+                        onClick={() => setShowTemplates(!showTemplates)}
+                        className="flex items-center space-x-1 px-2 py-1 text-xs bg-background border border-border rounded hover:bg-muted transition-colors"
+                    >
                         <List className="h-3 w-3" />
                         <span>Templates</span>
                     </button>
@@ -163,20 +149,13 @@ export function Editor({ selectedNote, onSave }: { selectedNote: any | null, onS
                     )}
                 </div>
 
-                <div className="h-4 w-[1px] bg-border mx-2" />
-
-                <button
-                    onClick={insertImage}
-                    className="flex items-center space-x-1 px-2 py-1 text-xs bg-background border border-border rounded hover:bg-muted transition-colors"
-                >
-                    <TagIcon className="h-3 w-3" />
-                    <span>Add Image</span>
-                </button>
-
                 <div className="flex-1" />
+
                 <button
                     onClick={handleSave}
-                    className={`flex items-center space-x-1 px-3 py-1 text-xs rounded transition-colors ${isSaved ? "bg-green-500/20 text-green-500" : "bg-primary text-primary-foreground hover:bg-primary/90"
+                    className={`flex items-center space-x-1 px-3 py-1 text-xs rounded transition-colors ${isSaved
+                            ? "bg-green-500/20 text-green-500"
+                            : "bg-primary text-primary-foreground hover:bg-primary/90"
                         }`}
                 >
                     {isSaved ? <Check className="h-3 w-3" /> : <Save className="h-3 w-3" />}
@@ -184,13 +163,15 @@ export function Editor({ selectedNote, onSave }: { selectedNote: any | null, onS
                 </button>
             </div>
 
-            <textarea
-                className="flex-1 resize-none bg-transparent p-6 focus:outline-none font-mono text-sm leading-relaxed"
-                placeholder="Start typing..."
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-            />
-            <p className="px-6 pb-2 text-[10px] text-muted-foreground/50 text-right">Markdown & HTML supported</p>
+            {/* Rich Text Editor */}
+            <div className="flex-1 overflow-hidden">
+                <RichTextEditor
+                    key={selectedNote.id}
+                    content={content}
+                    onChange={setContent}
+                    placeholder="Start writing your notes..."
+                />
+            </div>
 
             {/* Template Manager Modal */}
             <Modal isOpen={isManageOpen} onClose={() => { setIsManageOpen(false); setEditingTemplate(null); }}>
@@ -207,7 +188,7 @@ export function Editor({ selectedNote, onSave }: { selectedNote: any | null, onS
                             />
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Content</label>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Content (HTML)</label>
                             <textarea
                                 className="w-full h-40 bg-muted/50 border border-input rounded px-3 py-2 text-sm font-mono"
                                 value={editingTemplate.content}
