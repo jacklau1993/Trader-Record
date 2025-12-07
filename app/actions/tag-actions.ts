@@ -28,9 +28,9 @@ export async function getCategories() {
     const userTags = await db.select().from(tags).where(eq(tags.userId, user.id));
 
     // Assemble
-    return userCats.map(cat => ({
+    return userCats.map((cat: any) => ({
         ...cat,
-        tags: userTags.filter(t => t.categoryId === cat.id)
+        tags: userTags.filter((t: any) => t.categoryId === cat.id)
     }));
 }
 

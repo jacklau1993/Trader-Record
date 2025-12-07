@@ -1,4 +1,5 @@
 "use server";
+// Force Rebuild
 
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -30,7 +31,7 @@ export async function getTrades() {
 
     // 2. Fetch tags for these trades
     // We can do this efficiently by fetching all trade_tags for these trade IDs
-    const tradeIds = userTrades.map(t => t.id);
+    const tradeIds = userTrades.map((t: any) => t.id);
     let tagsMap: Record<string, string[]> = {};
 
     if (tradeIds.length > 0) {
@@ -38,14 +39,14 @@ export async function getTrades() {
             .from(tradeTags)
             .where(inArray(tradeTags.tradeId, tradeIds));
 
-        relatedTags.forEach(rt => {
+        relatedTags.forEach((rt: any) => {
             if (!tagsMap[rt.tradeId]) tagsMap[rt.tradeId] = [];
             tagsMap[rt.tradeId].push(rt.tagId);
         });
     }
 
     // 3. Merge
-    return userTrades.map(t => ({
+    return userTrades.map((t: any) => ({
         ...t,
         tags: tagsMap[t.id] || []
     }));
@@ -63,7 +64,7 @@ export async function getTrade(id: string) {
 
     return {
         ...trade,
-        tags: tags.map(t => t.tagId)
+        tags: tags.map((t: any) => t.tagId)
     };
 }
 

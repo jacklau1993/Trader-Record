@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Book, Tags, Settings, BarChart2, List } from "lucide-react";
+import { Home, Book, Tags, Settings, BarChart2, List, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@/components/auth/SignOutButton";
+import { authClient } from "@/lib/auth-client";
 
 const navigation = [
     { name: "Dashboard", href: "/", icon: Home },
@@ -17,6 +18,22 @@ const navigation = [
 
 export function Sidebar() {
     const pathname = usePathname();
+    const { data: session, isPending } = authClient.useSession();
+
+    // Get user initials for avatar
+    const getInitials = (name?: string | null, email?: string | null) => {
+        if (name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        }
+        if (email) {
+            return email[0].toUpperCase();
+        }
+        return '?';
+    };
+
+    const user = session?.user;
+    const displayName = user?.name || user?.email?.split('@')[0] || 'User';
+    const initials = getInitials(user?.name, user?.email);
 
     return (
         <div className="flex h-screen w-64 flex-col border-r border-border bg-card">
@@ -52,17 +69,38 @@ export function Sidebar() {
                 })}
             </nav>
             <div className="border-t border-border p-4">
-                <div className="flex items-center mb-4">
-                    <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-                        J
+                {isPending ? (
+                    <div className="flex items-center mb-4">
+                        <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+                        <div className="ml-3 space-y-1">
+                            <div className="h-4 w-20 bg-muted rounded animate-pulse" />
+                            <div className="h-3 w-16 bg-muted rounded animate-pulse" />
+                        </div>
                     </div>
-                    <div className="ml-3">
-                        <p className="text-sm font-medium">Jack Lau</p>
-                        <p className="text-xs text-muted-foreground">Pro Trader</p>
-                    </div>
-                </div>
-                <SignOutButton />
+                ) : user ? (
+                    <>
+                        <div className="flex items-center mb-4">
+                            <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                                {initials}
+                            </div>
+                            <div className="ml-3">
+                                <p className="text-sm font-medium truncate max-w-[140px]">{displayName}</p>
+                                <p className="text-xs text-muted-foreground truncate max-w-[140px]">{user.email}</p>
+                            </div>
+                        </div>
+                        <SignOutButton />
+                    </>
+                ) : (
+                    <Link
+                        href="/sign-in"
+                        className="flex items-center gap-2 w-full rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                    >
+                        <LogIn className="h-4 w-4" />
+                        Sign In
+                    </Link>
+                )}
             </div>
         </div>
     );
 }
+
