@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 13, "column": 0}, "map": {"version":3,"sources":["file:///Users/jacklau/Documents/GitHub/Trading-app/app/page.tsx"],"sourcesContent":["// This will be replaced by the WriteToFile tool call next for DashboardClient.\n// Just a placeholder to signal intent.\n"],"names":[],"mappings":"AAAA,+EAA+E;AAC/E,uCAAuC"}}]
+}

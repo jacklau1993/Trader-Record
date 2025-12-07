@@ -1,11 +1,27 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bold, Italic, List, Tag as TagIcon, Save, Check, Settings, Plus, Trash } from "lucide-react";
-import { Note, saveNote, getTemplates, saveTemplates, Template } from "@/lib/storage";
+import { List, Tag as TagIcon, Save, Check, Settings, Plus, Trash } from "lucide-react";
+// import { Note, saveNote, getTemplates, saveTemplates, Template } from "@/lib/storage"; // REMOVED
 import { Modal } from "@/components/ui/modal";
+import { updateNote } from "@/app/actions/note-actions";
+import { getTemplates, createTemplate, updateTemplate, deleteTemplate } from "@/app/actions/template-actions";
 
-export function Editor({ selectedNote, onSave }: { selectedNote: Note | null, onSave: () => void }) {
+// Define compatible types locally or import
+interface Template {
+    id: string;
+    name: string;
+    content: string;
+}
+
+interface Note {
+    id: string;
+    title: string;
+    content: string;
+    date: string;
+}
+
+export function Editor({ selectedNote, onSave }: { selectedNote: any | null, onSave: () => void }) {
     const [content, setContent] = useState("");
     const [title, setTitle] = useState("");
     const [isSaved, setIsSaved] = useState(false);
@@ -16,6 +32,11 @@ export function Editor({ selectedNote, onSave }: { selectedNote: Note | null, on
     const [isManageOpen, setIsManageOpen] = useState(false);
     const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
 
+    // Fetch templates on mount
+    useEffect(() => {
+        getTemplates().then((data: any[]) => setTemplates(data));
+    }, []);
+
     useEffect(() => {
         if (selectedNote) {
             setTitle(selectedNote.title);
@@ -25,15 +46,18 @@ export function Editor({ selectedNote, onSave }: { selectedNote: Note | null, on
             setTitle("");
             setContent("");
         }
-        setTemplates(getTemplates());
     }, [selectedNote]);
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!selectedNote) return;
-        const updatedNote = { ...selectedNote, title, content };
-        saveNote(updatedNote);
-        setIsSaved(true);
-        onSave();
+        setIsSaved(true); // Optimistic UI
+
+        await updateNote(selectedNote.id, {
+            title,
+            content
+        });
+
+        onSave(); // Refresh parent list
         setTimeout(() => setIsSaved(false), 2000);
     };
 
@@ -42,27 +66,35 @@ export function Editor({ selectedNote, onSave }: { selectedNote: Note | null, on
         setShowTemplates(false);
     };
 
-    const saveTemplate = () => {
+    const saveTemplate = async () => {
         if (!editingTemplate) return;
+
+        // Optimistic Update
         let newTemplates = [...templates];
         const existingIndex = newTemplates.findIndex(t => t.id === editingTemplate.id);
-
         if (existingIndex >= 0) {
             newTemplates[existingIndex] = editingTemplate;
+            await updateTemplate(editingTemplate.id, { name: editingTemplate.name, content: editingTemplate.content });
         } else {
             newTemplates.push(editingTemplate);
+            await createTemplate({
+                id: editingTemplate.id,
+                name: editingTemplate.name,
+                content: editingTemplate.content
+            });
         }
 
         setTemplates(newTemplates);
-        saveTemplates(newTemplates);
         setEditingTemplate(null);
+
+        // Refresh triggers implicit re-fetch if needed, but local state is fine.
     };
 
-    const deleteTemplate = (id: string) => {
+    const handleDeleteTemplate = async (id: string) => {
         if (confirm("Delete this template?")) {
             const newTemplates = templates.filter(t => t.id !== id);
             setTemplates(newTemplates);
-            saveTemplates(newTemplates);
+            await deleteTemplate(id);
             if (editingTemplate?.id === id) setEditingTemplate(null);
         }
     };
@@ -201,7 +233,7 @@ export function Editor({ selectedNote, onSave }: { selectedNote: Note | null, on
                                         <button onClick={() => setEditingTemplate(t)} className="p-1 hover:bg-primary/10 text-primary rounded">
                                             <Settings className="h-4 w-4" />
                                         </button>
-                                        <button onClick={() => deleteTemplate(t.id)} className="p-1 hover:bg-destructive/10 text-destructive rounded">
+                                        <button onClick={() => handleDeleteTemplate(t.id)} className="p-1 hover:bg-destructive/10 text-destructive rounded">
                                             <Trash className="h-4 w-4" />
                                         </button>
                                     </div>

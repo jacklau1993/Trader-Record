@@ -1,5 +1,453 @@
 {
-  "node": {},
+  "node": {
+    "0090736f02578ca4b4c65e6dca5ee83390105d6c03": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getTrades",
+          "filename": "app/actions/trade-actions.ts"
+        },
+        "app/reports/page": {
+          "moduleId": "[project]/.next-internal/server/app/reports/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getTrades",
+          "filename": "app/actions/trade-actions.ts"
+        },
+        "app/trades/page": {
+          "moduleId": "[project]/.next-internal/server/app/trades/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getTrades",
+          "filename": "app/actions/trade-actions.ts"
+        }
+      },
+      "layer": {
+        "app/page": "rsc",
+        "app/reports/page": "rsc",
+        "app/trades/page": "rsc"
+      },
+      "filename": "app/actions/trade-actions.ts",
+      "exportedName": "getTrades"
+    },
+    "40106a6085ff6e4feab105289aa01acea1ad94d7b8": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getTrade",
+          "filename": "app/actions/trade-actions.ts"
+        },
+        "app/reports/page": {
+          "moduleId": "[project]/.next-internal/server/app/reports/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getTrade",
+          "filename": "app/actions/trade-actions.ts"
+        },
+        "app/trades/page": {
+          "moduleId": "[project]/.next-internal/server/app/trades/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getTrade",
+          "filename": "app/actions/trade-actions.ts"
+        }
+      },
+      "layer": {
+        "app/page": "rsc",
+        "app/reports/page": "rsc",
+        "app/trades/page": "rsc"
+      },
+      "filename": "app/actions/trade-actions.ts",
+      "exportedName": "getTrade"
+    },
+    "405500843b9859315359f61100b975024bf60c4f7a": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createTrade",
+          "filename": "app/actions/trade-actions.ts"
+        },
+        "app/reports/page": {
+          "moduleId": "[project]/.next-internal/server/app/reports/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createTrade",
+          "filename": "app/actions/trade-actions.ts"
+        },
+        "app/trades/page": {
+          "moduleId": "[project]/.next-internal/server/app/trades/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createTrade",
+          "filename": "app/actions/trade-actions.ts"
+        }
+      },
+      "layer": {
+        "app/page": "action-browser",
+        "app/reports/page": "rsc",
+        "app/trades/page": "rsc"
+      },
+      "filename": "app/actions/trade-actions.ts",
+      "exportedName": "createTrade"
+    },
+    "40a3d5153dba4e5c0aec170a7205a5e78fde36deb0": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "deleteTrade",
+          "filename": "app/actions/trade-actions.ts"
+        },
+        "app/reports/page": {
+          "moduleId": "[project]/.next-internal/server/app/reports/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "deleteTrade",
+          "filename": "app/actions/trade-actions.ts"
+        },
+        "app/trades/page": {
+          "moduleId": "[project]/.next-internal/server/app/trades/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "deleteTrade",
+          "filename": "app/actions/trade-actions.ts"
+        }
+      },
+      "layer": {
+        "app/page": "rsc",
+        "app/reports/page": "rsc",
+        "app/trades/page": "rsc"
+      },
+      "filename": "app/actions/trade-actions.ts",
+      "exportedName": "deleteTrade"
+    },
+    "60a48f3a0630dd2fabb9d3e4cd4bf0c504966521c5": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "updateTrade",
+          "filename": "app/actions/trade-actions.ts"
+        },
+        "app/reports/page": {
+          "moduleId": "[project]/.next-internal/server/app/reports/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "updateTrade",
+          "filename": "app/actions/trade-actions.ts"
+        },
+        "app/trades/page": {
+          "moduleId": "[project]/.next-internal/server/app/trades/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "updateTrade",
+          "filename": "app/actions/trade-actions.ts"
+        }
+      },
+      "layer": {
+        "app/page": "rsc",
+        "app/reports/page": "rsc",
+        "app/trades/page": "rsc"
+      },
+      "filename": "app/actions/trade-actions.ts",
+      "exportedName": "updateTrade"
+    },
+    "406debee7cf8e0814e52095644e4c8fbd292855462": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createNote",
+          "filename": "app/actions/note-actions.ts"
+        },
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createNote",
+          "filename": "app/actions/note-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "action-browser",
+        "app/page": "action-browser"
+      },
+      "filename": "app/actions/note-actions.ts",
+      "exportedName": "createNote"
+    },
+    "007b063976cca985f8945e48ef16566224a288712c": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getSections",
+          "filename": "app/actions/note-actions.ts"
+        },
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getSections",
+          "filename": "app/actions/note-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "rsc",
+        "app/page": "action-browser"
+      },
+      "filename": "app/actions/note-actions.ts",
+      "exportedName": "getSections"
+    },
+    "406c4bb6286029f3b391260d4174226fe58f0b55a3": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createCategory",
+          "filename": "app/actions/tag-actions.ts"
+        },
+        "app/reports/page": {
+          "moduleId": "[project]/.next-internal/server/app/reports/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createCategory",
+          "filename": "app/actions/tag-actions.ts"
+        },
+        "app/tags/page": {
+          "moduleId": "[project]/.next-internal/server/app/tags/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createCategory",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/page": "action-browser",
+        "app/reports/page": "rsc",
+        "app/tags/page": "action-browser"
+      },
+      "filename": "app/actions/tag-actions.ts",
+      "exportedName": "createCategory"
+    },
+    "40f821b8bbcc291b86e1f7707cf05a76fa515e1a92": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createTag",
+          "filename": "app/actions/tag-actions.ts"
+        },
+        "app/reports/page": {
+          "moduleId": "[project]/.next-internal/server/app/reports/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createTag",
+          "filename": "app/actions/tag-actions.ts"
+        },
+        "app/tags/page": {
+          "moduleId": "[project]/.next-internal/server/app/tags/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createTag",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/page": "action-browser",
+        "app/reports/page": "rsc",
+        "app/tags/page": "action-browser"
+      },
+      "filename": "app/actions/tag-actions.ts",
+      "exportedName": "createTag"
+    },
+    "404bf889af309280233c16c7335b847e95e56728ac": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createTemplate",
+          "filename": "app/actions/template-actions.ts"
+        },
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE3 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createTemplate",
+          "filename": "app/actions/template-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "action-browser",
+        "app/page": "action-browser"
+      },
+      "filename": "app/actions/template-actions.ts",
+      "exportedName": "createTemplate"
+    },
+    "009c6c5c672facf1505d4d15445f5ed04549fd785e": {
+      "workers": {
+        "app/reports/page": {
+          "moduleId": "[project]/.next-internal/server/app/reports/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getCategories",
+          "filename": "app/actions/tag-actions.ts"
+        },
+        "app/tags/page": {
+          "moduleId": "[project]/.next-internal/server/app/tags/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getCategories",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/reports/page": "rsc",
+        "app/tags/page": "rsc"
+      },
+      "filename": "app/actions/tag-actions.ts",
+      "exportedName": "getCategories"
+    },
+    "40a214db86e4468f57c7d8c6f5c8fa60cd5522845d": {
+      "workers": {
+        "app/reports/page": {
+          "moduleId": "[project]/.next-internal/server/app/reports/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "deleteCategory",
+          "filename": "app/actions/tag-actions.ts"
+        },
+        "app/tags/page": {
+          "moduleId": "[project]/.next-internal/server/app/tags/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "deleteCategory",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/reports/page": "rsc",
+        "app/tags/page": "action-browser"
+      },
+      "filename": "app/actions/tag-actions.ts",
+      "exportedName": "deleteCategory"
+    },
+    "40f59e1eac3aa74bd9034fa7a2276c5e9f53654db1": {
+      "workers": {
+        "app/reports/page": {
+          "moduleId": "[project]/.next-internal/server/app/reports/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "deleteTag",
+          "filename": "app/actions/tag-actions.ts"
+        },
+        "app/tags/page": {
+          "moduleId": "[project]/.next-internal/server/app/tags/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "deleteTag",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/reports/page": "rsc",
+        "app/tags/page": "action-browser"
+      },
+      "filename": "app/actions/tag-actions.ts",
+      "exportedName": "deleteTag"
+    },
+    "60324bce951071f5f2edcbdff64bedd42a1e587ba7": {
+      "workers": {
+        "app/reports/page": {
+          "moduleId": "[project]/.next-internal/server/app/reports/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "updateCategory",
+          "filename": "app/actions/tag-actions.ts"
+        },
+        "app/tags/page": {
+          "moduleId": "[project]/.next-internal/server/app/tags/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/tag-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "updateCategory",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/reports/page": "rsc",
+        "app/tags/page": "action-browser"
+      },
+      "filename": "app/actions/tag-actions.ts",
+      "exportedName": "updateCategory"
+    },
+    "00cbc8392ed3c3efd9905a42e2df0638438b53c144": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getNotes",
+          "filename": "app/actions/note-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "rsc"
+      },
+      "filename": "app/actions/note-actions.ts",
+      "exportedName": "getNotes"
+    },
+    "4058f5f1c1b84bcfd38d1c540621b4ab16a900800f": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "deleteNote",
+          "filename": "app/actions/note-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "action-browser"
+      },
+      "filename": "app/actions/note-actions.ts",
+      "exportedName": "deleteNote"
+    },
+    "604796a50909e872936bfd6bbb40d57ae4f12bf07f": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "updateNote",
+          "filename": "app/actions/note-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "action-browser"
+      },
+      "filename": "app/actions/note-actions.ts",
+      "exportedName": "updateNote"
+    },
+    "00399653d60232db485c98282c10c13df2ef2c30f0": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getTemplates",
+          "filename": "app/actions/template-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "action-browser"
+      },
+      "filename": "app/actions/template-actions.ts",
+      "exportedName": "getTemplates"
+    },
+    "60033033569661b596acdcfd5c74e60d2ed3a00b1a": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "updateTemplate",
+          "filename": "app/actions/template-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "action-browser"
+      },
+      "filename": "app/actions/template-actions.ts",
+      "exportedName": "updateTemplate"
+    },
+    "404b7a25599fc8344c6847834fa59ac89e5ec11794": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "deleteTemplate",
+          "filename": "app/actions/template-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "action-browser"
+      },
+      "filename": "app/actions/template-actions.ts",
+      "exportedName": "deleteTemplate"
+    }
+  },
   "edge": {},
   "encryptionKey": "EYOd+cozgVV9tOdGB3HQ7BeBsncCnsl0einpHyY9Akc="
 }

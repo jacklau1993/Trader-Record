@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell, ReferenceLine } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trade } from "@/lib/storage";
+import { Trade } from "@/lib/types";
 import { format, parseISO, compareAsc } from "date-fns";
 
 export function DailyProfitChart({ trades }: { trades: Trade[] }) {

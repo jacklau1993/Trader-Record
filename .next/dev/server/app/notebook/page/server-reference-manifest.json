@@ -1,4 +1,140 @@
 {
-  "node": {},
+  "node": {
+    "007b063976cca985f8945e48ef16566224a288712c": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getSections",
+          "filename": "app/actions/note-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "rsc"
+      },
+      "exportedName": "getSections",
+      "filename": "app/actions/note-actions.ts"
+    },
+    "00cbc8392ed3c3efd9905a42e2df0638438b53c144": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getNotes",
+          "filename": "app/actions/note-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "rsc"
+      },
+      "exportedName": "getNotes",
+      "filename": "app/actions/note-actions.ts"
+    },
+    "4058f5f1c1b84bcfd38d1c540621b4ab16a900800f": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "deleteNote",
+          "filename": "app/actions/note-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "action-browser"
+      },
+      "exportedName": "deleteNote",
+      "filename": "app/actions/note-actions.ts"
+    },
+    "406debee7cf8e0814e52095644e4c8fbd292855462": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createNote",
+          "filename": "app/actions/note-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "action-browser"
+      },
+      "exportedName": "createNote",
+      "filename": "app/actions/note-actions.ts"
+    },
+    "604796a50909e872936bfd6bbb40d57ae4f12bf07f": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "updateNote",
+          "filename": "app/actions/note-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "action-browser"
+      },
+      "exportedName": "updateNote",
+      "filename": "app/actions/note-actions.ts"
+    },
+    "00399653d60232db485c98282c10c13df2ef2c30f0": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getTemplates",
+          "filename": "app/actions/template-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "action-browser"
+      },
+      "exportedName": "getTemplates",
+      "filename": "app/actions/template-actions.ts"
+    },
+    "404bf889af309280233c16c7335b847e95e56728ac": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createTemplate",
+          "filename": "app/actions/template-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "action-browser"
+      },
+      "exportedName": "createTemplate",
+      "filename": "app/actions/template-actions.ts"
+    },
+    "60033033569661b596acdcfd5c74e60d2ed3a00b1a": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "updateTemplate",
+          "filename": "app/actions/template-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "action-browser"
+      },
+      "exportedName": "updateTemplate",
+      "filename": "app/actions/template-actions.ts"
+    },
+    "404b7a25599fc8344c6847834fa59ac89e5ec11794": {
+      "workers": {
+        "app/notebook/page": {
+          "moduleId": "[project]/.next-internal/server/app/notebook/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/note-actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/app/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "deleteTemplate",
+          "filename": "app/actions/template-actions.ts"
+        }
+      },
+      "layer": {
+        "app/notebook/page": "action-browser"
+      },
+      "exportedName": "deleteTemplate",
+      "filename": "app/actions/template-actions.ts"
+    }
+  },
   "edge": {}
 }

@@ -1,4 +1,170 @@
 {
-  "node": {},
+  "node": {
+    "003bdb41977fafc385b089ea1b1a363d738935fdfc": {
+      "workers": {
+        "app/trades/[id]/page": {
+          "moduleId": 41705,
+          "async": false,
+          "exportedName": "getTrades",
+          "filename": "app/actions/trade-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/[id]/page": "rsc"
+      },
+      "exportedName": "getTrades",
+      "filename": "app/actions/trade-actions.ts"
+    },
+    "404d76a0830acf0ac4288e23290c039cbd3c7de1ce": {
+      "workers": {
+        "app/trades/[id]/page": {
+          "moduleId": 41705,
+          "async": false,
+          "exportedName": "getTrade",
+          "filename": "app/actions/trade-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/[id]/page": "rsc"
+      },
+      "exportedName": "getTrade",
+      "filename": "app/actions/trade-actions.ts"
+    },
+    "40a6cc6f1f2178696141d579a69bfb77252b4d97f8": {
+      "workers": {
+        "app/trades/[id]/page": {
+          "moduleId": 41705,
+          "async": false,
+          "exportedName": "createTrade",
+          "filename": "app/actions/trade-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/[id]/page": "rsc"
+      },
+      "exportedName": "createTrade",
+      "filename": "app/actions/trade-actions.ts"
+    },
+    "40ff44ff1593cccb6762fa1dfdda55b4f154bce892": {
+      "workers": {
+        "app/trades/[id]/page": {
+          "moduleId": 41705,
+          "async": false,
+          "exportedName": "deleteTrade",
+          "filename": "app/actions/trade-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/[id]/page": "rsc"
+      },
+      "exportedName": "deleteTrade",
+      "filename": "app/actions/trade-actions.ts"
+    },
+    "60ebe67b8ff8ece876c43cb6478d274e72270a4de9": {
+      "workers": {
+        "app/trades/[id]/page": {
+          "moduleId": 41705,
+          "async": false,
+          "exportedName": "updateTrade",
+          "filename": "app/actions/trade-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/[id]/page": "action-browser"
+      },
+      "exportedName": "updateTrade",
+      "filename": "app/actions/trade-actions.ts"
+    },
+    "0053c2991b153a5bfd651fb43ef45a92e50dedd5aa": {
+      "workers": {
+        "app/trades/[id]/page": {
+          "moduleId": 41705,
+          "async": false,
+          "exportedName": "getCategories",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/[id]/page": "rsc"
+      },
+      "exportedName": "getCategories",
+      "filename": "app/actions/tag-actions.ts"
+    },
+    "40265b30102208e2dbfd12633e96636836ce67eda6": {
+      "workers": {
+        "app/trades/[id]/page": {
+          "moduleId": 41705,
+          "async": false,
+          "exportedName": "createCategory",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/[id]/page": "rsc"
+      },
+      "exportedName": "createCategory",
+      "filename": "app/actions/tag-actions.ts"
+    },
+    "40483b3fa33e4e7224b9332c539e22dffe6158a91c": {
+      "workers": {
+        "app/trades/[id]/page": {
+          "moduleId": 41705,
+          "async": false,
+          "exportedName": "deleteTag",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/[id]/page": "rsc"
+      },
+      "exportedName": "deleteTag",
+      "filename": "app/actions/tag-actions.ts"
+    },
+    "406890b07abd01545dd838dd5e595466dd49672ebd": {
+      "workers": {
+        "app/trades/[id]/page": {
+          "moduleId": 41705,
+          "async": false,
+          "exportedName": "createTag",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/[id]/page": "rsc"
+      },
+      "exportedName": "createTag",
+      "filename": "app/actions/tag-actions.ts"
+    },
+    "40a11be9358d3ebe9de33ae0c86d1ada70bf8b7562": {
+      "workers": {
+        "app/trades/[id]/page": {
+          "moduleId": 41705,
+          "async": false,
+          "exportedName": "deleteCategory",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/[id]/page": "rsc"
+      },
+      "exportedName": "deleteCategory",
+      "filename": "app/actions/tag-actions.ts"
+    },
+    "6027cde55327f090e4abf24830ed1af39fdc545367": {
+      "workers": {
+        "app/trades/[id]/page": {
+          "moduleId": 41705,
+          "async": false,
+          "exportedName": "updateCategory",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/[id]/page": "rsc"
+      },
+      "exportedName": "updateCategory",
+      "filename": "app/actions/tag-actions.ts"
+    }
+  },
   "edge": {}
 }

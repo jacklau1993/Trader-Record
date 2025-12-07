@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { startOfMonth, endOfMonth, eachDayOfInterval, format, getDay, addMonths, subMonths, isSameDay } from "date-fns";
 import { cn } from "@/lib/utils";
-import { Trade } from "@/lib/storage";
+import { Trade } from "@/lib/types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function CalendarHeatmap({ trades }: { trades: Trade[] }) {

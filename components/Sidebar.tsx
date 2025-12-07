@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Book, Tags, Settings, BarChart2, List } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SignOutButton } from "@/components/auth/SignOutButton";
 
 const navigation = [
     { name: "Dashboard", href: "/", icon: Home },
@@ -51,7 +52,7 @@ export function Sidebar() {
                 })}
             </nav>
             <div className="border-t border-border p-4">
-                <div className="flex items-center">
+                <div className="flex items-center mb-4">
                     <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
                         J
                     </div>
@@ -60,6 +61,7 @@ export function Sidebar() {
                         <p className="text-xs text-muted-foreground">Pro Trader</p>
                     </div>
                 </div>
+                <SignOutButton />
             </div>
         </div>
     );

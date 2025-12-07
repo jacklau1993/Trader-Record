@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trade } from "@/lib/storage";
+import { Trade } from "@/lib/types";
 import { format } from "date-fns";
 
 export function RecentTrades({ trades }: { trades: Trade[] }) {

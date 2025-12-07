@@ -1,4 +1,95 @@
 {
-  "node": {},
+  "node": {
+    "0053c2991b153a5bfd651fb43ef45a92e50dedd5aa": {
+      "workers": {
+        "app/tags/page": {
+          "moduleId": 48624,
+          "async": false,
+          "exportedName": "getCategories",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/tags/page": "rsc"
+      },
+      "exportedName": "getCategories",
+      "filename": "app/actions/tag-actions.ts"
+    },
+    "40265b30102208e2dbfd12633e96636836ce67eda6": {
+      "workers": {
+        "app/tags/page": {
+          "moduleId": 48624,
+          "async": false,
+          "exportedName": "createCategory",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/tags/page": "action-browser"
+      },
+      "exportedName": "createCategory",
+      "filename": "app/actions/tag-actions.ts"
+    },
+    "40483b3fa33e4e7224b9332c539e22dffe6158a91c": {
+      "workers": {
+        "app/tags/page": {
+          "moduleId": 48624,
+          "async": false,
+          "exportedName": "deleteTag",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/tags/page": "action-browser"
+      },
+      "exportedName": "deleteTag",
+      "filename": "app/actions/tag-actions.ts"
+    },
+    "406890b07abd01545dd838dd5e595466dd49672ebd": {
+      "workers": {
+        "app/tags/page": {
+          "moduleId": 48624,
+          "async": false,
+          "exportedName": "createTag",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/tags/page": "action-browser"
+      },
+      "exportedName": "createTag",
+      "filename": "app/actions/tag-actions.ts"
+    },
+    "40a11be9358d3ebe9de33ae0c86d1ada70bf8b7562": {
+      "workers": {
+        "app/tags/page": {
+          "moduleId": 48624,
+          "async": false,
+          "exportedName": "deleteCategory",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/tags/page": "action-browser"
+      },
+      "exportedName": "deleteCategory",
+      "filename": "app/actions/tag-actions.ts"
+    },
+    "6027cde55327f090e4abf24830ed1af39fdc545367": {
+      "workers": {
+        "app/tags/page": {
+          "moduleId": 48624,
+          "async": false,
+          "exportedName": "updateCategory",
+          "filename": "app/actions/tag-actions.ts"
+        }
+      },
+      "layer": {
+        "app/tags/page": "action-browser"
+      },
+      "exportedName": "updateCategory",
+      "filename": "app/actions/tag-actions.ts"
+    }
+  },
   "edge": {}
 }

@@ -1,4 +1,80 @@
 {
-  "node": {},
+  "node": {
+    "0090736f02578ca4b4c65e6dca5ee83390105d6c03": {
+      "workers": {
+        "app/trades/page": {
+          "moduleId": "[project]/.next-internal/server/app/trades/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getTrades",
+          "filename": "app/actions/trade-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/page": "rsc"
+      },
+      "exportedName": "getTrades",
+      "filename": "app/actions/trade-actions.ts"
+    },
+    "40106a6085ff6e4feab105289aa01acea1ad94d7b8": {
+      "workers": {
+        "app/trades/page": {
+          "moduleId": "[project]/.next-internal/server/app/trades/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getTrade",
+          "filename": "app/actions/trade-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/page": "rsc"
+      },
+      "exportedName": "getTrade",
+      "filename": "app/actions/trade-actions.ts"
+    },
+    "405500843b9859315359f61100b975024bf60c4f7a": {
+      "workers": {
+        "app/trades/page": {
+          "moduleId": "[project]/.next-internal/server/app/trades/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createTrade",
+          "filename": "app/actions/trade-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/page": "rsc"
+      },
+      "exportedName": "createTrade",
+      "filename": "app/actions/trade-actions.ts"
+    },
+    "40a3d5153dba4e5c0aec170a7205a5e78fde36deb0": {
+      "workers": {
+        "app/trades/page": {
+          "moduleId": "[project]/.next-internal/server/app/trades/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "deleteTrade",
+          "filename": "app/actions/trade-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/page": "rsc"
+      },
+      "exportedName": "deleteTrade",
+      "filename": "app/actions/trade-actions.ts"
+    },
+    "60a48f3a0630dd2fabb9d3e4cd4bf0c504966521c5": {
+      "workers": {
+        "app/trades/page": {
+          "moduleId": "[project]/.next-internal/server/app/trades/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/trade-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "updateTrade",
+          "filename": "app/actions/trade-actions.ts"
+        }
+      },
+      "layer": {
+        "app/trades/page": "rsc"
+      },
+      "exportedName": "updateTrade",
+      "filename": "app/actions/trade-actions.ts"
+    }
+  },
   "edge": {}
 }
