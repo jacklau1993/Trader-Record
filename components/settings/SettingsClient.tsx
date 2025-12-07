@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     User,
     Download,
@@ -84,6 +84,17 @@ export default function SettingsClient({ user, preferences }: SettingsClientProp
     const [deleteConfirmText, setDeleteConfirmText] = useState("");
     const [deleting, setDeleting] = useState(false);
 
+    // Apply theme on mount
+    useEffect(() => {
+        applyTheme(preferences.theme);
+    }, []);
+
+    // Helper function to apply theme
+    const applyTheme = (newTheme: string) => {
+        document.documentElement.classList.remove("dark", "light");
+        document.documentElement.classList.add(newTheme);
+    };
+
     // Save profile
     const handleSaveProfile = async () => {
         setProfileSaving(true);
@@ -113,12 +124,12 @@ export default function SettingsClient({ user, preferences }: SettingsClientProp
     };
 
     // Toggle theme
-    const toggleTheme = () => {
+    const toggleTheme = async () => {
         const newTheme = theme === "dark" ? "light" : "dark";
         setTheme(newTheme);
-        // Apply theme to document
-        document.documentElement.classList.toggle("dark", newTheme === "dark");
-        document.documentElement.classList.toggle("light", newTheme === "light");
+        applyTheme(newTheme);
+        // Auto-save theme preference
+        await updateUserPreferences({ theme: newTheme });
     };
 
     // Export trades
