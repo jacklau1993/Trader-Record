@@ -135,3 +135,15 @@ export const templates = sqliteTable("template", {
     createdAt: integer("created_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date())
 });
+
+export const userPreferences = sqliteTable("user_preferences", {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull().unique().references(() => user.id, { onDelete: "cascade" }),
+    currency: text("currency").default("USD").notNull(),
+    dateFormat: text("date_format").default("YYYY-MM-DD").notNull(),
+    timezone: text("timezone").default("UTC").notNull(),
+    theme: text("theme").default("dark").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date())
+});
+

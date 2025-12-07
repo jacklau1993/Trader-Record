@@ -1,10 +1,39 @@
-export default function SettingsPage() {
-    return (
-        <div className="flex-1 p-8 pt-6">
-            <h2 className="text-3xl font-bold tracking-tight mb-4">Settings</h2>
-            <div className="p-4 border border-zinc-800 rounded-lg text-zinc-400">
-                Settings functionality (Profile, Data Export, Theme) coming soon.
-            </div>
-        </div>
-    );
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { getAuth } from "@/lib/auth";
+import { getUserPreferences } from "@/app/actions/settings-actions";
+import SettingsClient from "@/components/settings/SettingsClient";
+
+export const runtime = "edge";
+
+export default async function SettingsPage() {
+    const auth = getAuth();
+    const headersList = await headers();
+
+    try {
+        const session = await auth.api.getSession({ headers: headersList });
+        if (!session?.user) {
+            redirect("/sign-in");
+        }
+
+        const preferences = await getUserPreferences();
+
+        return (
+            <SettingsClient
+                user={{
+                    id: session.user.id,
+                    name: session.user.name,
+                    email: session.user.email,
+                }}
+                preferences={{
+                    currency: preferences.currency,
+                    dateFormat: preferences.dateFormat,
+                    timezone: preferences.timezone,
+                    theme: preferences.theme,
+                }}
+            />
+        );
+    } catch (error) {
+        redirect("/sign-in");
+    }
 }
