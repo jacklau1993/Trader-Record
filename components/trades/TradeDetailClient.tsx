@@ -73,20 +73,90 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
         }
     }, [trade.entryPrice, trade.exitPrice, trade.stopLoss, trade.profitTarget, trade.type, calculateMetrics]); // Dependencies for recalc
 
+    // Helper for safe number conversion
+    const safeNumber = (value: any, fallback = 0) => {
+        const num = Number(value);
+        return isFinite(num) ? num : fallback;
+    };
+
+    const safeNullableNumber = (value: any) => {
+        if (value === null || value === "" || value === undefined) return null;
+        const num = Number(value);
+        return isFinite(num) ? num : null;
+    };
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSaving(true);
         try {
-            // Must strip out non-updateable fields if needed, but actions can handle partials.
-            // Be careful to send numbers not strings.
-            const { id, userId, createdAt, updatedAt, ...updates } = trade as any; // any to avoid strict type issues with omit
-            await updateTrade(trade.id, updates);
+            // Fix: Create a clean payload object with only allowed fields
+            // Exclude ID, userId, dates, and UI-only fields (plannedRR, realizedRR, points) which are not in schema for direct update? 
+            // Actually schema has them, but let's be safe and ensure numbers are numbers.
+
+            const payload: any = {
+                date: trade.date,
+                ticker: trade.ticker,
+                type: trade.type,
+                entryPrice: safeNumber(trade.entryPrice),
+                exitPrice: safeNumber(trade.exitPrice),
+                quantity: safeNumber(trade.quantity),
+                pnl: safeNumber(trade.pnl),
+                status: trade.status,
+                notes: trade.notes,
+                contracts: safeNullableNumber(trade.contracts),
+                points: safeNullableNumber(trade.points),
+                ticks: safeNullableNumber(trade.ticks),
+                rating: safeNullableNumber(trade.rating),
+                profitTarget: safeNullableNumber(trade.profitTarget),
+                stopLoss: safeNullableNumber(trade.stopLoss),
+                plannedRR: safeNullableNumber(trade.plannedRR),
+                realizedRR: safeNullableNumber(trade.realizedRR),
+                tags: trade.tags
+            };
+
+            console.log("Sending Payload via API:", payload);
+
+            // CHANGED: Use standard API Route instead of Server Action
+            const response = await fetch(`/api/trades/${trade.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Failed to update trade");
+            }
+
+            alert("Trade saved successfully!"); // Simple feedback
             router.push('/trades');
             router.refresh();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to save:", error);
+            alert(`Failed to save trade: ${error.message || "Unknown error"}`);
             setIsSaving(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!confirm("Are you sure you want to delete this trade?")) return;
+        try {
+            // CHANGED: Use standard API Route instead of Server Action
+            const response = await fetch(`/api/trades/${trade.id}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Failed to delete trade");
+            }
+
+            // Client-side navigation or refresh might be safer to prevent 404 on current page
+            router.push('/trades');
+            router.refresh();
+        } catch (error: any) {
+            console.error("Failed to delete:", error);
+            alert(`Failed to delete trade: ${error.message || "Unknown error"}`);
         }
     };
 
@@ -101,11 +171,20 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
 
     return (
         <div className="flex-1 space-y-4 p-8 pt-6">
-            <div className="flex items-center space-x-4 mb-6">
-                <button onClick={() => router.back()} className="p-2 hover:bg-muted rounded-full">
-                    <ArrowLeft className="h-5 w-5" />
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-4">
+                    <button onClick={() => router.back()} className="p-2 hover:bg-muted rounded-full">
+                        <ArrowLeft className="h-5 w-5" />
+                    </button>
+                    <h2 className="text-3xl font-bold tracking-tight">Edit Trade</h2>
+                </div>
+                <button
+                    type="button"
+                    onClick={handleDelete}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90 px-4 py-2 rounded-md text-sm font-medium"
+                >
+                    Delete Trade
                 </button>
-                <h2 className="text-3xl font-bold tracking-tight">Edit Trade</h2>
             </div>
 
             <form onSubmit={handleSave} className="space-y-6">
