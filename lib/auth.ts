@@ -23,6 +23,12 @@ export const getAuth = () => {
             enabled: true,
             // requireEmailVerification: true, // Enable when you have a verified domain
         },
+        socialProviders: {
+            google: {
+                clientId: process.env.GOOGLE_CLIENT_ID!,
+                clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            },
+        },
         // Uncomment this section when you have a verified domain in Resend:
         // emailVerification: {
         //     sendOnSignUp: true,
