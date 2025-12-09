@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Sidebar } from "@/components/Sidebar";
+import { Sidebar, MobileSidebar } from "@/components/Sidebar";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -22,7 +22,8 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" className="dark" suppressHydrationWarning>
-            <body className={`${inter.className} flex h-screen overflow-hidden bg-background`}>
+            <body className={`${inter.className} flex h-screen overflow-hidden bg-background flex-col md:flex-row`}>
+                <MobileSidebar />
                 <Sidebar />
                 <main className="flex-1 overflow-y-auto">
                     {children}

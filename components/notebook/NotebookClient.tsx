@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Folder, Plus, Trash2 } from "lucide-react";
+import { Folder, Plus, Trash2, ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Editor } from "@/components/notebook/Editor";
 import { createNote, deleteNote } from "@/app/actions/note-actions";
@@ -28,6 +28,8 @@ export default function NotebookClient({ initialSections, initialNotes }: { init
     const [notes, setNotes] = useState<Note[]>(initialNotes);
     const [activeSection, setActiveSection] = useState(initialSections[0]?.id || "s1");
     const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
+    const [showNotebooks, setShowNotebooks] = useState(true);
+    const [showPages, setShowPages] = useState(true);
     const router = useRouter();
 
     useEffect(() => {
@@ -91,70 +93,108 @@ export default function NotebookClient({ initialSections, initialNotes }: { init
     const activeNote = notes.find(n => n.id === activeNoteId) || null;
 
     return (
-        <div className="flex h-screen max-h-[calc(100vh-2rem)] overflow-hidden m-4 rounded-xl border border-border bg-card shadow-sm">
+        <div className="flex flex-col md:flex-row h-[calc(100vh-4rem)] md:h-screen max-h-[calc(100vh-2rem)] overflow-hidden m-2 md:m-4 rounded-xl border border-border bg-card shadow-sm">
 
             {/* Sections Sidebar (Left) */}
-            <div className="w-60 border-r border-border bg-muted/10 flex flex-col">
-                <div className="p-4 border-b border-border font-semibold flex justify-between items-center">
-                    <span>Notebooks</span>
+            <div className={cn(
+                "w-full md:w-60 border-b md:border-b-0 md:border-r border-border bg-muted/10 flex flex-col shrink-0 transition-all duration-300",
+                showNotebooks ? "h-32 md:h-full" : "h-12 md:h-full"
+            )}>
+                <div
+                    className="p-4 border-b border-border font-semibold flex justify-between items-center cursor-pointer md:cursor-default"
+                    onClick={() => setShowNotebooks(!showNotebooks)}
+                >
+                    <div className="flex items-center gap-2">
+                        <span className="md:hidden">
+                            {showNotebooks ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                        </span>
+                        <span>Notebooks</span>
+                    </div>
                 </div>
-                <div className="flex-1 overflow-y-auto p-2 space-y-1">
-                    {sections.map(section => (
-                        <button
-                            key={section.id}
-                            onClick={() => { setActiveSection(section.id); setActiveNoteId(null); }}
-                            className={cn(
-                                "w-full flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium hover:bg-muted transition-colors",
-                                activeSection === section.id ? "bg-primary/10 text-primary" : "text-muted-foreground"
-                            )}
-                        >
-                            <Folder className="h-4 w-4" />
-                            <span className="flex-1 text-left">{section.name}</span>
-                            <span className="text-xs opacity-50">{notes.filter(n => n.sectionId === section.id).length}</span>
-                        </button>
-                    ))}
-                </div>
+                {showNotebooks && (
+                    <div className="flex-1 overflow-y-auto p-2 space-y-1">
+                        {sections.map(section => (
+                            <button
+                                key={section.id}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setActiveSection(section.id);
+                                    setActiveNoteId(null);
+                                    // Optional: Auto-collapse on mobile after selection?
+                                    // setShowNotebooks(false); 
+                                }}
+                                className={cn(
+                                    "w-full flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium hover:bg-muted transition-colors",
+                                    activeSection === section.id ? "bg-primary/10 text-primary" : "text-muted-foreground"
+                                )}
+                            >
+                                <Folder className="h-4 w-4" />
+                                <span className="flex-1 text-left">{section.name}</span>
+                                <span className="text-xs opacity-50">{notes.filter(n => n.sectionId === section.id).length}</span>
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Notes List (Middle) */}
-            <div className="w-72 border-r border-border bg-background flex flex-col">
-                <div className="p-4 border-b border-border font-semibold flex justify-between items-center">
-                    <span>Pages</span>
-                    <button onClick={handleCreateNote} className="hover:bg-muted p-1 rounded"><Plus className="h-4 w-4" /></button>
+            <div className={cn(
+                "w-full md:w-72 border-b md:border-b-0 md:border-r border-border bg-background flex flex-col shrink-0 transition-all duration-300",
+                showPages ? "h-48 md:h-full" : "h-12 md:h-full"
+            )}>
+                <div
+                    className="p-4 border-b border-border font-semibold flex justify-between items-center cursor-pointer md:cursor-default"
+                    onClick={() => setShowPages(!showPages)}
+                >
+                    <div className="flex items-center gap-2">
+                        <span className="md:hidden">
+                            {showPages ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                        </span>
+                        <span>Pages</span>
+                    </div>
+                    <button
+                        onClick={(e) => { e.stopPropagation(); handleCreateNote(); }}
+                        className="hover:bg-muted p-1 rounded"
+                    >
+                        <Plus className="h-4 w-4" />
+                    </button>
                 </div>
-                <div className="flex-1 overflow-y-auto">
-                    {currentNotes.length === 0 ? (
-                        <div className="p-4 text-sm text-muted-foreground text-center">No pages here</div>
-                    ) : (
-                        currentNotes.map(note => (
-                            <div
-                                key={note.id}
-                                className={cn(
-                                    "group w-full flex flex-col items-start px-4 py-3 border-b border-border/50 hover:bg-muted/50 transition-colors text-left relative cursor-pointer",
-                                    activeNoteId === note.id ? "bg-muted/50 border-l-2 border-l-primary pl-[14px]" : ""
-                                )}
-                                onClick={() => setActiveNoteId(note.id)}
-                            >
-                                <div className="flex justify-between w-full">
-                                    <h4 className={cn("text-sm font-semibold", activeNoteId === note.id ? "text-primary" : "")}>{note.title}</h4>
-                                    <button
-                                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-destructive/10 text-destructive rounded transition-all"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDeleteNote(note.id);
-                                        }}
-                                    >
-                                        <Trash2 className="h-3 w-3" />
-                                    </button>
+                {showPages && (
+                    <div className="flex-1 overflow-y-auto">
+                        {currentNotes.length === 0 ? (
+                            <div className="p-4 text-sm text-muted-foreground text-center">No pages here</div>
+                        ) : (
+                            currentNotes.map(note => (
+                                <div
+                                    key={note.id}
+                                    className={cn(
+                                        "group w-full flex flex-col items-start px-4 py-3 border-b border-border/50 hover:bg-muted/50 transition-colors text-left relative cursor-pointer",
+                                        activeNoteId === note.id ? "bg-muted/50 border-l-2 border-l-primary pl-[14px]" : ""
+                                    )}
+                                    // Auto-collapse Pages on mobile after selection could be nice?
+                                    onClick={() => { setActiveNoteId(note.id); }}
+                                >
+                                    <div className="flex justify-between w-full">
+                                        <h4 className={cn("text-sm font-semibold", activeNoteId === note.id ? "text-primary" : "")}>{note.title}</h4>
+                                        <button
+                                            className="opacity-100 md:opacity-0 md:group-hover:opacity-100 p-1 hover:bg-destructive/10 text-destructive rounded transition-all"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteNote(note.id);
+                                            }}
+                                        >
+                                            <Trash2 className="h-3 w-3" />
+                                        </button>
+                                    </div>
+                                    <div className="flex items-center justify-between mt-1 w-full">
+                                        <span className="text-xs text-muted-foreground">{note.date}</span>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{note.content.substring(0, 30)}...</p>
                                 </div>
-                                <div className="flex items-center justify-between mt-1 w-full">
-                                    <span className="text-xs text-muted-foreground">{note.date}</span>
-                                </div>
-                                <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{note.content.substring(0, 30)}...</p>
-                            </div>
-                        ))
-                    )}
-                </div>
+                            ))
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Editor (Right) */}

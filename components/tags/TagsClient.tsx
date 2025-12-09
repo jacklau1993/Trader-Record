@@ -141,44 +141,46 @@ export default function TagsClient({ initialCategories }: { initialCategories: a
     };
 
     return (
-        <div className="flex-1 space-y-4 p-8 pt-6">
-            <div className="flex items-center justify-between">
+        <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h2 className="text-3xl font-bold tracking-tight">Tag Management</h2>
 
-                <div className="flex items-center space-x-2 bg-muted/30 p-1 rounded-lg border border-border">
+                <div className="flex flex-col md:flex-row items-center gap-2 bg-muted/30 p-2 rounded-lg border border-border w-full md:w-auto">
                     <input
                         type="text"
                         placeholder="New Category Name"
-                        className="bg-transparent border-none px-3 py-1.5 text-sm w-48 focus:outline-none"
+                        className="bg-transparent border-none px-3 py-1.5 text-sm w-full md:w-48 focus:outline-none border-b md:border-b-0 border-border/50 md:border-none mb-2 md:mb-0"
                         value={newCatName}
                         onChange={(e) => setNewCatName(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
                     />
 
                     {/* Color Picker for New Category */}
-                    <div className="flex space-x-1 px-2 border-l border-border">
-                        {COLORS.slice(0, 5).map(c => (
-                            <button
-                                key={c.value}
-                                onClick={() => setSelectedColor(c.value)}
-                                className={`w-4 h-4 rounded-full transition-transform hover:scale-110 ${c.value === selectedColor ? 'ring-2 ring-primary ring-offset-1' : ''}`}
-                                style={{ backgroundColor: c.value === 'white' ? 'white' : `var(--color-${c.value}-500, ${c.value})` }}
-                                title={c.name}
-                            />
-                        ))}
-                    </div>
+                    <div className="flex items-center justify-between w-full md:w-auto gap-2">
+                        <div className="flex space-x-1 px-2 md:border-l border-border">
+                            {COLORS.slice(0, 5).map(c => (
+                                <button
+                                    key={c.value}
+                                    onClick={() => setSelectedColor(c.value)}
+                                    className={`w-4 h-4 rounded-full transition-transform hover:scale-110 ${c.value === selectedColor ? 'ring-2 ring-primary ring-offset-1' : ''}`}
+                                    style={{ backgroundColor: c.value === 'white' ? 'white' : `var(--color-${c.value}-500, ${c.value})` }}
+                                    title={c.name}
+                                />
+                            ))}
+                        </div>
 
-                    <button
-                        onClick={handleAddCategory}
-                        disabled={updating}
-                        className="bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1.5 rounded-md text-xs font-medium ml-2 disabled:opacity-50"
-                    >
-                        Add
-                    </button>
+                        <button
+                            onClick={handleAddCategory}
+                            disabled={updating}
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1.5 rounded-md text-xs font-medium ml-2 disabled:opacity-50"
+                        >
+                            Add
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {categories.map((category) => {
                     const catColor = COLORS.find(c => c.value === category.color) || COLORS[0];
                     return (
@@ -200,7 +202,7 @@ export default function TagsClient({ initialCategories }: { initialCategories: a
                                 </div>
                                 <button
                                     onClick={() => handleDeleteCategory(category.id)}
-                                    className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="text-muted-foreground hover:text-destructive opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
@@ -210,7 +212,7 @@ export default function TagsClient({ initialCategories }: { initialCategories: a
                                     {category.tags.map(tag => (
                                         <div key={tag.id} className={`flex items-center space-x-1 px-2 py-1 rounded-md text-xs font-medium ${tag.color || catColor.class}`}>
                                             <span>{tag.name}</span>
-                                            <button onClick={() => handleDeleteTag(category.id, tag.id)} className="hover:text-foreground/70 ml-1">
+                                            <button onClick={() => handleDeleteTag(category.id, tag.id)} className="hover:text-foreground/70 ml-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                                 <X className="h-3 w-3" />
                                             </button>
                                         </div>

@@ -16,7 +16,7 @@ const navigation = [
     { name: "Settings", href: "/settings", icon: Settings },
 ];
 
-export function Sidebar() {
+const SidebarContent = () => {
     const pathname = usePathname();
     const { data: session, isPending } = authClient.useSession();
 
@@ -36,13 +36,13 @@ export function Sidebar() {
     const initials = getInitials(user?.name, user?.email);
 
     return (
-        <div className="flex h-screen w-64 flex-col border-r border-border bg-card">
+        <div className="flex h-full flex-col border-r border-border bg-card">
             <div className="flex h-14 items-center border-b border-border px-6">
                 <span className="text-xl font-bold bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
                     TraderRecord
                 </span>
             </div>
-            <nav className="flex-1 space-y-1 px-3 py-4">
+            <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
                 {navigation.map((item) => {
                     const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
                     return (
@@ -100,6 +100,45 @@ export function Sidebar() {
                     </Link>
                 )}
             </div>
+        </div>
+    );
+};
+
+export function Sidebar() {
+    return (
+        <div className="hidden md:flex h-screen w-64 flex-col">
+            <SidebarContent />
+        </div>
+    );
+}
+
+import { Menu } from "lucide-react";
+import { Sheet } from "@/components/ui/sheet";
+import { useState } from "react";
+
+export function MobileSidebar() {
+    const [open, setOpen] = useState(false);
+
+    // Close sidebar when route changes
+    const pathname = usePathname();
+    // Alternatively, simple effect or user action.
+    // For now, simple standard usage.
+
+    return (
+        <div className="sticky top-0 z-40 flex h-14 items-center border-b border-border bg-background px-4 md:hidden">
+            <button
+                onClick={() => setOpen(true)}
+                className="mr-2 rounded-md p-2 text-muted-foreground hover:bg-muted focus:outline-none focus:ring-1 focus:ring-ring"
+            >
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Open sidebar</span>
+            </button>
+            <div className="font-semibold">TraderRecord</div>
+            <Sheet open={open} onOpenChange={setOpen}>
+                <div onClick={() => setOpen(false)} className="h-full">
+                    <SidebarContent />
+                </div>
+            </Sheet>
         </div>
     );
 }
