@@ -6,6 +6,7 @@ import { ArrowLeft, Save } from "lucide-react";
 import { updateTrade } from "@/app/actions/trade-actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trade, Category } from "@/lib/types";
+import { TICKERS, CONTRACT_MULTIPLIERS } from "@/lib/constants";
 
 export function TradeDetailClient({ trade: initialTrade, categories }: { trade: Trade, categories: Category[] }) {
     const router = useRouter();
@@ -61,6 +62,21 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
             }
         }
 
+        // 5. Automatic PnL Calculation
+        const multiplier = CONTRACT_MULTIPLIERS[currentTrade.ticker] || 0;
+        if (multiplier && entryPrice && exitPrice && currentTrade.quantity) {
+            let calculatedPnL = (exitPrice - entryPrice) * currentTrade.quantity * multiplier;
+            if (type === 'Short') {
+                calculatedPnL = (entryPrice - exitPrice) * currentTrade.quantity * multiplier;
+            }
+            const roundedPnL = Number(calculatedPnL.toFixed(2));
+            // Only update if difference is significant to avoid loops (though strict equality check handles it mostly)
+            if (Math.abs(currentTrade.pnl - roundedPnL) > 0.01) {
+                updates.pnl = roundedPnL;
+                changed = true;
+            }
+        }
+
         return changed ? updates : null;
     }, []);
 
@@ -71,7 +87,7 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
         if (updates) {
             setTrade(prev => ({ ...prev, ...updates }));
         }
-    }, [trade.entryPrice, trade.exitPrice, trade.stopLoss, trade.profitTarget, trade.type, calculateMetrics]); // Dependencies for recalc
+    }, [trade.entryPrice, trade.exitPrice, trade.stopLoss, trade.profitTarget, trade.type, trade.ticker, trade.quantity, calculateMetrics]); // Dependencies for recalc
 
     // Helper for safe number conversion
     const safeNumber = (value: any, fallback = 0) => {
@@ -206,12 +222,15 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium">Ticker</label>
-                                    <input
-                                        type="text"
+                                    <select
                                         className="w-full mt-1 bg-background border border-input rounded px-3 py-2 uppercase"
                                         value={trade.ticker}
                                         onChange={e => setTrade({ ...trade, ticker: e.target.value })}
-                                    />
+                                    >
+                                        {TICKERS.map(t => (
+                                            <option key={t} value={t}>{t} (x{CONTRACT_MULTIPLIERS[t]})</option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
 
@@ -265,8 +284,7 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
                                     type="number" step="0.01"
                                     className={`w-full mt-1 bg-background border border-input rounded px-3 py-2 font-bold ${trade.pnl > 0 ? 'text-green-500' : 'text-red-500'}`}
                                     value={trade.pnl}
-                                    onChange={e => setTrade({ ...trade, pnl: Number(e.target.value) })}
-                                    readOnly={false}
+                                    readOnly
                                 />
                             </div>
                         </CardContent>

@@ -6,6 +6,8 @@ import { Modal } from "@/components/ui/modal";
 import { useRouter } from "next/navigation";
 import { createTrade } from "@/app/actions/trade-actions";
 import { createNote, getSections } from "@/app/actions/note-actions";
+import { TICKERS, CONTRACT_MULTIPLIERS } from "@/lib/constants";
+import { useEffect } from "react";
 
 // Types matching DB schema roughly, or inferred
 // For form we can keep simple types
@@ -27,8 +29,34 @@ export function AddTradeModal({ onTradeAdded }: { onTradeAdded?: () => void }) {
 
     // Form State
     const [formData, setFormData] = useState<Partial<TradeData>>({
-        type: "Long"
+        type: "Long",
+        ticker: TICKERS[0]
     });
+
+    useEffect(() => {
+        const calculatePnL = () => {
+            const entry = Number(formData.entryPrice) || 0;
+            const exit = Number(formData.exitPrice) || 0;
+            const quantity = Number(formData.quantity) || 0;
+            const ticker = formData.ticker || "";
+            const type = formData.type || "Long";
+
+            if (!entry || !exit || !quantity || !ticker) return;
+
+            const multiplier = CONTRACT_MULTIPLIERS[ticker] || 0;
+            let rawPnL = (exit - entry) * quantity * multiplier;
+
+            if (type === "Short") {
+                rawPnL = (entry - exit) * quantity * multiplier;
+            }
+
+            setFormData(prev => {
+                if (prev.pnl === Number(rawPnL.toFixed(2))) return prev;
+                return { ...prev, pnl: Number(rawPnL.toFixed(2)) };
+            });
+        };
+        calculatePnL();
+    }, [formData.entryPrice, formData.exitPrice, formData.quantity, formData.ticker, formData.type]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -109,10 +137,15 @@ export function AddTradeModal({ onTradeAdded }: { onTradeAdded?: () => void }) {
                         </div>
                         <div>
                             <label className="text-xs font-medium text-muted-foreground mb-1 block">Ticker</label>
-                            <input type="text" placeholder="AAPL" required className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm uppercase"
+                            <select
+                                className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm uppercase"
                                 value={formData.ticker || ""}
                                 onChange={e => setFormData({ ...formData, ticker: e.target.value })}
-                            />
+                            >
+                                {TICKERS.map(t => (
+                                    <option key={t} value={t}>{t} (x{CONTRACT_MULTIPLIERS[t]})</option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 
@@ -162,7 +195,7 @@ export function AddTradeModal({ onTradeAdded }: { onTradeAdded?: () => void }) {
                         <label className="text-xs font-medium text-muted-foreground mb-1 block">Net P&L ($)</label>
                         <input type="number" step="0.01" placeholder="0.00" required className="w-full bg-muted/50 border border-input rounded px-3 py-2 font-bold"
                             value={formData.pnl || ""}
-                            onChange={e => setFormData({ ...formData, pnl: Number(e.target.value) })}
+                            readOnly
                         />
                     </div>
 
