@@ -4,7 +4,7 @@
 
 ## 功能
 - 儀表板：淨 P&L、勝率、獲利因子、平均盈虧、累積/日收益圖、日曆熱力圖、近期交易。
-- 交易管理：新增/編輯/刪除，支援多標籤、方向/倉位/進出場/P&L，自動計算 Points、Planned/Realized R:R、風險、評分。
+- 交易管理：新增/編輯/刪除，支援多標籤、方向/倉位/進出場/P&L，依預設合約乘數自動算淨 P&L，並自動計算 Points、Planned/Realized R:R、風險、評分。
 - 標籤與分類：自訂分類+標籤，顏色同步，供報表分析。
 - 報表：標籤 P&L/勝率/次數/平均盈虧，P&L+成交量組合圖、勝率 vs 成交量、標的交叉分析。
 - 筆記與模板：TipTap 富文本（標題、粗斜體、列表、程式碼、引用），模板插入/管理並存 DB。
@@ -19,6 +19,7 @@
 - 認證：Better Auth（email/password）
 - 介面：Tailwind CSS、Lucide 圖示
 - 圖表/編輯：Recharts、TipTap（含圖片上傳、Placeholder、StarterKit）
+- 預設期貨代號與合約乘數：`lib/constants.ts`（用於自動計算 P&L）
 
 ## 前置需求
 - Node.js 18+
@@ -87,7 +88,7 @@ Cloud-first trading journal with trade logging, tag analytics, reports, rich-tex
 
 ## Features
 - Dashboard: net P&L, win rate, profit factor, average win/loss, cumulative & daily profit charts, calendar heatmap, recent trades.
-- Trade management: create/edit/delete with multi-tags, direction/size/entry/exit/P&L; auto Points and Planned/Realized R:R, risk inputs, rating, notes.
+- Trade management: create/edit/delete with multi-tags, direction/size/entry/exit/P&L; auto net P&L via preset contract multipliers, plus auto Points and Planned/Realized R:R, risk inputs, rating, notes.
 - Tags & categories: custom categories/tags with synced colors for reporting.
 - Reports: tag P&L/win rate/counts/avg win-loss, P&L + volume combo chart, win-rate vs volume, ticker cross-analysis.
 - Notebook & templates: TipTap rich text (headings, bold/italic, lists, code, quotes); insert/manage templates persisted in DB.
@@ -102,6 +103,7 @@ Cloud-first trading journal with trade logging, tag analytics, reports, rich-tex
 - Auth: Better Auth (email/password)
 - UI: Tailwind CSS, Lucide icons
 - Charts/Editor: Recharts, TipTap (image upload, Placeholder, StarterKit)
+- Preset futures tickers & contract multipliers: `lib/constants.ts` (drives auto P&L)
 
 ## Prerequisites
 - Node.js 18+
