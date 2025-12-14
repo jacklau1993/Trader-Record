@@ -143,7 +143,7 @@ export function AddTradeModal({ onTradeAdded }: { onTradeAdded?: () => void }) {
                                 onChange={e => setFormData({ ...formData, ticker: e.target.value })}
                             >
                                 {TICKERS.map(t => (
-                                    <option key={t} value={t}>{t} (x{CONTRACT_MULTIPLIERS[t]})</option>
+                                    <option key={t} value={t}>{t}</option>
                                 ))}
                             </select>
                         </div>
