@@ -21,6 +21,8 @@ interface TradeData {
     pnl: number;
     notes: string;
     tradingAccountId?: string;
+    entryTime?: string;
+    exitTime?: string;
 }
 
 export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }: { onTradeAdded?: () => void, accounts?: any[], defaultAccountId?: string }) {
@@ -92,7 +94,9 @@ export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }:
                 pnl: pnl,
                 status: "Closed",
                 notes: formData.notes || "",
-                tradingAccountId: formData.tradingAccountId
+                tradingAccountId: formData.tradingAccountId,
+                entryTime: formData.entryTime,
+                exitTime: formData.exitTime
             };
 
             // 1. Save Trade to DB
@@ -230,6 +234,23 @@ export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }:
                             <input type="number" step="0.01" placeholder="0.00" required className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
                                 value={formData.exitPrice || ""}
                                 onChange={e => setFormData({ ...formData, exitPrice: Number(e.target.value) })}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Entry Time</label>
+                            <input type="time" className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
+                                value={formData.entryTime || ""}
+                                onChange={e => setFormData({ ...formData, entryTime: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Exit Time</label>
+                            <input type="time" className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
+                                value={formData.exitTime || ""}
+                                onChange={e => setFormData({ ...formData, exitTime: e.target.value })}
                             />
                         </div>
                     </div>

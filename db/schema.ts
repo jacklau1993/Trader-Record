@@ -115,6 +115,11 @@ export const trades = sqliteTable("trade", {
     realizedRR: real("realized_rr"),
 
     userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+
+    // Time Tracking (Text as "HH:MM")
+    entryTime: text("entry_time"),
+    exitTime: text("exit_time"),
+
     createdAt: integer("created_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date())
 });

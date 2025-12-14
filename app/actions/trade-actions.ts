@@ -109,6 +109,7 @@ export async function getTrade(id: string) {
     };
 }
 
+
 // Define Input Type
 type CreateTradeInput = Omit<typeof trades.$inferInsert, "userId"> & { tags?: string[] };
 
@@ -126,21 +127,26 @@ export async function createTrade(data: CreateTradeInput) {
         updatedAt: new Date()
     };
 
-    await db.insert(trades).values(newTrade);
+    try {
+        await db.insert(trades).values(newTrade);
 
-    if (tagIds && tagIds.length > 0) {
-        for (const tagId of tagIds) {
-            await db.insert(tradeTags).values({
-                tradeId: newTrade.id,
-                tagId: tagId
-            });
+        if (tagIds && tagIds.length > 0) {
+            for (const tagId of tagIds) {
+                await db.insert(tradeTags).values({
+                    tradeId: newTrade.id,
+                    tagId: tagId
+                });
+            }
         }
-    }
 
-    revalidatePath("/trades");
-    revalidatePath("/");
-    revalidatePath("/reports");
-    return { success: true };
+        revalidatePath("/trades");
+        revalidatePath("/");
+        revalidatePath("/reports");
+        return { success: true };
+    } catch (e) {
+        console.error("SERVER ERROR in createTrade:", e);
+        throw e; // Re-throw to ensure client sees failure
+    }
 }
 
 export async function updateTrade(id: string, data: Partial<CreateTradeInput>) {
