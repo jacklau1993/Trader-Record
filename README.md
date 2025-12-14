@@ -4,12 +4,14 @@
 
 ## 功能
 - 儀表板：淨 P&L、勝率、獲利因子、平均盈虧、累積/日收益圖、日曆熱力圖、近期交易。支援多帳戶切換（個人/Prop Firm）。
-- 交易管理：新增/編輯/刪除，支援多標籤、方向/倉位/進出場/P&L，依預設合約乘數自動算淨 P&L，並自動計算 Points、Planned/Realized R:R、風險、評分。
+- 交易管理：新增/編輯/刪除，支援多標籤、方向/倉位/進出場時間與價格/P&L，依預設合約乘數自動算淨 P&L，並自動計算 Points、Planned/Realized R:R、風險、評分。
 - 多帳戶管理：
   - 個人帳戶：於「設定」中管理（如 Interactive Brokers, TD Ameritrade）。
   - Prop Firm：專屬「Prop Firms」模組，追蹤成本、出金、考試狀態。
 - 標籤與分類：自訂分類+標籤，顏色同步，供報表分析。
-- 報表：標籤 P&L/勝率/次數/平均盈虧，P&L+成交量組合圖、勝率 vs 成交量、標的交叉分析。
+- 報表：
+  - **績效報表 (Performance Report)**：淨 P&L、獲利因子、勝率、期望值、最大回撤 (Drawdown)、平均持倉時間 (Avg Hold Time)、權益曲線 (Equity Curve)、日收益圖。
+  - **標籤報表 (Tags Report)**：標籤 P&L/勝率/次數/平均盈虧，P&L+成交量組合圖、勝率 vs 成交量、標的交叉分析。
 - 筆記與模板：TipTap 富文本（標題、粗斜體、列表、程式碼、引用），模板插入/管理並存 DB。
 - 圖片上傳：筆記可上傳 JPEG/PNG/GIF/WebP（5MB），存 Cloudflare R2。
 - 遷移工具：偵測舊版 localStorage 的分類/標籤/交易/筆記/模板並寫入雲端。
@@ -91,12 +93,14 @@ Cloud-first trading journal with trade logging, tag analytics, reports, rich-tex
 
 ## Features
 - Dashboard: net P&L, win rate, profit factor, average win/loss, cumulative & daily profit charts, calendar heatmap, recent trades. Supports **Account Switching** (Personal/Prop Firm).
-- Trade management: create/edit/delete with multi-tags, direction/size/entry/exit/P&L; auto net P&L via preset contract multipliers, plus auto Points and Planned/Realized R:R, risk inputs, rating, notes.
+- Trade management: create/edit/delete with multi-tags, direction/size/entry/exit time & price/P&L; auto net P&L via preset contract multipliers, plus auto Points and Planned/Realized R:R, risk inputs, rating, notes.
 - **Multi-Account Management**:
   - **Personal Accounts**: Manage in Settings (e.g., Interactive Brokers).
   - **Prop Firms**: Dedicated "Prop Firms" module to track costs, payouts, and evaluation status.
 - Tags & categories: custom categories/tags with synced colors for reporting.
-- Reports: tag P&L/win rate/counts/avg win-loss, P&L + volume combo chart, win-rate vs volume, ticker cross-analysis.
+- Reports:
+  - **Performance Report**: Net P&L, Profit Factor, Win Rate, Expectancy, Max Drawdown, **Avg Hold Time**, Equity Curve, Daily P&L chart.
+  - **Tags Report**: Tag-based P&L/win rate/counts/avg win-loss, P&L + volume combo chart, win-rate vs volume, ticker cross-analysis.
 - Notebook & templates: TipTap rich text (headings, bold/italic, lists, code, quotes); insert/manage templates persisted in DB.
 - Image uploads: JPEG/PNG/GIF/WebP (5MB) stored in Cloudflare R2 via `/api/images/upload`.
 - Migration tool: detects legacy localStorage data (categories/tags/trades/notes/templates) and writes to the cloud DB.
