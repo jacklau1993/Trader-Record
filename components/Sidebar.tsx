@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Book, Tags, Settings, BarChart2, List, LogIn } from "lucide-react";
+import { Home, Book, Tags, Settings, BarChart2, List, LogIn, Briefcase } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { authClient } from "@/lib/auth-client";
@@ -13,6 +13,7 @@ const navigation = [
     { name: "Notebook", href: "/notebook", icon: Book },
     { name: "Reports", href: "/reports", icon: BarChart2 },
     { name: "Tags", href: "/tags", icon: Tags },
+    { name: "Prop Firms", href: "/prop-firms", icon: Briefcase },
     { name: "Settings", href: "/settings", icon: Settings },
 ];
 

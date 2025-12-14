@@ -15,6 +15,13 @@
       "when": 1765141948475,
       "tag": "0001_mushy_nightshade",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1765710389381,
+      "tag": "0002_wild_nekra",
+      "breakpoints": true
     }
   ]
 }

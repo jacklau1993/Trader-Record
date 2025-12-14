@@ -25,6 +25,12 @@ import {
     getTradesForExport,
     deleteUserAccount,
 } from "@/app/actions/settings-actions";
+import {
+    createAccount,
+    updateAccount,
+    deleteAccount
+} from "@/app/actions/account-actions";
+import { Modal } from "@/components/ui/modal";
 
 interface UserData {
     id: string;
@@ -42,6 +48,7 @@ interface Preferences {
 interface SettingsClientProps {
     user: UserData;
     preferences: Preferences;
+    initialAccounts: any[];
 }
 
 const CURRENCIES = ["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "CNY", "HKD", "SGD"];
@@ -60,7 +67,99 @@ const TIMEZONES = [
     "Australia/Sydney",
 ];
 
-export default function SettingsClient({ user, preferences }: SettingsClientProps) {
+// Internal component for managing broker accounts
+function AccountsManager({ initialAccounts }: { initialAccounts: any[] }) {
+    const [accounts, setAccounts] = useState(initialAccounts);
+    const [isAddOpen, setIsAddOpen] = useState(false);
+    const [newAccountName, setNewAccountName] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+
+    const handleAdd = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        try {
+            await createAccount({
+                id: `acc_${Date.now()}`,
+                name: newAccountName,
+                type: "BROKER"
+            });
+            setAccounts([...accounts, { id: `acc_${Date.now()}`, name: newAccountName, type: "BROKER" }]);
+            setIsAddOpen(false);
+            setNewAccountName("");
+            router.refresh();
+        } catch (error) {
+            alert("Failed to create account");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("Delete this account?")) return;
+        try {
+            await deleteAccount(id);
+            setAccounts(accounts.filter(a => a.id !== id));
+            router.refresh();
+        } catch (error) {
+            alert("Failed to delete account");
+        }
+    };
+
+    return (
+        <section className="rounded-lg border border-border bg-card p-6">
+            <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                    <DollarSign className="h-5 w-5 text-primary" />
+                    <h3 className="text-lg font-semibold">Trading Accounts</h3>
+                </div>
+                <button
+                    onClick={() => setIsAddOpen(true)}
+                    className="text-sm bg-primary text-primary-foreground px-3 py-1 rounded hover:bg-primary/90"
+                >
+                    Add Account
+                </button>
+            </div>
+
+            <p className="text-sm text-muted-foreground mb-4">
+                Manage your personal trading accounts (Brokers).
+            </p>
+
+            <div className="space-y-2">
+                {accounts.length === 0 && <p className="text-sm text-muted-foreground italic">No extra accounts created.</p>}
+                {accounts.map(acc => (
+                    <div key={acc.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
+                        <span className="font-medium">{acc.name}</span>
+                        <div className="flex items-center gap-2">
+                            <button onClick={() => handleDelete(acc.id)} className="text-destructive hover:bg-destructive/10 p-1 rounded">
+                                <Trash2 className="h-4 w-4" />
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <Modal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)}>
+                <h2 className="text-lg font-bold mb-4">Add Trading Account</h2>
+                <form onSubmit={handleAdd}>
+                    <label className="text-sm font-medium mb-1 block">Account Name</label>
+                    <input
+                        required
+                        className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm mb-4"
+                        placeholder="e.g. Interactive Brokers"
+                        value={newAccountName}
+                        onChange={e => setNewAccountName(e.target.value)}
+                    />
+                    <button disabled={isLoading} className="w-full bg-primary text-primary-foreground py-2 rounded">
+                        {isLoading ? "Creating..." : "Create Account"}
+                    </button>
+                </form>
+            </Modal>
+        </section>
+    );
+}
+
+export default function SettingsClient({ user, preferences, initialAccounts }: SettingsClientProps) {
     const router = useRouter();
 
     // Profile state
@@ -400,6 +499,9 @@ export default function SettingsClient({ user, preferences }: SettingsClientProp
                         </button>
                     </div>
                 </section>
+
+                {/* Trading Accounts Management */}
+                <AccountsManager initialAccounts={initialAccounts ? initialAccounts.filter(a => a.type === "BROKER") : []} />
 
                 {/* Danger Zone */}
                 <section className="rounded-lg border border-destructive/50 bg-destructive/5 p-6">

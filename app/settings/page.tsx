@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { getAuth } from "@/lib/auth";
 import { getUserPreferences } from "@/app/actions/settings-actions";
+import { getAccounts } from "@/app/actions/account-actions";
 import SettingsClient from "@/components/settings/SettingsClient";
 
 export const runtime = "edge";
@@ -16,7 +17,10 @@ export default async function SettingsPage() {
             redirect("/sign-in");
         }
 
-        const preferences = await getUserPreferences();
+        const [preferences, accounts] = await Promise.all([
+            getUserPreferences(),
+            getAccounts()
+        ]);
 
         return (
             <SettingsClient
@@ -31,6 +35,7 @@ export default async function SettingsPage() {
                     timezone: preferences.timezone,
                     theme: preferences.theme,
                 }}
+                initialAccounts={accounts}
             />
         );
     } catch (error) {

@@ -1,4 +1,5 @@
 import { getTrades } from "@/app/actions/trade-actions";
+import { getAccounts } from "@/app/actions/account-actions";
 import DashboardClient from "@/components/dashboard/DashboardClient";
 import { redirect } from "next/navigation";
 
@@ -8,15 +9,16 @@ export const runtime = 'edge';
 
 export default async function DashboardPage() {
     let trades: any[] = [];
+    let accounts: any[] = [];
     try {
-        trades = await getTrades();
+        [trades, accounts] = await Promise.all([getTrades(), getAccounts()]);
     } catch (e) {
         // Assume any error in getTrades for main page is likely auth or critical failure
         // For a better UX, redirect to sign-in if unauthorized.
         // Since we can't easily distinguish server action errors without parsing message:
-        console.error("Failed to fetch trades:", e);
+        console.error("Failed to fetch data:", e);
         redirect("/sign-in");
     }
 
-    return <DashboardClient initialTrades={trades} />;
+    return <DashboardClient initialTrades={trades} initialAccounts={accounts} />;
 }

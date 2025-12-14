@@ -20,9 +20,10 @@ interface TradeData {
     quantity: number;
     pnl: number;
     notes: string;
+    tradingAccountId?: string;
 }
 
-export function AddTradeModal({ onTradeAdded }: { onTradeAdded?: () => void }) {
+export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }: { onTradeAdded?: () => void, accounts?: any[], defaultAccountId?: string }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
@@ -30,8 +31,20 @@ export function AddTradeModal({ onTradeAdded }: { onTradeAdded?: () => void }) {
     // Form State
     const [formData, setFormData] = useState<Partial<TradeData>>({
         type: "Long",
-        ticker: TICKERS[0]
+        ticker: TICKERS[0],
+        tradingAccountId: defaultAccountId === "all" ? (accounts && accounts.length > 0 ? accounts[0].id : undefined) : defaultAccountId
     });
+
+    useEffect(() => {
+        // Update default account if defaultAccountId changes and form isn't dirty (simplified logic)
+        if (!isOpen) {
+            setFormData(prev => ({
+                ...prev,
+                tradingAccountId: defaultAccountId === "all" ? (accounts && accounts.length > 0 ? accounts[0].id : undefined) : defaultAccountId
+            }));
+        }
+    }, [defaultAccountId, accounts, isOpen]);
+
 
     useEffect(() => {
         const calculatePnL = () => {
@@ -78,12 +91,14 @@ export function AddTradeModal({ onTradeAdded }: { onTradeAdded?: () => void }) {
                 quantity: Number(formData.quantity) || 0,
                 pnl: pnl,
                 status: "Closed",
-                notes: formData.notes || ""
+                notes: formData.notes || "",
+                tradingAccountId: formData.tradingAccountId
             };
 
             // 1. Save Trade to DB
             await createTrade(tradeData);
 
+            // ... (rest is same)
             // 2. Auto-create Note in Notebook
             // Fetch sections to find "Trade Notes"
             const sections = await getSections();
@@ -104,7 +119,11 @@ export function AddTradeModal({ onTradeAdded }: { onTradeAdded?: () => void }) {
             router.refresh();
             if (onTradeAdded) onTradeAdded();
             setIsOpen(false);
-            setFormData({ type: "Long" });
+            setFormData({
+                type: "Long",
+                ticker: TICKERS[0],
+                tradingAccountId: defaultAccountId === "all" ? (accounts && accounts.length > 0 ? accounts[0].id : undefined) : defaultAccountId
+            });
 
         } catch (error) {
             console.error("Failed to save trade:", error);
@@ -127,6 +146,30 @@ export function AddTradeModal({ onTradeAdded }: { onTradeAdded?: () => void }) {
             <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
                 <h2 className="text-xl font-bold mb-4">Log New Trade</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Account Selection */}
+                    {accounts && accounts.length > 0 && (
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Account</label>
+                            <select
+                                className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
+                                value={formData.tradingAccountId || ""}
+                                onChange={e => setFormData({ ...formData, tradingAccountId: e.target.value })}
+                            >
+                                <option value="" disabled>Select Account</option>
+                                <optgroup label="Personal Accounts">
+                                    {accounts.filter(a => a.type === "BROKER").map(acc => (
+                                        <option key={acc.id} value={acc.id}>{acc.name}</option>
+                                    ))}
+                                </optgroup>
+                                <optgroup label="Prop Firms">
+                                    {accounts.filter(a => a.type === "PROP_FIRM").map(acc => (
+                                        <option key={acc.id} value={acc.id}>{acc.name}</option>
+                                    ))}
+                                </optgroup>
+                            </select>
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="text-xs font-medium text-muted-foreground mb-1 block">Date</label>

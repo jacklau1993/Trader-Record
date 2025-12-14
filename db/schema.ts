@@ -69,6 +69,26 @@ export const tags = sqliteTable("tag", {
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date())
 });
 
+// ... (previous tables)
+
+export const tradingAccounts = sqliteTable("trading_account", {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    type: text("type").notNull(), // "BROKER" | "PROP_FIRM"
+
+    // Prop Firm specifics
+    status: text("status"), // e.g., "Active", "Busted", "Passed"
+    cost: real("cost"),
+    lastPayoutAmount: real("last_payout_amount"),
+    lastPayoutDate: integer("last_payout_date", { mode: "timestamp" }),
+    totalPayout: real("total_payout"),
+
+    createdAt: integer("created_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date())
+});
+
+
 export const trades = sqliteTable("trade", {
     id: text("id").primaryKey(),
     date: text("date").notNull(), // ISO Date String
@@ -80,6 +100,9 @@ export const trades = sqliteTable("trade", {
     pnl: real("pnl").notNull(),
     status: text("status").default("Closed").notNull(),
     notes: text("notes"),
+
+    // Account link
+    tradingAccountId: text("trading_account_id").references(() => tradingAccounts.id, { onDelete: "set null" }),
 
     // Advanced Metrics
     contracts: real("contracts"),
@@ -143,6 +166,7 @@ export const userPreferences = sqliteTable("user_preferences", {
     dateFormat: text("date_format").default("YYYY-MM-DD").notNull(),
     timezone: text("timezone").default("UTC").notNull(),
     theme: text("theme").default("dark").notNull(),
+    defaultTradingAccountId: text("default_trading_account_id"),
     createdAt: integer("created_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date())
 });

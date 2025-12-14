@@ -8,16 +8,28 @@ import { DailyProfitChart } from "@/components/dashboard/DailyProfitChart";
 import { CalendarHeatmap } from "@/components/dashboard/CalendarHeatmap";
 import { RecentTrades } from "@/components/dashboard/RecentTrades";
 import { AddTradeModal } from "@/components/AddTradeModal";
+import { AccountSwitcher } from "@/components/dashboard/AccountSwitcher";
 import { MigrationComponent } from "@/components/MigrationComponent";
 
-export default function DashboardClient({ initialTrades }: { initialTrades: any[] }) {
+export default function DashboardClient({ initialTrades, initialAccounts }: { initialTrades: any[], initialAccounts: any[] }) {
     const [trades, setTrades] = useState(initialTrades);
+    const [accounts, setAccounts] = useState(initialAccounts);
+    const [selectedAccountId, setSelectedAccountId] = useState<string>("all");
 
     useEffect(() => {
         setTrades(initialTrades);
     }, [initialTrades]);
 
-    const stats = calculateStats(trades);
+    useEffect(() => {
+        setAccounts(initialAccounts);
+    }, [initialAccounts]);
+
+
+    const filteredTrades = selectedAccountId === "all"
+        ? trades
+        : trades.filter(t => t.tradingAccountId === selectedAccountId);
+
+    const stats = calculateStats(filteredTrades);
 
     function calculateStats(data: any[]) {
         if (!data || data.length === 0) return {
@@ -63,7 +75,12 @@ export default function DashboardClient({ initialTrades }: { initialTrades: any[
             <div className="flex items-center justify-between space-y-2">
                 <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
                 <div className="flex items-center space-x-2">
-                    <AddTradeModal />
+                    <AccountSwitcher
+                        accounts={accounts}
+                        selectedAccountId={selectedAccountId}
+                        onSelect={setSelectedAccountId}
+                    />
+                    <AddTradeModal accounts={accounts} defaultAccountId={selectedAccountId} />
                 </div>
             </div>
 
@@ -107,14 +124,14 @@ export default function DashboardClient({ initialTrades }: { initialTrades: any[
 
                 {/* Left Column: Charts */}
                 <div className="col-span-4 space-y-4">
-                    <ProfitChart trades={trades} />
-                    <DailyProfitChart trades={trades} />
+                    <ProfitChart trades={filteredTrades} />
+                    <DailyProfitChart trades={filteredTrades} />
                 </div>
 
                 {/* Right Column: Calendar & Recent Activity */}
                 <div className="col-span-3 space-y-4">
-                    <CalendarHeatmap trades={trades} />
-                    <RecentTrades trades={trades} />
+                    <CalendarHeatmap trades={filteredTrades} />
+                    <RecentTrades trades={filteredTrades} />
                 </div>
             </div>
         </div>

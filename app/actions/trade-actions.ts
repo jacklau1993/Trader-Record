@@ -24,9 +24,50 @@ export async function getTrades() {
     const db = getDb();
 
     // 1. Fetch trades
-    const userTrades = await db.select()
+    let query = db.select()
         .from(trades)
         .where(eq(trades.userId, user.id))
+        .$dynamic(); // Prepare for potential dynamic chain
+
+    // If implementing filtering by account, we can add it here as an argument to getTrades
+    // For now, returning all trades, client can filter or we can add param later.
+    const userTrades = await query.orderBy(desc(trades.date));
+
+    // 2. Fetch tags for these trades
+    // We can do this efficiently by fetching all trade_tags for these trade IDs
+    const tradeIds = userTrades.map((t: any) => t.id);
+    let tagsMap: Record<string, string[]> = {};
+
+    if (tradeIds.length > 0) {
+        const relatedTags = await db.select()
+            .from(tradeTags)
+            .where(inArray(tradeTags.tradeId, tradeIds));
+
+        relatedTags.forEach((rt: any) => {
+            if (!tagsMap[rt.tradeId]) tagsMap[rt.tradeId] = [];
+            tagsMap[rt.tradeId].push(rt.tagId);
+        });
+    }
+
+    // 3. Merge
+    return userTrades.map((t: any) => ({
+        ...t,
+        tags: tagsMap[t.id] || []
+    }));
+}
+
+export async function getTradesByAccount(accountId?: string) {
+    const user = await getUser();
+    const db = getDb();
+
+    let whereClause = eq(trades.userId, user.id);
+    if (accountId) {
+        whereClause = and(whereClause, eq(trades.tradingAccountId, accountId)) as any;
+    }
+
+    const userTrades = await db.select()
+        .from(trades)
+        .where(whereClause)
         .orderBy(desc(trades.date));
 
     // 2. Fetch tags for these trades
