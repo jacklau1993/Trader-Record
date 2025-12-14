@@ -228,7 +228,7 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
                                         onChange={e => setTrade({ ...trade, ticker: e.target.value })}
                                     >
                                         {TICKERS.map(t => (
-                                            <option key={t} value={t}>{t} (x{CONTRACT_MULTIPLIERS[t]})</option>
+                                            <option key={t} value={t}>{t}</option>
                                         ))}
                                     </select>
                                 </div>
