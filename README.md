@@ -3,8 +3,11 @@
 雲端交易日記，涵蓋交易紀錄、標籤分析、報表、富文本筆記與模板、圖片上傳，以及 localStorage → 雲端的遷移。採用 Next.js 16（App Router + Edge runtime）、Drizzle ORM、Cloudflare D1/R2、Better Auth，預設部署 Cloudflare Pages。
 
 ## 功能
-- 儀表板：淨 P&L、勝率、獲利因子、平均盈虧、累積/日收益圖、日曆熱力圖、近期交易。
+- 儀表板：淨 P&L、勝率、獲利因子、平均盈虧、累積/日收益圖、日曆熱力圖、近期交易。支援多帳戶切換（個人/Prop Firm）。
 - 交易管理：新增/編輯/刪除，支援多標籤、方向/倉位/進出場/P&L，依預設合約乘數自動算淨 P&L，並自動計算 Points、Planned/Realized R:R、風險、評分。
+- 多帳戶管理：
+  - 個人帳戶：於「設定」中管理（如 Interactive Brokers, TD Ameritrade）。
+  - Prop Firm：專屬「Prop Firms」模組，追蹤成本、出金、考試狀態。
 - 標籤與分類：自訂分類+標籤，顏色同步，供報表分析。
 - 報表：標籤 P&L/勝率/次數/平均盈虧，P&L+成交量組合圖、勝率 vs 成交量、標的交叉分析。
 - 筆記與模板：TipTap 富文本（標題、粗斜體、列表、程式碼、引用），模板插入/管理並存 DB。
@@ -87,8 +90,11 @@ ISC（參見 `package.json`）
 Cloud-first trading journal with trade logging, tag analytics, reports, rich-text notebook/templates, image uploads, and migration from browser localStorage. Built with Next.js 16 (App Router + Edge runtime), Drizzle ORM, Cloudflare D1/R2, Better Auth; targets Cloudflare Pages.
 
 ## Features
-- Dashboard: net P&L, win rate, profit factor, average win/loss, cumulative & daily profit charts, calendar heatmap, recent trades.
+- Dashboard: net P&L, win rate, profit factor, average win/loss, cumulative & daily profit charts, calendar heatmap, recent trades. Supports **Account Switching** (Personal/Prop Firm).
 - Trade management: create/edit/delete with multi-tags, direction/size/entry/exit/P&L; auto net P&L via preset contract multipliers, plus auto Points and Planned/Realized R:R, risk inputs, rating, notes.
+- **Multi-Account Management**:
+  - **Personal Accounts**: Manage in Settings (e.g., Interactive Brokers).
+  - **Prop Firms**: Dedicated "Prop Firms" module to track costs, payouts, and evaluation status.
 - Tags & categories: custom categories/tags with synced colors for reporting.
 - Reports: tag P&L/win rate/counts/avg win-loss, P&L + volume combo chart, win-rate vs volume, ticker cross-analysis.
 - Notebook & templates: TipTap rich text (headings, bold/italic, lists, code, quotes); insert/manage templates persisted in DB.
