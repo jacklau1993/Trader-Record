@@ -29,7 +29,14 @@ export function ImportTradesModal({ accounts = [], defaultAccountId }: { account
                 setIsOpen(false);
                 setFile(null);
                 router.refresh();
-                alert(`Successfully imported ${result.count} trades.`);
+                if ((result.count || 0) > 0) {
+                    alert(`Successfully imported ${result.count} trades.`);
+                } else {
+                    const errorMsg = result.errors && result.errors.length > 0
+                        ? "\n" + result.errors.join("\n")
+                        : "No trades found in file.";
+                    alert(`Imported 0 trades. Errors:${errorMsg}`);
+                }
             } else {
                 alert(`Import failed: ${result.message}`);
             }

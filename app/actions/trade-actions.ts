@@ -245,21 +245,59 @@ export async function importTradesFromCsv(formData: FormData) {
     // We expect header at line 0
     if (lines.length < 2) return { success: false, message: "Empty CSV" };
 
-    const headers = lines[0].split(",");
+    // Helper to parse CSV line respecting quotes
+    const parseCSVLine = (line: string): string[] => {
+        const result: string[] = [];
+        let current = '';
+        let inQuote = false;
+
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+
+            if (char === '"') {
+                // If we are in a quote and see another quote, check if it's escaped (double quote)
+                // However, standard CSV usually escapes quotes by doubling them.
+                // For simplicity here, we toggle inQuote.
+                if (inQuote && line[i + 1] === '"') {
+                    current += '"';
+                    i++; // skip next quote
+                } else {
+                    inQuote = !inQuote;
+                }
+            } else if (char === ',' && !inQuote) {
+                result.push(current);
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        result.push(current);
+        return result;
+    }
+
+    // Parse header using helper
+    const headerCols = parseCSVLine(lines[0]);
+    const headers = headerCols.map(h => h.trim().replace(/^"|"$/g, ''));
 
     // Simple index mapping
     const getIdx = (name: string) => headers.indexOf(name);
 
-    const idxSymbol = 0; // usually 0
+    // Verify necessary headers
+    const idxSymbol = 0;
     const idxQty = getIdx("qty");
     const idxBuyPrice = getIdx("buyPrice");
     const idxSellPrice = getIdx("sellPrice");
     const idxPnl = getIdx("pnl");
     const idxBoughtTs = getIdx("boughtTimestamp");
     const idxSoldTs = getIdx("soldTimestamp");
-    const idxDuration = getIdx("duration"); // optional, maybe for notes
+    const idxDuration = getIdx("duration");
+
+    if (idxBoughtTs === -1 || idxSoldTs === -1) {
+        return { success: false, message: `Missing timestamp columns. Found: ${headers.join(', ')}` };
+    }
 
     let importedCount = 0;
+    let errors: string[] = [];
 
     // Fetch or create "Trade Notes" section
     let tradeSections = await db.select().from(sections).where(and(eq(sections.userId, user.id), eq(sections.name, "Trade Notes")));
@@ -267,7 +305,6 @@ export async function importTradesFromCsv(formData: FormData) {
     if (tradeSections.length > 0) {
         sectionId = tradeSections[0].id;
     } else {
-        // Create if missing (though unlikely if user used app before)
         sectionId = `sec_${Date.now()}_import`;
         await db.insert(sections).values({
             id: sectionId,
@@ -276,100 +313,151 @@ export async function importTradesFromCsv(formData: FormData) {
         });
     }
 
+    // Helper to clean CSV value
+    const clean = (val: string) => val ? val.trim().replace(/^"|"$/g, '') : "";
+
+    // Helper for date parsing: "MM/DD/YYYY HH:mm:ss" -> Date object
+    const parseDate = (str: string) => {
+        if (!str) return null;
+        const cleaned = clean(str);
+        try {
+            // Try standard Date constructor first if it matches standard ISO or supported formats
+            const dSimple = new Date(cleaned);
+            if (!isNaN(dSimple.getTime())) return dSimple;
+
+            // Fallback to manual parsing for MM/DD/YYYY HH:mm:ss
+            const [datePart, timePart] = cleaned.split(' ');
+            if (!datePart) return null;
+            const [month, day, year] = datePart.split('/');
+
+            // If time is missing, default to 00:00:00
+            let hours = 0, minutes = 0, seconds = 0;
+            if (timePart) {
+                const parts = timePart.split(':');
+                hours = parseInt(parts[0]) || 0;
+                minutes = parseInt(parts[1]) || 0;
+                seconds = parseInt(parts[2]) || 0;
+            }
+
+            // Note: Month is 0-indexed in JS Date
+            const d = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), hours, minutes, seconds);
+            if (isNaN(d.getTime())) return null;
+            return d;
+        } catch (e) {
+            return null;
+        }
+    };
+
     for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (!line) continue;
 
-        // Handle CSV split respecting quotes if needed, 
-        // but Performance.csv seems simple. "$0.00" might have quotes? 
-        // Example: MYMH6,0,0,1,3.46188E+11,3.46188E+11,20,48768,48768,$0.00,12/16/2025 14:45:00,12/16/2025 14:38:47,6min 12sec
-        // $0.00 is not quoted in example.
-        const cols = line.split(",");
+        try {
+            const cols = parseCSVLine(line);
 
-        if (cols.length < 5) continue;
+            // Check if we have enough columns. 
+            // Note: cols.length should match headers.length ideally, or at least be enough to cover our indices.
+            const maxIdx = Math.max(idxSymbol, idxQty, idxBuyPrice, idxSellPrice, idxPnl, idxBoughtTs, idxSoldTs, idxDuration);
+            if (cols.length <= maxIdx) {
+                errors.push(`Line ${i}: Not enough columns (Found ${cols.length}, required > ${maxIdx})`);
+                continue;
+            }
 
-        const rawSymbol = cols[idxSymbol];
-        const ticker = normalizeTicker(rawSymbol);
+            const rawSymbol = clean(cols[idxSymbol]);
+            const ticker = normalizeTicker(rawSymbol);
 
-        const qty = parseFloat(cols[idxQty]);
-        const buyPrice = parseFloat(cols[idxBuyPrice]);
-        const sellPrice = parseFloat(cols[idxSellPrice]);
+            const qty = parseFloat(clean(cols[idxQty]));
+            const buyPrice = parseFloat(clean(cols[idxBuyPrice]));
+            const sellPrice = parseFloat(clean(cols[idxSellPrice]));
 
-        // PnL might have '$'
-        let pnlStr = cols[idxPnl] || "0";
-        pnlStr = pnlStr.replace("$", "").replace(",", "");
-        const pnl = parseFloat(pnlStr);
+            // start/end timestamp check
+            const boughtTsStr = cols[idxBoughtTs];
+            const soldTsStr = cols[idxSoldTs];
 
-        const boughtTs = cols[idxBoughtTs];
-        const soldTs = cols[idxSoldTs];
+            const boughtDate = parseDate(boughtTsStr);
+            const soldDate = parseDate(soldTsStr);
 
-        const boughtDate = new Date(boughtTs);
-        const soldDate = new Date(soldTs);
+            if (!boughtDate || !soldDate) {
+                errors.push(`Row ${i + 1}: Invalid dates. Bought: "${boughtTsStr}", Sold: "${soldTsStr}"`);
+                continue;
+            }
 
-        // Determine type
-        // If bought before sold -> Long
-        // If sold before bought -> Short
-        const isLong = boughtDate.getTime() < soldDate.getTime();
-        const type = isLong ? "Long" : "Short";
+            // PnL processing
+            let pnlStr = clean(cols[idxPnl] || "0");
 
-        // Entry/Exit mapping
-        const entryPrice = isLong ? buyPrice : sellPrice;
-        const exitPrice = isLong ? sellPrice : buyPrice;
+            // Detect negative parenthesis format e.g. (100), $(100), ($100)
+            const isNegativeParenthesis = pnlStr.includes('(') && pnlStr.includes(')');
 
-        // Date: use entry date
-        const entryDateObj = isLong ? boughtDate : soldDate;
-        const exitDateObj = isLong ? soldDate : boughtDate;
-        const dateStr = entryDateObj.toISOString().split('T')[0];
+            // Remove characters that are not digits, dot, or minus
+            // We remove $, ( ) and commas
+            pnlStr = pnlStr.replace(/[$,()]/g, "");
 
-        // Time strings HH:mm
-        const entryTime = entryDateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-        const exitTime = exitDateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+            let pnl = parseFloat(pnlStr);
 
-        const duration = cols[idxDuration];
+            if (isNegativeParenthesis) {
+                pnl = -Math.abs(pnl);
+            }
 
-        const tradeId = `trade_${Date.now()}_${i}`;
-        const noteId = `note_${Date.now()}_${i}`;
+            const isLong = boughtDate.getTime() < soldDate.getTime();
+            const type = isLong ? "Long" : "Short";
 
-        const tradeData = {
-            id: tradeId,
-            date: dateStr,
-            ticker: ticker,
-            type: type as "Long" | "Short",
-            entryPrice: entryPrice,
-            exitPrice: exitPrice,
-            quantity: qty,
-            pnl: pnl,
-            status: "Closed",
-            notes: `Imported from CSV. Raw Symbol: ${rawSymbol}. Duration: ${duration}`,
-            tradingAccountId: accountId,
-            entryTime: entryTime,
-            exitTime: exitTime,
-            userId: user.id,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        };
+            const entryPrice = isLong ? buyPrice : sellPrice;
+            const exitPrice = isLong ? sellPrice : buyPrice;
 
-        await db.insert(trades).values(tradeData);
+            // Date string YYYY-MM-DD
+            const entryDateObj = isLong ? boughtDate : soldDate;
+            const exitDateObj = isLong ? soldDate : boughtDate;
+            const dateStr = entryDateObj.toISOString().split('T')[0];
 
-        // Create Note
-        const noteContent = `<p><strong># Trade Details</strong></p><p>- <strong>Ticker</strong>: ${ticker}<br>- <strong>Direction</strong>: ${type}<br>- <strong>Date</strong>: ${dateStr}<br>- <strong>Net P&L</strong>: $${pnl.toFixed(2)}</p><p><strong>## Notes</strong></p><p>Imported from CSV.<br>Raw Symbol: ${rawSymbol}<br>Duration: ${duration}</p><p><strong>## Review</strong></p><p></p>`;
+            const entryTime = entryDateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+            const exitTime = exitDateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
-        // Ensure unique ID collision avoidance if loop is fast
-        const uniqueNoteId = noteId + Math.random().toString(36).substr(2, 5);
+            const duration = clean(cols[idxDuration]);
 
-        await db.insert(notes).values({
-            id: uniqueNoteId,
-            sectionId: sectionId,
-            title: `${ticker} ${type} (${dateStr})`,
-            content: noteContent,
-            date: dateStr,
-            tradeId: tradeId,
-            userId: user.id,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
+            const tradeId = `trade_${Date.now()}_${importedCount}`;
 
-        importedCount++;
+            const tradeData = {
+                id: tradeId,
+                date: dateStr,
+                ticker: ticker,
+                type: type as "Long" | "Short",
+                entryPrice: isNaN(entryPrice) ? 0 : entryPrice,
+                exitPrice: isNaN(exitPrice) ? 0 : exitPrice,
+                quantity: isNaN(qty) ? 0 : qty,
+                pnl: isNaN(pnl) ? 0 : pnl,
+                status: "Closed",
+                notes: `Imported from CSV. Raw Symbol: ${rawSymbol}. Duration: ${duration}`,
+                tradingAccountId: accountId,
+                entryTime: entryTime,
+                exitTime: exitTime,
+                userId: user.id,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            };
+
+            await db.insert(trades).values(tradeData);
+
+            const noteContent = `<p><strong># Trade Details</strong></p><p>- <strong>Ticker</strong>: ${ticker}<br>- <strong>Direction</strong>: ${type}<br>- <strong>Date</strong>: ${dateStr}<br>- <strong>Net P&L</strong>: $${(isNaN(pnl) ? 0 : pnl).toFixed(2)}</p><p><strong>## Notes</strong></p><p>Imported from CSV.<br>Raw Symbol: ${rawSymbol}<br>Duration: ${duration}</p><p><strong>## Review</strong></p><p></p>`;
+
+            const uniqueNoteId = `note_${Date.now()}_${importedCount}`;
+
+            await db.insert(notes).values({
+                id: uniqueNoteId,
+                sectionId: sectionId,
+                title: `${ticker} ${type} (${dateStr})`,
+                content: noteContent,
+                date: dateStr,
+                tradeId: tradeId,
+                userId: user.id,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+
+            importedCount++;
+        } catch (err: any) {
+            console.error(`Error processing line ${i}:`, err);
+            errors.push(`Line ${i}: Error - ${err.message || String(err)}`);
+        }
     }
 
     revalidatePath("/trades");
@@ -377,5 +465,5 @@ export async function importTradesFromCsv(formData: FormData) {
     revalidatePath("/reports");
     revalidatePath("/notebook");
 
-    return { success: true, count: importedCount };
+    return { success: true, count: importedCount, errors: errors.slice(0, 10) }; // Return first 10 errors
 }

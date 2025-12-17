@@ -98,6 +98,11 @@ Cloud-first trading journal with trade logging, tag analytics, reports, rich-tex
   - **Personal Accounts**: Manage in Settings (e.g., Interactive Brokers).
   - **Prop Firms**: Dedicated "Prop Firms" module to track costs, payouts, and evaluation status.
 - Tags & categories: custom categories/tags with synced colors for reporting.
+- **CSV Import**: Bulk import trades from CSV (e.g. from broker export).
+    - Automatically maps columns (symbol, dates, P&L, direction).
+    - Normalizes ticker symbols (e.g. `MYMH6` -> `MYM`).
+    - Handles various P&L formats (e.g. `$(1,010.00)` as negative).
+    - **Auto-creates Trade Notes**: Each imported trade generates a corresponding detailed note in the Notebook.
 - Reports:
   - **Performance Report**: Net P&L, Profit Factor, Win Rate, Expectancy, Max Drawdown, **Avg Hold Time**, Equity Curve, Daily P&L chart.
   - **Tags Report**: Tag-based P&L/win rate/counts/avg win-loss, P&L + volume combo chart, win-rate vs volume, ticker cross-analysis.
