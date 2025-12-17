@@ -9,6 +9,7 @@ import { CalendarHeatmap } from "@/components/dashboard/CalendarHeatmap";
 import { RecentTrades } from "@/components/dashboard/RecentTrades";
 import { AddTradeModal } from "@/components/AddTradeModal";
 import { AccountSwitcher } from "@/components/dashboard/AccountSwitcher";
+import { ImportTradesModal } from "@/components/ImportTradesModal";
 import { MigrationComponent } from "@/components/MigrationComponent";
 
 export default function DashboardClient({ initialTrades, initialAccounts }: { initialTrades: any[], initialAccounts: any[] }) {
@@ -80,6 +81,7 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
                         selectedAccountId={selectedAccountId}
                         onSelect={setSelectedAccountId}
                     />
+                    <ImportTradesModal accounts={accounts} defaultAccountId={selectedAccountId === "all" ? undefined : selectedAccountId} />
                     <AddTradeModal accounts={accounts} defaultAccountId={selectedAccountId} />
                 </div>
             </div>
