@@ -23,6 +23,7 @@ interface TradeData {
     tradingAccountId?: string;
     entryTime?: string;
     exitTime?: string;
+    tradeId?: string;
 }
 
 export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }: { onTradeAdded?: () => void, accounts?: any[], defaultAccountId?: string }) {
@@ -113,8 +114,9 @@ export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }:
                 id: `note_${Date.now()}`,
                 sectionId: sectionId,
                 title: `${ticker} ${tradeData.type} (${date})`,
-                content: `\n# Trade Details\n- **Ticker**: ${ticker}\n- **Direction**: ${tradeData.type}\n- **Date**: ${date}\n- **Net P&L**: $${pnl.toFixed(2)}\n\n## Notes\n${tradeData.notes || "No initial notes."}\n\n## Review\n`,
+                content: `<p><strong># Trade Details</strong></p><p>- <strong>Ticker</strong>: ${ticker}<br>- <strong>Direction</strong>: ${tradeData.type}<br>- <strong>Date</strong>: ${date}<br>- <strong>Net P&L</strong>: $${pnl.toFixed(2)}</p><p><strong>## Notes</strong></p><p>${(tradeData.notes || "No initial notes.").replace(/\n/g, "<br>")}</p><p><strong>## Review</strong></p><p></p>`,
                 date: date,
+                tradeId: tradeId
             };
 
             await createNote(newNote);

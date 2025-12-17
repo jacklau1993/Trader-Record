@@ -146,6 +146,7 @@ export const notes = sqliteTable("note", {
     date: text("date").notNull(), // ISO Date String
     sectionId: text("section_id").notNull().references(() => sections.id, { onDelete: "cascade" }),
     userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+    tradeId: text("trade_id").references(() => trades.id, { onDelete: "set null" }),
     createdAt: integer("created_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date())
 });

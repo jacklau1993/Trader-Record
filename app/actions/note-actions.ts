@@ -63,6 +63,18 @@ export async function createNote(data: Omit<typeof notes.$inferInsert, "userId">
     return { success: true };
 }
 
+export async function getNoteByTradeId(tradeId: string) {
+    const user = await getUser();
+    const db = getDb();
+
+    const note = await db.select()
+        .from(notes)
+        .where(and(eq(notes.tradeId, tradeId), eq(notes.userId, user.id)))
+        .get();
+
+    return note;
+}
+
 export async function updateNote(id: string, data: Partial<typeof notes.$inferInsert>) {
     const user = await getUser();
     const db = getDb();

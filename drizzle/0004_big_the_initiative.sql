@@ -1,0 +1,1 @@
+ALTER TABLE `note` ADD `trade_id` text REFERENCES trade(id);
