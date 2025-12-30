@@ -27,6 +27,8 @@ export function DateRangePicker({
 }: DateRangePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false)
 
+  const [selectedPreset, setSelectedPreset] = React.useState<string | undefined>(undefined)
+
   const handlePreset = (preset: string) => {
     const now = new Date()
     let from = new Date()
@@ -42,7 +44,7 @@ export function DateRangePicker({
         to = subDays(now, 1)
         break
       case "last7":
-        from = subDays(now, 6) // Inclusive of today makes 7 days
+        from = subDays(now, 6)
         to = now
         break
       case "last30":
@@ -51,7 +53,7 @@ export function DateRangePicker({
         break
       case "thisMonth":
         from = startOfMonth(now)
-        to = endOfMonth(now) // or now? Usually user wants full month scope
+        to = endOfMonth(now)
         break
       case "lastMonth":
         from = startOfMonth(subMonths(now, 1))
@@ -59,6 +61,7 @@ export function DateRangePicker({
         break
     }
     setDate({ from, to })
+    setSelectedPreset(preset)
     setIsOpen(false)
   }
 
@@ -69,6 +72,7 @@ export function DateRangePicker({
     const d = new Date(e.target.value)
     if (!isNaN(d.getTime())) {
       setDate(prev => ({ from: d, to: prev?.to }))
+      setSelectedPreset(undefined)
     }
   }
 
@@ -76,6 +80,7 @@ export function DateRangePicker({
     const d = new Date(e.target.value)
     if (!isNaN(d.getTime())) {
       setDate(prev => ({ from: prev?.from, to: d }))
+      setSelectedPreset(undefined)
     }
   }
 
@@ -111,12 +116,54 @@ export function DateRangePicker({
                 <div className="flex flex-col gap-2">
                     <h4 className="font-medium leading-none mb-1 text-sm text-muted-foreground">Presets</h4>
                     <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-col">
-                        <Button variant="ghost" size="sm" className="justify-start font-normal" onClick={() => handlePreset("today")}>Today</Button>
-                        <Button variant="ghost" size="sm" className="justify-start font-normal" onClick={() => handlePreset("yesterday")}>Yesterday</Button>
-                        <Button variant="ghost" size="sm" className="justify-start font-normal" onClick={() => handlePreset("last7")}>Last 7 Days</Button>
-                        <Button variant="ghost" size="sm" className="justify-start font-normal" onClick={() => handlePreset("last30")}>Last 30 Days</Button>
-                        <Button variant="ghost" size="sm" className="justify-start font-normal" onClick={() => handlePreset("thisMonth")}>This Month</Button>
-                        <Button variant="ghost" size="sm" className="justify-start font-normal" onClick={() => handlePreset("lastMonth")}>Last Month</Button>
+                        <Button 
+                            variant={selectedPreset === "today" ? "secondary" : "ghost"} 
+                            size="sm" 
+                            className="justify-start font-normal" 
+                            onClick={() => handlePreset("today")}
+                        >
+                            Today
+                        </Button>
+                        <Button 
+                            variant={selectedPreset === "yesterday" ? "secondary" : "ghost"} 
+                            size="sm" 
+                            className="justify-start font-normal" 
+                            onClick={() => handlePreset("yesterday")}
+                        >
+                            Yesterday
+                        </Button>
+                        <Button 
+                            variant={selectedPreset === "last7" ? "secondary" : "ghost"} 
+                            size="sm" 
+                            className="justify-start font-normal" 
+                            onClick={() => handlePreset("last7")}
+                        >
+                            Last 7 Days
+                        </Button>
+                        <Button 
+                            variant={selectedPreset === "last30" ? "secondary" : "ghost"} 
+                            size="sm" 
+                            className="justify-start font-normal" 
+                            onClick={() => handlePreset("last30")}
+                        >
+                            Last 30 Days
+                        </Button>
+                        <Button 
+                            variant={selectedPreset === "thisMonth" ? "secondary" : "ghost"} 
+                            size="sm" 
+                            className="justify-start font-normal" 
+                            onClick={() => handlePreset("thisMonth")}
+                        >
+                            This Month
+                        </Button>
+                        <Button 
+                            variant={selectedPreset === "lastMonth" ? "secondary" : "ghost"} 
+                            size="sm" 
+                            className="justify-start font-normal" 
+                            onClick={() => handlePreset("lastMonth")}
+                        >
+                            Last Month
+                        </Button>
                     </div>
                 </div>
                 <div className="w-[1px] bg-border hidden sm:block"></div>
@@ -127,7 +174,7 @@ export function DateRangePicker({
                             <label className="text-xs font-medium">From</label>
                             <input 
                                 type="date" 
-                                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
                                 value={formatInputDate(date?.from)}
                                 onChange={handleFromChange}
                             />
@@ -136,7 +183,7 @@ export function DateRangePicker({
                             <label className="text-xs font-medium">To</label>
                             <input 
                                 type="date" 
-                                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
                                 value={formatInputDate(date?.to)}
                                 onChange={handleToChange}
                             />
