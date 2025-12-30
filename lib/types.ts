@@ -5,6 +5,7 @@ import { InferSelectModel } from "drizzle-orm";
 export type Trade = InferSelectModel<typeof trades> & {
     pnl: number; // Derived or Ensure it matches
     tags: string[]; // We might need to handle joined tags if we fetch them that way, or just array of IDs
+    entryDate?: string | null;
 };
 
 export type Category = InferSelectModel<typeof categories> & {

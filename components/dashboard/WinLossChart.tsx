@@ -52,6 +52,8 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
                                 <Tooltip
                                     cursor={{fill: 'transparent'}}
                                     contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
+                                    itemStyle={{ color: '#f8fafc' }}
+                                    labelStyle={{ color: '#f8fafc' }}
                                     formatter={(value: any) => [`$${value.toFixed(2)}`, "Value"]}
                                 />
                                 <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={20}>

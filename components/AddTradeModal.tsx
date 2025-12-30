@@ -21,6 +21,7 @@ interface TradeData {
     pnl: number;
     notes: string;
     tradingAccountId?: string;
+    entryDate?: string;
     entryTime?: string;
     exitTime?: string;
     tradeId?: string;
@@ -96,6 +97,7 @@ export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }:
                 status: "Closed",
                 notes: formData.notes || "",
                 tradingAccountId: formData.tradingAccountId,
+                entryDate: formData.entryDate || date, // Default to main date if not set
                 entryTime: formData.entryTime,
                 exitTime: formData.exitTime
             };
@@ -178,7 +180,7 @@ export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }:
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Date</label>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Exit Date (Close)</label>
                             <input type="date" required className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
                                 value={formData.date || ""}
                                 onChange={e => setFormData({ ...formData, date: e.target.value })}
@@ -237,6 +239,19 @@ export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }:
                                 value={formData.exitPrice || ""}
                                 onChange={e => setFormData({ ...formData, exitPrice: Number(e.target.value) })}
                             />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                             <label className="text-xs font-medium text-muted-foreground mb-1 block">Entry Date</label>
+                             <input type="date" className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
+                                value={formData.entryDate || ""}
+                                onChange={e => setFormData({ ...formData, entryDate: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            {/* Spacer or potentially move Entry Time here? */}
                         </div>
                     </div>
 

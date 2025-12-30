@@ -118,6 +118,7 @@ export const trades = sqliteTable("trade", {
     userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
 
     // Time Tracking (Text as "HH:MM")
+    entryDate: text("entry_date"), // ISO Date String
     entryTime: text("entry_time"),
     exitTime: text("exit_time"),
 

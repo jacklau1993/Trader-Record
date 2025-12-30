@@ -1,0 +1,1 @@
+ALTER TABLE `trade` ADD `entry_date` text;
