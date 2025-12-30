@@ -37,7 +37,7 @@ export function DashboardCalendar({ trades }: DashboardCalendarProps) {
     const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
 
     return (
-        <Card className="col-span-8 h-full">
+        <Card className="md:col-span-8 h-full">
             <CardHeader className="px-6 py-4 flex flex-row items-center justify-between">
                 <div className="flex items-center gap-4">
                      <Button variant="outline" size="icon" onClick={prevMonth} className="h-8 w-8">
