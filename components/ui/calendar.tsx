@@ -28,6 +28,11 @@ function Calendar({
           defaultClassNames.months
         ),
         month: cn("flex w-full flex-col gap-4", defaultClassNames.month),
+        caption: cn(
+          "flex justify-center pt-1 relative items-center",
+          defaultClassNames.caption
+        ),
+        caption_label: cn("text-sm font-medium", defaultClassNames.caption_label),
         nav: cn(
           "space-x-1 flex items-center",
           defaultClassNames.nav
