@@ -37,7 +37,7 @@ export function StatsRow({ stats }: StatsRowProps) {
     return (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
             {/* NET P&L */}
-            <Card className="bg-[#111111] border-[#27272a] shadow-sm">
+            <Card>
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                         Net P&L <Info className="h-3 w-3" />
@@ -54,7 +54,7 @@ export function StatsRow({ stats }: StatsRowProps) {
             </Card>
 
             {/* WIN RATE */}
-            <Card className="bg-[#111111] border-[#27272a] shadow-sm relative overflow-hidden">
+            <Card className="relative overflow-hidden">
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                         Trade win % <Info className="h-3 w-3" />
@@ -91,7 +91,7 @@ export function StatsRow({ stats }: StatsRowProps) {
             </Card>
 
             {/* PROFIT FACTOR */}
-            <Card className="bg-[#111111] border-[#27272a] shadow-sm">
+            <Card>
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                         Profit factor <Info className="h-3 w-3" />
@@ -125,7 +125,7 @@ export function StatsRow({ stats }: StatsRowProps) {
             </Card>
 
             {/* AVG WIN/LOSS */}
-            <Card className="bg-[#111111] border-[#27272a] shadow-sm">
+            <Card>
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                         Avg win/loss trade <Info className="h-3 w-3" />
@@ -155,7 +155,7 @@ export function StatsRow({ stats }: StatsRowProps) {
             </Card>
 
              {/* TRADE EXPECTANCY */}
-             <Card className="bg-[#111111] border-[#27272a] shadow-sm">
+             <Card>
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                         Trade expectancy <Info className="h-3 w-3" />

@@ -37,7 +37,7 @@ export function DashboardCalendar({ trades }: DashboardCalendarProps) {
     const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
 
     return (
-        <Card className="col-span-8 h-full bg-[#111111] border-[#27272a] shadow-sm">
+        <Card className="col-span-8 h-full">
             <CardHeader className="px-6 py-4 flex flex-row items-center justify-between">
                 <div className="flex items-center gap-4">
                      <Button variant="outline" size="icon" onClick={prevMonth} className="h-8 w-8">
@@ -69,14 +69,14 @@ export function DashboardCalendar({ trades }: DashboardCalendarProps) {
                 </div>
                 
                 {/* Calendar Grid */}
-                <div className="grid grid-cols-7 h-[500px] border-t border-l border-[#27272a]">
+                <div className="grid grid-cols-7 h-[500px] border-t border-l border-border">
                     {days.map((day, idx) => {
                         const dateStr = format(day, 'yyyy-MM-dd');
                         const dayData = calendarData[dateStr];
                         const isCurrentMonth = isSameMonth(day, currentMonth);
                         const isToday = isSameDay(day, new Date());
                         
-                        let bgClass = "bg-[#111111]";
+                        let bgClass = "bg-background";
                         if (dayData && isCurrentMonth) {
                              if (dayData.pnl > 0) bgClass = "bg-green-900/20"; // Very subtle green
                              if (dayData.pnl < 0) bgClass = "bg-red-900/20"; // Very subtle red
@@ -95,7 +95,7 @@ export function DashboardCalendar({ trades }: DashboardCalendarProps) {
                             <div 
                                 key={day.toString()} 
                                 className={`
-                                    min-h-[80px] p-2 flex flex-col justify-between border-b border-r border-[#27272a] 
+                                    min-h-[80px] p-2 flex flex-col justify-between border-b border-r border-border  
                                     ${bgClass}
                                     ${!isCurrentMonth ? 'opacity-30' : ''}
                                 `}

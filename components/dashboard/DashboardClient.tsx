@@ -6,6 +6,8 @@ import { DailyProfitChart } from "@/components/dashboard/DailyProfitChart";
 import { RecentTrades } from "@/components/dashboard/RecentTrades";
 import { DashboardCalendar } from "@/components/dashboard/DashboardCalendar";
 import { StatsRow } from "@/components/dashboard/StatsRow"; // New component
+import { WinLossChart } from "@/components/dashboard/WinLossChart";
+import { DurationChart } from "@/components/dashboard/DurationChart";
 import { AddTradeModal } from "@/components/AddTradeModal";
 import { AccountSwitcher } from "@/components/dashboard/AccountSwitcher";
 import { ImportTradesModal } from "@/components/ImportTradesModal";
@@ -80,7 +82,7 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
     }
 
     return (
-        <div className="min-h-screen bg-black/95 text-foreground p-4 md:p-6 space-y-6">
+        <div className="min-h-screen bg-background text-foreground p-4 md:p-6 space-y-6">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
@@ -89,13 +91,13 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
                 
                 <div className="flex flex-wrap items-center gap-2">
                     {/* Mock Filters for visuals */}
-                    <Button variant="outline" size="sm" className="h-9 gap-2 bg-[#111111] border-[#27272a] text-muted-foreground hover:text-white">
+                    <Button variant="outline" size="sm" className="h-9 gap-2">
                         <Filter className="h-4 w-4" />
                         Filters
                     </Button>
                     <div className="h-9 w-[180px]">
                          <Select defaultValue="this-month">
-                            <SelectTrigger className="h-9 bg-[#111111] border-[#27272a]">
+                            <SelectTrigger className="h-9">
                                 <CalendarIcon className="mr-2 h-4 w-4" />
                                 <SelectValue placeholder="Select range" />
                             </SelectTrigger>
@@ -143,15 +145,13 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
             <div className="grid gap-4 grid-cols-1 md:grid-cols-12">
                 <DashboardCalendar trades={filteredTrades} />
                 
-                {/* Right Column: Placeholder for future advanced charts */}
+                {/* Right Column: Advanced charts */}
                 <div className="md:col-span-4 space-y-4">
-                     {/* Placeholder for Win % Chart */}
-                     <div className="rounded-xl border border-border bg-[#111111] p-6 h-[240px] flex items-center justify-center text-muted-foreground text-sm">
-                        Win % - Avg Win - Avg Loss Chart (Coming Soon)
+                     <div className="h-[240px]">
+                        <WinLossChart trades={filteredTrades} />
                      </div>
-                     {/* Placeholder for Trade Duration Chart */}
-                     <div className="rounded-xl border border-border bg-[#111111] p-6 h-[240px] flex items-center justify-center text-muted-foreground text-sm">
-                        Trade Duration Performance (Coming Soon)
+                     <div className="h-[240px]">
+                        <DurationChart trades={filteredTrades} />
                      </div>
                 </div>
             </div>
