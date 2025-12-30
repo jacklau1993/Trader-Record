@@ -186,7 +186,7 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
     };
 
     return (
-        <div className="flex-1 space-y-4 p-8 pt-6">
+        <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-4">
                     <button onClick={() => router.back()} className="p-2 hover:bg-muted rounded-full">

@@ -93,7 +93,7 @@ export default function NotebookClient({ initialSections, initialNotes }: { init
     const activeNote = notes.find(n => n.id === activeNoteId) || null;
 
     return (
-        <div className="flex flex-col md:flex-row h-[calc(100vh-4rem)] md:h-screen max-h-[calc(100vh-2rem)] overflow-hidden m-2 md:m-4 rounded-xl border border-border bg-card shadow-sm">
+        <div className="flex flex-col md:flex-row h-[calc(100vh-4rem)] md:h-screen max-h-[calc(100vh-2rem)] overflow-hidden m-4 md:m-8 rounded-xl border border-border bg-card shadow-sm">
 
             {/* Sections Sidebar (Left) */}
             <div className={cn(
