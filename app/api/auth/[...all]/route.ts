@@ -6,7 +6,8 @@ export const runtime = "edge";
 
 export async function GET(request: NextRequest) {
     try {
-        const auth = getAuth();
+        const origin = request.headers.get("origin");
+        const auth = getAuth(origin);
         const handler = toNextJsHandler(auth);
         return await handler.GET(request);
     } catch (error: any) {
@@ -20,7 +21,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
-        const auth = getAuth();
+        const origin = request.headers.get("origin");
+        const auth = getAuth(origin);
         const handler = toNextJsHandler(auth);
         return await handler.POST(request);
     } catch (error: any) {

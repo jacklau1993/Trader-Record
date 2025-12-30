@@ -5,9 +5,23 @@ import * as schema from "../db/schema";
 // import { Resend } from "resend"; // Uncomment when you have a verified domain
 
 // Function to get or create auth instance with proper DB binding
-export const getAuth = () => {
+export const getAuth = (customOrigin?: string | null) => {
     // Always get fresh DB in case context changed
     const db = getDb();
+
+    const trustedOrigins = [
+        "https://trader-record.pages.dev",
+        "http://localhost:3000" // Always allow local dev
+    ];
+
+    if (customOrigin && (
+        customOrigin.endsWith(".trader-record.pages.dev") || 
+        customOrigin.includes("localhost")
+    )) {
+        if (!trustedOrigins.includes(customOrigin)) {
+            trustedOrigins.push(customOrigin);
+        }
+    }
 
     // Note: Email verification is disabled because Resend's test domain (onboarding@resend.dev)
     // can only send to the email registered with your Resend account.
@@ -43,11 +57,7 @@ export const getAuth = () => {
         //         });
         //     }
         // },
-        trustedOrigins: [
-            "https://trader-record.pages.dev",
-            // Allow all subdomains for preview deployments
-            "https://*.trader-record.pages.dev"
-        ]
+        trustedOrigins: trustedOrigins
     });
 };
 
