@@ -1,7 +1,7 @@
 name = "trading-app"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat_v2"]
-pages_build_output_dir = ".next"
+pages_build_output_dir = ".vercel/output/static"
 
 [[d1_databases]]
 binding = "DB"

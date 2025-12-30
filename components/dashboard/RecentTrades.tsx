@@ -22,16 +22,17 @@ export function RecentTrades({ trades }: { trades: Trade[] }) {
                             <div key={trade.id} className="flex items-center justify-between border-b border-border pb-3 last:border-0 last:pb-0">
                                 <div className="flex flex-col">
                                     <div className="flex items-center space-x-2">
-                                        <span className="font-bold text-sm">{trade.ticker}</span>
-                                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${trade.type === 'Long' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
+                                        <span className="font-bold text-sm truncate max-w-[80px]">{trade.ticker}</span>
+                                        <span className={`text-[10px] px-1.5 py-0.5 rounded shrink-0 ${trade.type === 'Long' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
                                             {trade.type}
                                         </span>
                                     </div>
                                     <span className="text-xs text-muted-foreground">{format(new Date(trade.date), 'MMM dd')}</span>
                                 </div>
-                                <div className={`font-mono font-medium text-sm ${trade.pnl > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                <div className={`font-mono font-medium text-sm whitespace-nowrap ${trade.pnl > 0 ? 'text-green-500' : 'text-red-500'}`}>
                                     {trade.pnl > 0 ? "+" : ""}${trade.pnl.toFixed(2)}
                                 </div>
+
                             </div>
                         ))
                     )}

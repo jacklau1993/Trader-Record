@@ -140,7 +140,7 @@ export default function NotebookClient({ initialSections, initialNotes }: { init
             {/* Notes List (Middle) */}
             <div className={cn(
                 "w-full md:w-72 border-b md:border-b-0 md:border-r border-border bg-background flex flex-col shrink-0 transition-all duration-300",
-                showPages ? "h-48 md:h-full" : "h-12 md:h-full"
+                showPages ? "h-64 md:h-full" : "h-12 md:h-full"
             )}>
                 <div
                     className="p-4 border-b border-border font-semibold flex justify-between items-center cursor-pointer md:cursor-default"
@@ -159,6 +159,7 @@ export default function NotebookClient({ initialSections, initialNotes }: { init
                         <Plus className="h-4 w-4" />
                     </button>
                 </div>
+
                 {showPages && (
                     <div className="flex-1 overflow-y-auto">
                         {currentNotes.length === 0 ? (

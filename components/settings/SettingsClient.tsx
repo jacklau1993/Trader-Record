@@ -310,7 +310,8 @@ export default function SettingsClient({ user, preferences, initialAccounts }: S
     };
 
     return (
-        <div className="flex-1 p-8 pt-6 max-w-4xl">
+        <div className="flex-1 p-4 md:p-8 pt-6 max-w-4xl">
+
             <h2 className="text-3xl font-bold tracking-tight mb-6">Settings</h2>
 
             <div className="space-y-6">
