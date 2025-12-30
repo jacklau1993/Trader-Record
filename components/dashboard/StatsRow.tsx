@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Info, ExternalLink } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 interface DashboardStats {
@@ -40,7 +41,17 @@ export function StatsRow({ stats }: StatsRowProps) {
             <Card>
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                        Net P&L <Info className="h-3 w-3" />
+                        Net P&L
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Info className="h-3 w-3" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Total realized profit and loss</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </CardTitle>
                     <div />
                 </CardHeader>
@@ -55,7 +66,17 @@ export function StatsRow({ stats }: StatsRowProps) {
             <Card className="relative overflow-hidden">
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                        Trade win % <Info className="h-3 w-3" />
+                        Trade win %
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Info className="h-3 w-3" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Percentage of winning trades</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="px-4 pb-4 flex items-center justify-between">
@@ -92,7 +113,17 @@ export function StatsRow({ stats }: StatsRowProps) {
             <Card>
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                        Profit factor <Info className="h-3 w-3" />
+                        Profit factor
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Info className="h-3 w-3" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Gross profit divided by gross loss</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="px-4 pb-4 flex items-center justify-between">
@@ -126,7 +157,17 @@ export function StatsRow({ stats }: StatsRowProps) {
             <Card>
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                        Avg win/loss trade <Info className="h-3 w-3" />
+                        Avg win/loss trade
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Info className="h-3 w-3" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Average win amount vs Average loss amount</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="px-4 pb-4">
@@ -156,7 +197,17 @@ export function StatsRow({ stats }: StatsRowProps) {
              <Card>
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                        Trade expectancy <Info className="h-3 w-3" />
+                        Trade expectancy
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Info className="h-3 w-3" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Expected value per trade based on win rate and avg win/loss</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </CardTitle>
 
                 </CardHeader>

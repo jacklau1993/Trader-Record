@@ -5,6 +5,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trade } from "@/lib/types";
 import { Info } from "lucide-react";
+import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function WinLossChart({ trades }: { trades: Trade[] }) {
     const data = useMemo(() => {
@@ -38,7 +39,17 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
         <Card className="col-span-1 h-full">
              <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                 <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                    Win % - Avg Win - Avg Loss Chart <Info className="h-3 w-3" />
+                    Win % - Avg Win - Avg Loss Chart
+                    <TooltipProvider>
+                        <UITooltip>
+                            <TooltipTrigger>
+                                <Info className="h-3 w-3" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Comparison of Win %, Average Win, and Average Loss</p>
+                            </TooltipContent>
+                        </UITooltip>
+                    </TooltipProvider>
                 </CardTitle>
             </CardHeader>
             <CardContent className="px-2 pb-2">
