@@ -42,7 +42,12 @@ export const getAuth = () => {
         //             html: `<a href="${url}">Verify Email</a>`
         //         });
         //     }
-        // }
+        // },
+        trustedOrigins: [
+            "https://trader-record.pages.dev",
+            // Allow all subdomains for preview deployments
+            "https://*.trader-record.pages.dev"
+        ]
     });
 };
 
