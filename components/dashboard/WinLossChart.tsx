@@ -79,7 +79,7 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
                  <div className="h-[250px] sm:h-[200px] w-full">
                     {data.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={data} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                            <LineChart data={data} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" />
                                 <XAxis 
                                     dataKey="date" 
@@ -97,6 +97,7 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
                                     tickLine={false}
                                     axisLine={false}
                                     tickFormatter={(value) => `$${value}`}
+                                    width={35}
                                 />
                                 <YAxis 
                                     yAxisId="right"
@@ -106,6 +107,7 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
                                     tickLine={false}
                                     axisLine={false}
                                     tickFormatter={(value) => `${value}%`}
+                                    width={35}
                                 />
                                 <Tooltip
                                     contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}

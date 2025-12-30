@@ -100,10 +100,10 @@ export function DurationChart({ trades }: { trades: Trade[] }) {
                  <div className="h-[250px] sm:h-[200px] w-full">
                     {data.some(d => d.count > 0) ? (
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={data} layout="vertical" margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                            <BarChart data={data} layout="vertical" margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#334155" />
                                 <XAxis type="number" hide />
-                                <YAxis dataKey="name" type="category" width={50} tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                                <YAxis dataKey="name" type="category" width={40} tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
                                 <Tooltip
                                     cursor={{fill: 'transparent'}}
                                     contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
