@@ -108,8 +108,10 @@ export function DashboardCalendar({ trades }: DashboardCalendarProps) {
                                 
                                 {dayData && (
                                     <div className="flex flex-col items-center justify-center h-full">
-                                        <span className={`text-sm font-bold ${dayData.pnl > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                            {dayData.pnl > 0 ? "+" : ""}${dayData.pnl.toFixed(0)}
+                                        <span
+                                            className={`max-w-full truncate text-[10px] font-bold leading-tight sm:text-sm ${dayData.pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}
+                                        >
+                                            {dayData.pnl === 0 ? "$0" : `${dayData.pnl > 0 ? "+" : "-"}$${Math.abs(dayData.pnl).toFixed(0)}`}
                                         </span>
                                         <span className="text-[10px] text-muted-foreground">
                                             {dayData.count} trade{dayData.count !== 1 ? 's' : ''}
