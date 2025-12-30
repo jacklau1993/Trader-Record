@@ -13,19 +13,19 @@ import { AccountSwitcher } from "@/components/dashboard/AccountSwitcher";
 import { ImportTradesModal } from "@/components/ImportTradesModal";
 import { MigrationComponent } from "@/components/MigrationComponent";
 import { Button } from "@/components/ui/button";
-import { Calendar as CalendarIcon, Filter } from "lucide-react";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
+import { DateRange } from "react-day-picker";
+import { startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
+
 
 export default function DashboardClient({ initialTrades, initialAccounts }: { initialTrades: any[], initialAccounts: any[] }) {
     const [trades, setTrades] = useState(initialTrades);
     const [accounts, setAccounts] = useState(initialAccounts);
     const [selectedAccountId, setSelectedAccountId] = useState<string>("all");
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({
+        from: startOfMonth(new Date()),
+        to: endOfMonth(new Date())
+    });
 
     useEffect(() => {
         setTrades(initialTrades);
@@ -36,9 +36,24 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
     }, [initialAccounts]);
 
 
-    const filteredTrades = selectedAccountId === "all"
-        ? trades
-        : trades.filter(t => t.tradingAccountId === selectedAccountId);
+    const filteredTrades = trades.filter(t => {
+        const matchesAccount = selectedAccountId === "all" || t.tradingAccountId === selectedAccountId;
+        
+        let matchesDate = true;
+        if (dateRange?.from) {
+            const tradeDate = new Date(t.date);
+            if (dateRange.to) {
+                matchesDate = isWithinInterval(tradeDate, { start: dateRange.from, end: dateRange.to });
+            } else {
+                 // If only from date is selected, exact match (or >= from if you prefer range start logic, but typically range picker handles ranges)
+                 // DateRange picker usually sets 'to' as well for a range, or just 'from' for single day.
+                 // Let's assume inclusive start and end of that day for single day selection or just >= start
+                 matchesDate = tradeDate >= dateRange.from;
+            }
+        }
+        
+        return matchesAccount && matchesDate;
+    });
 
     const stats = calculateStats(filteredTrades);
 
@@ -91,23 +106,12 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
                 
                 <div className="flex flex-wrap items-center gap-2">
                     {/* Mock Filters for visuals */}
-                    <Button variant="outline" size="sm" className="h-9 gap-2">
-                        <Filter className="h-4 w-4" />
-                        Filters
-                    </Button>
-                    <div className="h-9 w-[180px]">
-                         <Select defaultValue="this-month">
-                            <SelectTrigger className="h-9">
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                <SelectValue placeholder="Select range" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="this-month">This month</SelectItem>
-                                <SelectItem value="last-month">Last month</SelectItem>
-                                <SelectItem value="all-time">All time</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                     <div className="h-9">
+                        <DateRangePicker 
+                            date={dateRange}
+                            setDate={setDateRange}
+                        />
+                     </div>
 
                     <div className="w-[1px] h-6 bg-[#27272a] mx-2 hidden sm:block"></div>
 
