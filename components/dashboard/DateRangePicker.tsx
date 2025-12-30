@@ -111,11 +111,11 @@ export function DateRangePicker({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-4" align="end">
+        <PopoverContent className="w-[92vw] max-w-[24rem] p-4 sm:w-auto sm:max-w-none" align="end">
             <div className="flex flex-col gap-4 sm:flex-row">
                 <div className="flex flex-col gap-2">
                     <h4 className="font-medium leading-none mb-1 text-sm text-muted-foreground">Presets</h4>
-                    <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-col">
+                    <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-col">
                         <Button 
                             variant={selectedPreset === "today" ? "secondary" : "ghost"} 
                             size="sm" 
