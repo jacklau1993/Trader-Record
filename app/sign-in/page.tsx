@@ -23,7 +23,7 @@ export default function SignInPage() {
                 router.push("/");
             },
             onError: (ctx) => {
-                alert(ctx.error.message);
+                alert(ctx.error.message || ctx.error.statusText || JSON.stringify(ctx.error));
                 setLoading(false);
             }
         });
