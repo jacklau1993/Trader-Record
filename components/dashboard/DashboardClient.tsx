@@ -151,10 +151,10 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
                 
                 {/* Right Column: Advanced charts */}
                 <div className="md:col-span-4 space-y-4">
-                     <div className="h-[240px]">
+                     <div className="h-auto">
                         <WinLossChart trades={filteredTrades} />
                      </div>
-                     <div className="h-[240px]">
+                     <div className="h-auto">
                         <DurationChart trades={filteredTrades} />
                      </div>
                 </div>
