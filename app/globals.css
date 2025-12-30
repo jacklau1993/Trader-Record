@@ -203,12 +203,3 @@ body {
     border-top: 1px solid var(--border);
     margin: 1.5rem 0;
 }
-
-/* React Day Picker Overrides for Multi-Month View */
-.rdp-month:first-child .nav-next-button {
-    display: none;
-}
-
-.rdp-month:last-child .nav-prev-button {
-    display: none;
-}
