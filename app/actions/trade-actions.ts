@@ -407,7 +407,8 @@ export async function importTradesFromCsv(formData: FormData) {
             // Date string YYYY-MM-DD
             const entryDateObj = isLong ? boughtDate : soldDate;
             const exitDateObj = isLong ? soldDate : boughtDate;
-            const dateStr = entryDateObj.toISOString().split('T')[0];
+            const dateStr = exitDateObj.toISOString().split('T')[0]; // Use Exit Date as the main Date (Close Date)
+            const entryDateStr = entryDateObj.toISOString().split('T')[0];
 
             const entryTime = entryDateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
             const exitTime = exitDateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
@@ -428,6 +429,7 @@ export async function importTradesFromCsv(formData: FormData) {
                 status: "Closed",
                 notes: `Imported from CSV. Raw Symbol: ${rawSymbol}. Duration: ${duration}`,
                 tradingAccountId: accountId,
+                entryDate: entryDateStr,
                 entryTime: entryTime,
                 exitTime: exitTime,
                 userId: user.id,

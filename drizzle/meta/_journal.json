@@ -43,6 +43,13 @@
       "when": 1767101910568,
       "tag": "0005_smart_runaways",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1767107159054,
+      "tag": "0006_complete_impossible_man",
+      "breakpoints": true
     }
   ]
 }
