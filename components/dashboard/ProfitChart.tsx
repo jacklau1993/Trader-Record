@@ -65,6 +65,7 @@ export function ProfitChart({ trades }: { trades: Trade[] }) {
                                 <Tooltip
                                     contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
                                     itemStyle={{ color: '#f8fafc' }}
+                                    labelStyle={{ color: '#f8fafc' }}
                                     formatter={(value: any) => [`$${value}`, "Net P&L"]}
                                 />
                                 <Area

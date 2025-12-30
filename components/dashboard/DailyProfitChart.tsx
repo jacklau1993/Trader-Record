@@ -52,6 +52,8 @@ export function DailyProfitChart({ trades }: { trades: Trade[] }) {
                                 />
                                 <Tooltip
                                     contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
+                                    itemStyle={{ color: '#f8fafc' }}
+                                    labelStyle={{ color: '#f8fafc' }}
                                     cursor={{ fill: '#334155', opacity: 0.2 }}
                                     formatter={(value: any) => [`$${value}`, "Net P&L"]}
                                 />
