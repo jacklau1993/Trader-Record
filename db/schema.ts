@@ -79,6 +79,7 @@ export const tradingAccounts = sqliteTable("trading_account", {
 
     // Prop Firm specifics
     status: text("status"), // e.g., "Active", "Busted", "Passed"
+    accountNumber: text("account_number"),
     cost: real("cost"),
     lastPayoutAmount: real("last_payout_amount"),
     lastPayoutDate: integer("last_payout_date", { mode: "timestamp" }),

@@ -1,0 +1,1 @@
+ALTER TABLE `trading_account` ADD `account_number` text;

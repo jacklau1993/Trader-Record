@@ -11,6 +11,7 @@ interface PropFirm {
     name: string;
     type: "PROP_FIRM" | "BROKER";
     status?: string;
+    accountNumber?: string;
     cost?: number;
     lastPayoutAmount?: number;
     lastPayoutDate?: string; // ISO string from JSON/DB serialization
@@ -52,6 +53,7 @@ export function PropFirmManager({ initialPropFirms }: { initialPropFirms: any[] 
                 name: currentFirm.name || "Unnamed Firm",
                 type: "PROP_FIRM" as const,
                 status: currentFirm.status,
+                accountNumber: currentFirm.accountNumber,
                 cost: Number(currentFirm.cost) || 0,
                 lastPayoutAmount: Number(currentFirm.lastPayoutAmount) || 0,
                 totalPayout: Number(currentFirm.totalPayout) || 0,
@@ -101,6 +103,7 @@ export function PropFirmManager({ initialPropFirms }: { initialPropFirms: any[] 
                                 </div>
                                 <div>
                                     <h3 className="font-semibold">{firm.name}</h3>
+                                    <p className="text-xs text-muted-foreground">{firm.accountNumber}</p>
                                     <p className="text-xs text-muted-foreground">{firm.status}</p>
                                 </div>
                             </div>
@@ -116,14 +119,14 @@ export function PropFirmManager({ initialPropFirms }: { initialPropFirms: any[] 
 
                         <div className="grid grid-cols-2 gap-2 text-sm">
                             <div className="text-muted-foreground">Cost:</div>
-                            <div className="font-medium text-right">${firm.cost?.toFixed(2)}</div>
+                            <div className="font-medium text-right">£{firm.cost?.toFixed(2)}</div>
 
                             <div className="text-muted-foreground">Total Payout:</div>
-                            <div className="font-medium text-right text-green-500">${firm.totalPayout?.toFixed(2)}</div>
+                            <div className="font-medium text-right text-green-500">£{firm.totalPayout?.toFixed(2)}</div>
 
                             <div className="text-muted-foreground">Last Payout:</div>
                             <div className="font-medium text-right">
-                                {firm.lastPayoutAmount ? `$${firm.lastPayoutAmount.toFixed(2)}` : "-"}
+                                {firm.lastPayoutAmount ? `£${firm.lastPayoutAmount.toFixed(2)}` : "-"}
                             </div>
 
                             <div className="text-muted-foreground">Payout Date:</div>
@@ -147,6 +150,14 @@ export function PropFirmManager({ initialPropFirms }: { initialPropFirms: any[] 
                             onChange={e => setCurrentFirm({ ...currentFirm, name: e.target.value })}
                         />
                     </div>
+                    <div>
+                        <label className="text-sm font-medium mb-1 block">Account Number</label>
+                        <input
+                            className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
+                            value={currentFirm.accountNumber || ""}
+                            onChange={e => setCurrentFirm({ ...currentFirm, accountNumber: e.target.value })}
+                        />
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="text-sm font-medium mb-1 block">Status</label>
@@ -162,7 +173,7 @@ export function PropFirmManager({ initialPropFirms }: { initialPropFirms: any[] 
                             </select>
                         </div>
                         <div>
-                            <label className="text-sm font-medium mb-1 block">Cost ($)</label>
+                            <label className="text-sm font-medium mb-1 block">Cost (£)</label>
                             <input
                                 type="number"
                                 className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
@@ -176,7 +187,7 @@ export function PropFirmManager({ initialPropFirms }: { initialPropFirms: any[] 
                         <h3 className="text-sm font-semibold mb-2 mt-4">Payout Information</h3>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="text-xs text-muted-foreground mb-1 block">Last Payout Amount ($)</label>
+                                <label className="text-xs text-muted-foreground mb-1 block">Last Payout Amount (£)</label>
                                 <input
                                     type="number"
                                     className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
@@ -195,7 +206,7 @@ export function PropFirmManager({ initialPropFirms }: { initialPropFirms: any[] 
                             </div>
                         </div>
                         <div className="mt-2">
-                            <label className="text-xs text-muted-foreground mb-1 block">Total Payout ($)</label>
+                            <label className="text-xs text-muted-foreground mb-1 block">Total Payout (£)</label>
                             <input
                                 type="number"
                                 className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
