@@ -112,7 +112,7 @@ export function DateRangePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-[calc(100vw-2rem)] max-w-[24rem] p-4 sm:w-auto sm:max-w-none"
+          className="w-[calc(100vw-2rem)] max-w-[24rem] overflow-hidden p-4 sm:w-auto sm:max-w-none"
           align="center"
           sideOffset={8}
           collisionPadding={16}
@@ -172,14 +172,14 @@ export function DateRangePicker({
                     </div>
                 </div>
                 <div className="w-[1px] bg-border hidden sm:block"></div>
-                <div className="flex flex-col gap-2">
+                <div className="flex w-full min-w-0 flex-col gap-2">
                      <h4 className="font-medium leading-none mb-1 text-sm text-muted-foreground">Custom Range</h4>
-                     <div className="grid gap-2">
+                     <div className="grid w-full gap-2">
                         <div className="grid gap-1">
                             <label className="text-xs font-medium">From</label>
                             <input 
                                 type="date" 
-                                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
+                                className="flex h-9 min-w-0 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
                                 value={formatInputDate(date?.from)}
                                 onChange={handleFromChange}
                             />
@@ -188,7 +188,7 @@ export function DateRangePicker({
                             <label className="text-xs font-medium">To</label>
                             <input 
                                 type="date" 
-                                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
+                                className="flex h-9 min-w-0 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
                                 value={formatInputDate(date?.to)}
                                 onChange={handleToChange}
                             />
