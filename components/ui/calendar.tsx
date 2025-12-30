@@ -29,19 +29,15 @@ function Calendar({
         ),
         month: cn("flex w-full flex-col gap-4", defaultClassNames.month),
         nav: cn(
-          "absolute inset-x-0 top-0 flex w-full items-center justify-between px-4 z-10",
+          "space-x-1 flex items-center",
           defaultClassNames.nav
         ),
         nav_button: cn(
-           buttonVariants({ variant: "outline" }), 
-           "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 min-w-[28px]"
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
         ),
-        nav_button_previous: "absolute left-2.5",
-        nav_button_next: "absolute right-2.5",
-        caption: cn(
-            "relative flex items-center justify-center pt-1" 
-        ),
-        caption_label: "text-sm font-medium",
+        nav_button_previous: "absolute left-1",
+        nav_button_next: "absolute right-1",
         table: "w-full border-collapse space-y-1",
         head_row: "flex",
         head_cell:
