@@ -25,7 +25,7 @@ export default function RootLayout({
             <body className={`${inter.className} flex h-screen overflow-hidden bg-background flex-col md:flex-row`}>
                 <MobileSidebar />
                 <Sidebar />
-                <main className="flex-1 overflow-y-auto">
+                <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden">
                     {children}
                 </main>
             </body>
