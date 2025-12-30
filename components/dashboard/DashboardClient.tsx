@@ -104,9 +104,9 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
                     <h2 className="text-2xl font-bold tracking-tight text-white">Dashboard</h2>
                 </div>
                 
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-col w-full sm:w-auto sm:flex-row items-stretch sm:items-center gap-2">
                     {/* Mock Filters for visuals */}
-                     <div className="h-9">
+                     <div className="h-9 w-full sm:w-auto">
                         <DateRangePicker 
                             date={dateRange}
                             setDate={setDateRange}

@@ -60,8 +60,8 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
 
     return (
         <Card className="col-span-1 h-full">
-             <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
-                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
+            <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
+                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1 flex-wrap">
                     Win % - Avg Win - Avg Loss Chart
                     <TooltipProvider>
                         <UITooltip>
@@ -76,7 +76,7 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
                 </CardTitle>
             </CardHeader>
             <CardContent className="px-2 pb-2">
-                 <div className="h-[200px]">
+                 <div className="h-[250px] sm:h-[200px]">
                     {data.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={data} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>

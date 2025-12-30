@@ -54,7 +54,7 @@ export function DashboardCalendar({ trades }: DashboardCalendarProps) {
                     </Button>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
-                     <Maximize2 className="h-4 w-4" />
+                     <Maximize2 className="h-4 w-4 hidden sm:block" />
                      <Info className="h-4 w-4" />
                 </div>
             </CardHeader>
