@@ -1,16 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { DollarSign, Percent, TrendingUp, Activity } from "lucide-react";
-import { StatCard } from "@/components/dashboard/StatCard";
 import { ProfitChart } from "@/components/dashboard/ProfitChart";
 import { DailyProfitChart } from "@/components/dashboard/DailyProfitChart";
-import { CalendarHeatmap } from "@/components/dashboard/CalendarHeatmap";
 import { RecentTrades } from "@/components/dashboard/RecentTrades";
+import { DashboardCalendar } from "@/components/dashboard/DashboardCalendar";
+import { StatsRow } from "@/components/dashboard/StatsRow"; // New component
 import { AddTradeModal } from "@/components/AddTradeModal";
 import { AccountSwitcher } from "@/components/dashboard/AccountSwitcher";
 import { ImportTradesModal } from "@/components/ImportTradesModal";
 import { MigrationComponent } from "@/components/MigrationComponent";
+import { Button } from "@/components/ui/button";
+import { Calendar as CalendarIcon, Filter } from "lucide-react";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 export default function DashboardClient({ initialTrades, initialAccounts }: { initialTrades: any[], initialAccounts: any[] }) {
     const [trades, setTrades] = useState(initialTrades);
@@ -56,7 +64,7 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
             }
         });
 
-        const winRate = (wins / data.length) * 100;
+        const winRate = data.length > 0 ? (wins / data.length) * 100 : 0;
         const profitFactor = grossLoss === 0 ? grossProfit : grossProfit / grossLoss;
         const avgWin = wins === 0 ? 0 : winSum / wins;
         const avgLoss = (data.length - wins) === 0 ? 0 : lossSum / (data.length - wins);
@@ -72,69 +80,79 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
     }
 
     return (
-        <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
-                <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Dashboard</h2>
+        <div className="min-h-screen bg-black/95 text-foreground p-4 md:p-6 space-y-6">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                    <h2 className="text-2xl font-bold tracking-tight text-white">Dashboard</h2>
+                </div>
+                
                 <div className="flex flex-wrap items-center gap-2">
+                    {/* Mock Filters for visuals */}
+                    <Button variant="outline" size="sm" className="h-9 gap-2 bg-[#111111] border-[#27272a] text-muted-foreground hover:text-white">
+                        <Filter className="h-4 w-4" />
+                        Filters
+                    </Button>
+                    <div className="h-9 w-[180px]">
+                         <Select defaultValue="this-month">
+                            <SelectTrigger className="h-9 bg-[#111111] border-[#27272a]">
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                <SelectValue placeholder="Select range" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="this-month">This month</SelectItem>
+                                <SelectItem value="last-month">Last month</SelectItem>
+                                <SelectItem value="all-time">All time</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="w-[1px] h-6 bg-[#27272a] mx-2 hidden sm:block"></div>
 
                     <AccountSwitcher
                         accounts={accounts}
                         selectedAccountId={selectedAccountId}
                         onSelect={setSelectedAccountId}
                     />
-                    <ImportTradesModal accounts={accounts} defaultAccountId={selectedAccountId === "all" ? undefined : selectedAccountId} />
-                    <AddTradeModal accounts={accounts} defaultAccountId={selectedAccountId} />
+                    <div className="flex gap-2 ml-2">
+                         <ImportTradesModal accounts={accounts} defaultAccountId={selectedAccountId === "all" ? undefined : selectedAccountId} />
+                         <AddTradeModal accounts={accounts} defaultAccountId={selectedAccountId} />
+                    </div>
                 </div>
             </div>
 
             <MigrationComponent />
 
-            {/* Top Stats */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-                <StatCard
-                    title="Net P&L"
-                    value={`$${stats.netPnl.toFixed(2)}`}
-                    icon={DollarSign}
-                    trend={stats.totalTrades > 0 ? `${stats.totalTrades} trades total` : "No trades yet"}
-                    trendUp={stats.netPnl >= 0}
-                />
-                <StatCard
-                    title="Win Rate"
-                    value={`${stats.winRate.toFixed(1)}%`}
-                    icon={Percent}
-                    trendUp={stats.winRate >= 50}
-                />
-                <StatCard
-                    title="Profit Factor"
-                    value={stats.profitFactor.toFixed(2)}
-                    icon={TrendingUp}
-                    trendUp={stats.profitFactor >= 1.5}
-                />
-                <StatCard
-                    title="Avg Win / Loss"
-                    value={`$${stats.avgWin.toFixed(0)} / $${stats.avgLoss.toFixed(0)}`}
-                    icon={Activity}
-                />
-                <StatCard
-                    title="Avg Daily"
-                    value={`$${(stats.totalTrades > 0 ? stats.netPnl / stats.totalTrades : 0).toFixed(2)}`}
-                    icon={Activity}
-                />
-            </div>
+            {/* Row 1: KPI Stats */}
+            <StatsRow stats={stats} />
 
-            {/* Main Content Area */}
-            <div className="grid gap-4 md:grid-cols-7">
-
-                {/* Left Column: Charts */}
-                <div className="col-span-4 space-y-4">
+            {/* Row 2: Charts & Recent Activity */}
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-12 h-auto">
+                <div className="md:col-span-4 h-full min-h-[300px]">
                     <ProfitChart trades={filteredTrades} />
+                </div>
+                <div className="md:col-span-4 h-full min-h-[300px]">
                     <DailyProfitChart trades={filteredTrades} />
                 </div>
-
-                {/* Right Column: Calendar & Recent Activity */}
-                <div className="col-span-3 space-y-4">
-                    <CalendarHeatmap trades={filteredTrades} />
+                <div className="md:col-span-4 h-full">
                     <RecentTrades trades={filteredTrades} />
+                </div>
+            </div>
+
+            {/* Row 3: Calendar & Advanced Metrics */}
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-12">
+                <DashboardCalendar trades={filteredTrades} />
+                
+                {/* Right Column: Placeholder for future advanced charts */}
+                <div className="md:col-span-4 space-y-4">
+                     {/* Placeholder for Win % Chart */}
+                     <div className="rounded-xl border border-border bg-[#111111] p-6 h-[240px] flex items-center justify-center text-muted-foreground text-sm">
+                        Win % - Avg Win - Avg Loss Chart (Coming Soon)
+                     </div>
+                     {/* Placeholder for Trade Duration Chart */}
+                     <div className="rounded-xl border border-border bg-[#111111] p-6 h-[240px] flex items-center justify-center text-muted-foreground text-sm">
+                        Trade Duration Performance (Coming Soon)
+                     </div>
                 </div>
             </div>
         </div>
