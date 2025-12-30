@@ -97,7 +97,6 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
                                     tickLine={false}
                                     axisLine={false}
                                     tickFormatter={(value) => `$${value}`}
-                                    width={35}
                                 />
                                 <YAxis 
                                     yAxisId="right"
@@ -107,7 +106,6 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
                                     tickLine={false}
                                     axisLine={false}
                                     tickFormatter={(value) => `${value}%`}
-                                    width={35}
                                 />
                                 <Tooltip
                                     contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
