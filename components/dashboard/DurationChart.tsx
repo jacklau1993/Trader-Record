@@ -96,11 +96,11 @@ export function DurationChart({ trades }: { trades: Trade[] }) {
                     </TooltipProvider>
                 </CardTitle>
             </CardHeader>
-            <CardContent className="px-2 pb-2">
-                 <div className="h-[250px] sm:h-[200px]">
+            <CardContent className="p-0 pb-2">
+                 <div className="h-[250px] sm:h-[200px] w-full">
                     {data.some(d => d.count > 0) ? (
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={data} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                            <BarChart data={data} layout="vertical" margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#334155" />
                                 <XAxis type="number" hide />
                                 <YAxis dataKey="name" type="category" width={50} tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />

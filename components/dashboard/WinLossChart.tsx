@@ -75,11 +75,11 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
                     </TooltipProvider>
                 </CardTitle>
             </CardHeader>
-            <CardContent className="px-2 pb-2">
-                 <div className="h-[250px] sm:h-[200px]">
+            <CardContent className="p-0 pb-2">
+                 <div className="h-[250px] sm:h-[200px] w-full">
                     {data.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={data} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                            <LineChart data={data} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" />
                                 <XAxis 
                                     dataKey="date" 
