@@ -24,7 +24,7 @@ export function StatsRow({ stats }: StatsRowProps) {
         { name: 'Loss', value: 100 - stats.winRate }
     ];
     // Colors: Green for win, dark for loss background
-    const WIN_COLORS = ['#22c55e', '#1e293b']; 
+    const WIN_COLORS = ['#22c55e', '#334155']; 
 
     // Data for Profit Factor (Radial/Ring)
     const pfValue = Math.min(stats.profitFactor, 10); // Cap for visualization
@@ -32,7 +32,7 @@ export function StatsRow({ stats }: StatsRowProps) {
         { name: 'Factor', value: pfValue },
         { name: 'Remaining', value: 10 - pfValue }
     ];
-    const PF_COLORS = ['#22c55e', '#1e293b'];
+    const PF_COLORS = ['#22c55e', '#334155'];
 
     return (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
@@ -42,9 +42,7 @@ export function StatsRow({ stats }: StatsRowProps) {
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                         Net P&L <Info className="h-3 w-3" />
                     </CardTitle>
-                    <div className="h-6 w-6 rounded bg-[#1e293b] flex items-center justify-center text-blue-500">
-                        <span className="text-[10px]">👁</span>
-                    </div>
+                    <div />
                 </CardHeader>
                 <CardContent className="px-4 pb-4">
                     <div className={`text-2xl font-bold ${stats.netPnl >= 0 ? "text-red-500" : "text-red-500"} ${stats.netPnl > 0 ? "!text-green-500" : ""}`}>
@@ -160,7 +158,7 @@ export function StatsRow({ stats }: StatsRowProps) {
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                         Trade expectancy <Info className="h-3 w-3" />
                     </CardTitle>
-                    <ExternalLink className="h-3 w-3 text-blue-500 cursor-pointer" />
+
                 </CardHeader>
                 <CardContent className="px-4 pb-4">
                     <div className={`text-2xl font-bold ${((stats.winRate / 100 * stats.avgWin) - ((1 - stats.winRate / 100) * stats.avgLoss)) >= 0 ? "text-green-500" : "text-red-500"}`}>
