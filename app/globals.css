@@ -74,7 +74,7 @@
 body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: var(--font-inter, sans-serif);
+    font-family: var(--font-rajdhani, sans-serif);
     transition: background-color 0.2s, color 0.2s;
     overflow-x: hidden; /* Prevent horizontal scroll */
 }
