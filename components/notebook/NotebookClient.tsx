@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Folder, Plus, Trash2, ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Editor } from "@/components/notebook/Editor";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createNote, deleteNote } from "@/app/actions/note-actions";
 import { useRouter } from "next/navigation";
 
@@ -30,6 +31,7 @@ export default function NotebookClient({ initialSections, initialNotes }: { init
     const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
     const [showNotebooks, setShowNotebooks] = useState(true);
     const [showPages, setShowPages] = useState(true);
+    const [mobileView, setMobileView] = useState<"notebooks" | "pages" | "note">("pages");
     const router = useRouter();
 
     useEffect(() => {
@@ -55,6 +57,7 @@ export default function NotebookClient({ initialSections, initialNotes }: { init
         };
         setNotes([newNote, ...notes]);
         setActiveNoteId(id);
+        setMobileView("note");
 
         try {
             await createNote({
@@ -74,7 +77,10 @@ export default function NotebookClient({ initialSections, initialNotes }: { init
         if (!confirm("Are you sure you want to delete this note?")) return;
 
         setNotes(notes.filter(n => n.id !== noteId));
-        if (activeNoteId === noteId) setActiveNoteId(null);
+        if (activeNoteId === noteId) {
+            setActiveNoteId(null);
+            setMobileView("pages");
+        }
 
         try {
             await deleteNote(noteId);
@@ -91,14 +97,24 @@ export default function NotebookClient({ initialSections, initialNotes }: { init
 
     const currentNotes = notes.filter(n => n.sectionId === activeSection);
     const activeNote = notes.find(n => n.id === activeNoteId) || null;
-
     return (
         <div className="flex flex-col md:flex-row h-[calc(100vh-4rem)] md:h-screen max-h-[calc(100vh-2rem)] overflow-hidden m-4 md:m-8 rounded-xl border border-border bg-card shadow-sm">
+            <div className="md:hidden border-b border-border bg-muted/10 px-3 py-2">
+                <Tabs value={mobileView} onValueChange={(value) => setMobileView(value as "notebooks" | "pages" | "note")}>
+                    <TabsList className="grid w-full grid-cols-3 bg-muted/40">
+                        <TabsTrigger value="notebooks" className="text-xs">Notebooks</TabsTrigger>
+                        <TabsTrigger value="pages" className="text-xs">Pages</TabsTrigger>
+                        <TabsTrigger value="note" className="text-xs">Note</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+            </div>
 
             {/* Sections Sidebar (Left) */}
             <div className={cn(
-                "w-full md:w-60 border-b md:border-b-0 md:border-r border-border bg-muted/10 flex flex-col shrink-0 transition-all duration-300",
-                showNotebooks ? "h-32 md:h-full" : "h-12 md:h-full"
+                "w-full md:w-60 border-b md:border-b-0 md:border-r border-border bg-muted/10 flex-col shrink-0 transition-all duration-300 min-h-0 md:h-full md:flex-none",
+                mobileView === "notebooks" ? "flex" : "hidden",
+                "md:flex",
+                showNotebooks ? "flex-1" : "h-12"
             )}>
                 <div
                     className="p-4 border-b border-border font-semibold flex justify-between items-center cursor-pointer md:cursor-default"
@@ -120,8 +136,7 @@ export default function NotebookClient({ initialSections, initialNotes }: { init
                                     e.stopPropagation();
                                     setActiveSection(section.id);
                                     setActiveNoteId(null);
-                                    // Optional: Auto-collapse on mobile after selection?
-                                    // setShowNotebooks(false); 
+                                    setMobileView("pages");
                                 }}
                                 className={cn(
                                     "w-full flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium hover:bg-muted transition-colors",
@@ -139,8 +154,10 @@ export default function NotebookClient({ initialSections, initialNotes }: { init
 
             {/* Notes List (Middle) */}
             <div className={cn(
-                "w-full md:w-72 border-b md:border-b-0 md:border-r border-border bg-background flex flex-col shrink-0 transition-all duration-300",
-                showPages ? "h-64 md:h-full" : "h-12 md:h-full"
+                "w-full md:w-72 border-b md:border-b-0 md:border-r border-border bg-background flex-col shrink-0 transition-all duration-300 min-h-0 md:h-full md:flex-none",
+                mobileView === "pages" ? "flex" : "hidden",
+                "md:flex",
+                showPages ? "flex-1" : "h-12"
             )}>
                 <div
                     className="p-4 border-b border-border font-semibold flex justify-between items-center cursor-pointer md:cursor-default"
@@ -172,8 +189,10 @@ export default function NotebookClient({ initialSections, initialNotes }: { init
                                         "group w-full flex flex-col items-start px-4 py-3 border-b border-border/50 hover:bg-muted/50 transition-colors text-left relative cursor-pointer",
                                         activeNoteId === note.id ? "bg-muted/50 border-l-2 border-l-primary pl-[14px]" : ""
                                     )}
-                                    // Auto-collapse Pages on mobile after selection could be nice?
-                                    onClick={() => { setActiveNoteId(note.id); }}
+                                    onClick={() => {
+                                        setActiveNoteId(note.id);
+                                        setMobileView("note");
+                                    }}
                                 >
                                     <div className="flex justify-between w-full">
                                         <h4 className={cn("text-sm font-semibold", activeNoteId === note.id ? "text-primary" : "")}>{note.title}</h4>
@@ -199,10 +218,13 @@ export default function NotebookClient({ initialSections, initialNotes }: { init
             </div>
 
             {/* Editor (Right) */}
-            <div className="flex-1 bg-background">
-                <Editor key={activeNote ? activeNote.id : 'empty'} selectedNote={activeNote} onSave={handleNoteUpdated} />
+            <div className={cn(
+                "flex-1 bg-background min-h-0",
+                mobileView === "note" ? "block" : "hidden",
+                "md:block"
+            )}>
+                <Editor key={activeNote ? activeNote.id : "empty"} selectedNote={activeNote} onSave={handleNoteUpdated} />
             </div>
-
         </div>
     );
 }

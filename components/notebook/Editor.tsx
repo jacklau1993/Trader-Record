@@ -97,7 +97,7 @@ export function Editor({ selectedNote, onSave }: { selectedNote: any | null, onS
     }
 
     return (
-        <div className="flex h-full flex-col">
+        <div className="flex h-full min-h-0 flex-col">
             {/* Title & Date Header */}
             <div className="border-b border-border p-4">
                 <input
@@ -164,7 +164,7 @@ export function Editor({ selectedNote, onSave }: { selectedNote: any | null, onS
             </div>
 
             {/* Rich Text Editor */}
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-hidden">
                 <RichTextEditor
                     key={selectedNote.id}
                     content={content}
