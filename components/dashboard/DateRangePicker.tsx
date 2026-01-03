@@ -112,19 +112,19 @@ export function DateRangePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-auto overflow-hidden p-4 sm:w-auto sm:max-w-none"
-          align="center"
+          className="w-[calc(100vw-32px)] max-w-[280px] sm:w-auto sm:max-w-none p-3 sm:p-4 max-h-[60vh] overflow-y-auto"
+          align="start"
           sideOffset={8}
           collisionPadding={16}
         >
-            <div className="flex flex-col gap-4 sm:flex-row">
-                <div className="flex flex-col gap-2">
-                    <h4 className="font-medium leading-none mb-1 text-sm text-muted-foreground">Presets</h4>
-                    <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-col">
+            <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row">
+                <div className="flex flex-col gap-1.5 sm:gap-2">
+                    <h4 className="font-medium leading-none text-xs sm:text-sm text-muted-foreground">Presets</h4>
+                    <div className="grid grid-cols-3 gap-1 sm:grid-cols-1 sm:flex sm:flex-col sm:gap-2">
                         <Button 
                             variant={selectedPreset === "today" ? "secondary" : "ghost"} 
                             size="sm" 
-                            className="justify-start font-normal" 
+                            className="justify-center sm:justify-start font-normal text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3" 
                             onClick={() => handlePreset("today")}
                         >
                             Today
@@ -132,7 +132,7 @@ export function DateRangePicker({
                         <Button 
                             variant={selectedPreset === "yesterday" ? "secondary" : "ghost"} 
                             size="sm" 
-                            className="justify-start font-normal" 
+                            className="justify-center sm:justify-start font-normal text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3" 
                             onClick={() => handlePreset("yesterday")}
                         >
                             Yesterday
@@ -140,55 +140,55 @@ export function DateRangePicker({
                         <Button 
                             variant={selectedPreset === "last7" ? "secondary" : "ghost"} 
                             size="sm" 
-                            className="justify-start font-normal" 
+                            className="justify-center sm:justify-start font-normal text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3" 
                             onClick={() => handlePreset("last7")}
                         >
-                            Last 7 Days
+                            7 Days
                         </Button>
                         <Button 
                             variant={selectedPreset === "last30" ? "secondary" : "ghost"} 
                             size="sm" 
-                            className="justify-start font-normal" 
+                            className="justify-center sm:justify-start font-normal text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3" 
                             onClick={() => handlePreset("last30")}
                         >
-                            Last 30 Days
+                            30 Days
                         </Button>
                         <Button 
                             variant={selectedPreset === "thisMonth" ? "secondary" : "ghost"} 
                             size="sm" 
-                            className="justify-start font-normal" 
+                            className="justify-center sm:justify-start font-normal text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3" 
                             onClick={() => handlePreset("thisMonth")}
                         >
-                            This Month
+                            This Mo.
                         </Button>
                         <Button 
                             variant={selectedPreset === "lastMonth" ? "secondary" : "ghost"} 
                             size="sm" 
-                            className="justify-start font-normal" 
+                            className="justify-center sm:justify-start font-normal text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3" 
                             onClick={() => handlePreset("lastMonth")}
                         >
-                            Last Month
+                            Last Mo.
                         </Button>
                     </div>
                 </div>
                 <div className="w-[1px] bg-border hidden sm:block"></div>
-                <div className="flex w-full min-w-0 flex-col gap-2">
-                     <h4 className="font-medium leading-none mb-1 text-sm text-muted-foreground">Custom Range</h4>
-                     <div className="grid w-full gap-2">
-                        <div className="grid gap-1">
-                            <label className="text-xs font-medium">From</label>
+                <div className="flex w-full min-w-0 flex-col gap-1.5 sm:gap-2">
+                     <h4 className="font-medium leading-none text-xs sm:text-sm text-muted-foreground">Custom Range</h4>
+                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-1 sm:gap-2">
+                        <div className="grid gap-0.5 sm:gap-1">
+                            <label className="text-[10px] sm:text-xs font-medium">From</label>
                             <input 
                                 type="date" 
-                                className="flex h-9 min-w-0 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
+                                className="flex h-7 sm:h-9 min-w-0 w-full rounded-md border border-input bg-background px-2 sm:px-3 py-1 text-xs sm:text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
                                 value={formatInputDate(date?.from)}
                                 onChange={handleFromChange}
                             />
                         </div>
-                        <div className="grid gap-1">
-                            <label className="text-xs font-medium">To</label>
+                        <div className="grid gap-0.5 sm:gap-1">
+                            <label className="text-[10px] sm:text-xs font-medium">To</label>
                             <input 
                                 type="date" 
-                                className="flex h-9 min-w-0 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
+                                className="flex h-7 sm:h-9 min-w-0 w-full rounded-md border border-input bg-background px-2 sm:px-3 py-1 text-xs sm:text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
                                 value={formatInputDate(date?.to)}
                                 onChange={handleToChange}
                             />
