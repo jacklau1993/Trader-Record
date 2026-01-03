@@ -32,7 +32,7 @@ export function RecentTrades({ trades }: { trades: Trade[] }) {
                                 ) : (
                                     recentTrades.map(trade => (
                                         <div key={trade.id} className="flex items-center justify-between py-2 px-2 hover:bg-muted/30 rounded-md transition-colors text-sm">
-                                            <span className="w-24 text-muted-foreground font-mono text-xs">
+                                            <span className="w-24 text-muted-foreground text-xs">
                                                 {format(new Date(trade.date), 'MM/dd/yyyy')}
                                             </span>
                                             <span className="flex-1 text-center font-medium">

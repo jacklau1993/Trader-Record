@@ -210,7 +210,7 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
                     <Card>
                         <CardHeader><CardTitle>Trade Details</CardTitle></CardHeader>
                         <CardContent className="grid gap-4">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-sm font-medium">Date</label>
                                     <input
@@ -234,7 +234,7 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-sm font-medium">Direction</label>
                                     <select
@@ -257,7 +257,7 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-sm font-medium">Entry Price</label>
                                     <input
@@ -294,7 +294,7 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
                     <Card>
                         <CardHeader><CardTitle>Metrics & Risk</CardTitle></CardHeader>
                         <CardContent className="grid gap-4">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-sm font-medium">Profit Target</label>
                                     <input
@@ -315,7 +315,7 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-sm font-medium text-muted-foreground">Planned R:R (Auto)</label>
                                     <input
@@ -336,7 +336,7 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-sm font-medium text-muted-foreground">Points Captured (Auto)</label>
                                     <input
