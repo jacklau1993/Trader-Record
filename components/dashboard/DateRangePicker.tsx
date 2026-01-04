@@ -1,13 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { addDays, format, startOfMonth, endOfMonth, subDays, subMonths } from "date-fns"
+import { format, startOfMonth, endOfMonth, subDays, subMonths } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
-import { DateRange } from "react-day-picker"
+import Flatpickr from "react-flatpickr"
 
 import { cn } from "@/lib/utils"
+import { DateRange } from "@/lib/date-range"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
 import {
   Popover,
   PopoverContent,
@@ -28,6 +28,9 @@ export function DateRangePicker({
   const [isOpen, setIsOpen] = React.useState(false)
 
   const [selectedPreset, setSelectedPreset] = React.useState<string | undefined>(undefined)
+
+  const inputClassName =
+    "flex h-9 min-w-0 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
 
   const handlePreset = (preset: string) => {
     const now = new Date()
@@ -65,23 +68,16 @@ export function DateRangePicker({
     setIsOpen(false)
   }
 
-  // Helpers for inputs
-  const formatInputDate = (d?: Date) => d ? format(d, "yyyy-MM-dd") : ""
-  
-  const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const d = new Date(e.target.value)
-    if (!isNaN(d.getTime())) {
-      setDate(prev => ({ from: d, to: prev?.to }))
-      setSelectedPreset(undefined)
-    }
+  const handleFromChange = (dates: Date[]) => {
+    const [from] = dates
+    setDate(prev => ({ from, to: prev?.to }))
+    setSelectedPreset(undefined)
   }
 
-  const handleToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const d = new Date(e.target.value)
-    if (!isNaN(d.getTime())) {
-      setDate(prev => ({ from: prev?.from, to: d }))
-      setSelectedPreset(undefined)
-    }
+  const handleToChange = (dates: Date[]) => {
+    const [to] = dates
+    setDate(prev => ({ from: prev?.from, to }))
+    setSelectedPreset(undefined)
   }
 
   return (
@@ -176,20 +172,20 @@ export function DateRangePicker({
               <div className="grid gap-2">
                 <div className="grid gap-1">
                   <label className="text-xs font-medium">From</label>
-                  <input
-                    type="date"
-                    className="flex h-9 min-w-0 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
-                    value={formatInputDate(date?.from)}
+                  <Flatpickr
+                    options={{ dateFormat: "j M Y", disableMobile: true }}
+                    value={date?.from}
                     onChange={handleFromChange}
+                    className={inputClassName}
                   />
                 </div>
                 <div className="grid gap-1">
                   <label className="text-xs font-medium">To</label>
-                  <input
-                    type="date"
-                    className="flex h-9 min-w-0 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
-                    value={formatInputDate(date?.to)}
+                  <Flatpickr
+                    options={{ dateFormat: "j M Y", disableMobile: true }}
+                    value={date?.to}
                     onChange={handleToChange}
+                    className={inputClassName}
                   />
                 </div>
               </div>

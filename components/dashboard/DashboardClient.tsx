@@ -14,7 +14,7 @@ import { ImportTradesModal } from "@/components/ImportTradesModal";
 import { MigrationComponent } from "@/components/MigrationComponent";
 import { Button } from "@/components/ui/button";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
-import { DateRange } from "react-day-picker";
+import { DateRange } from "@/lib/date-range";
 import { startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
 
 

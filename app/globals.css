@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "flatpickr/dist/themes/dark.css";
 
 @theme {
     --color-background: var(--background);
@@ -84,6 +85,52 @@ body {
     transition: background-color 0.2s, color 0.2s;
     overflow-x: hidden; /* Prevent horizontal scroll */
     overscroll-behavior-x: none;
+}
+
+.flatpickr-calendar {
+    background: var(--popover);
+    border: 1px solid var(--border);
+    color: var(--popover-foreground);
+    box-shadow: 0 10px 25px -12px rgba(0, 0, 0, 0.6);
+}
+
+.flatpickr-months .flatpickr-month,
+.flatpickr-weekdays,
+.flatpickr-weekday,
+.flatpickr-current-month,
+.flatpickr-monthDropdown-months {
+    color: var(--popover-foreground);
+}
+
+.flatpickr-day {
+    color: var(--popover-foreground);
+}
+
+.flatpickr-day.today {
+    border-color: var(--primary);
+}
+
+.flatpickr-day.inRange {
+    background: rgba(59, 130, 246, 0.18);
+    border-color: transparent;
+    color: var(--popover-foreground);
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.flatpickr-time input,
+.flatpickr-time .flatpickr-time-separator,
+.flatpickr-time .flatpickr-am-pm {
+    color: var(--popover-foreground);
 }
 
 
