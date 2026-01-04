@@ -112,90 +112,89 @@ export function DateRangePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-[calc(100vw-32px)] max-w-[280px] sm:w-auto sm:max-w-none p-3 sm:p-4 max-h-[60vh] overflow-y-auto"
+          className="w-[calc(100vw-32px)] sm:w-[var(--radix-popover-trigger-width)] p-4 max-h-[60vh] overflow-y-auto"
           align="start"
           sideOffset={8}
           collisionPadding={16}
         >
-            <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row">
-                <div className="flex flex-col gap-1.5 sm:gap-2">
-                    <h4 className="font-medium leading-none text-xs sm:text-sm text-muted-foreground">Presets</h4>
-                    <div className="grid grid-cols-3 gap-1 sm:grid-cols-1 sm:flex sm:flex-col sm:gap-2">
-                        <Button 
-                            variant={selectedPreset === "today" ? "secondary" : "ghost"} 
-                            size="sm" 
-                            className="justify-center sm:justify-start font-normal text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3" 
-                            onClick={() => handlePreset("today")}
-                        >
-                            Today
-                        </Button>
-                        <Button 
-                            variant={selectedPreset === "yesterday" ? "secondary" : "ghost"} 
-                            size="sm" 
-                            className="justify-center sm:justify-start font-normal text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3" 
-                            onClick={() => handlePreset("yesterday")}
-                        >
-                            Yesterday
-                        </Button>
-                        <Button 
-                            variant={selectedPreset === "last7" ? "secondary" : "ghost"} 
-                            size="sm" 
-                            className="justify-center sm:justify-start font-normal text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3" 
-                            onClick={() => handlePreset("last7")}
-                        >
-                            7 Days
-                        </Button>
-                        <Button 
-                            variant={selectedPreset === "last30" ? "secondary" : "ghost"} 
-                            size="sm" 
-                            className="justify-center sm:justify-start font-normal text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3" 
-                            onClick={() => handlePreset("last30")}
-                        >
-                            30 Days
-                        </Button>
-                        <Button 
-                            variant={selectedPreset === "thisMonth" ? "secondary" : "ghost"} 
-                            size="sm" 
-                            className="justify-center sm:justify-start font-normal text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3" 
-                            onClick={() => handlePreset("thisMonth")}
-                        >
-                            This Mo.
-                        </Button>
-                        <Button 
-                            variant={selectedPreset === "lastMonth" ? "secondary" : "ghost"} 
-                            size="sm" 
-                            className="justify-center sm:justify-start font-normal text-xs sm:text-sm h-7 sm:h-9 px-2 sm:px-3" 
-                            onClick={() => handlePreset("lastMonth")}
-                        >
-                            Last Mo.
-                        </Button>
-                    </div>
-                </div>
-                <div className="w-[1px] bg-border hidden sm:block"></div>
-                <div className="flex w-full min-w-0 flex-col gap-1.5 sm:gap-2">
-                     <h4 className="font-medium leading-none text-xs sm:text-sm text-muted-foreground">Custom Range</h4>
-                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-1 sm:gap-2">
-                        <div className="grid gap-0.5 sm:gap-1">
-                            <label className="text-[10px] sm:text-xs font-medium">From</label>
-                            <input 
-                                type="date" 
-                                className="flex h-7 sm:h-9 min-w-0 w-full rounded-md border border-input bg-background px-2 sm:px-3 py-1 text-xs sm:text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
-                                value={formatInputDate(date?.from)}
-                                onChange={handleFromChange}
-                            />
-                        </div>
-                        <div className="grid gap-0.5 sm:gap-1">
-                            <label className="text-[10px] sm:text-xs font-medium">To</label>
-                            <input 
-                                type="date" 
-                                className="flex h-7 sm:h-9 min-w-0 w-full rounded-md border border-input bg-background px-2 sm:px-3 py-1 text-xs sm:text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
-                                value={formatInputDate(date?.to)}
-                                onChange={handleToChange}
-                            />
-                        </div>
-                     </div>
-                </div>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <h4 className="font-medium leading-none text-sm text-muted-foreground">Presets</h4>
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant={selectedPreset === "today" ? "secondary" : "ghost"}
+                  size="sm"
+                  className="w-full justify-start font-normal"
+                  onClick={() => handlePreset("today")}
+                >
+                  Today
+                </Button>
+                <Button
+                  variant={selectedPreset === "yesterday" ? "secondary" : "ghost"}
+                  size="sm"
+                  className="w-full justify-start font-normal"
+                  onClick={() => handlePreset("yesterday")}
+                >
+                  Yesterday
+                </Button>
+                <Button
+                  variant={selectedPreset === "last7" ? "secondary" : "ghost"}
+                  size="sm"
+                  className="w-full justify-start font-normal"
+                  onClick={() => handlePreset("last7")}
+                >
+                  Last 7 Days
+                </Button>
+                <Button
+                  variant={selectedPreset === "last30" ? "secondary" : "ghost"}
+                  size="sm"
+                  className="w-full justify-start font-normal"
+                  onClick={() => handlePreset("last30")}
+                >
+                  Last 30 Days
+                </Button>
+                <Button
+                  variant={selectedPreset === "thisMonth" ? "secondary" : "ghost"}
+                  size="sm"
+                  className="w-full justify-start font-normal"
+                  onClick={() => handlePreset("thisMonth")}
+                >
+                  This Month
+                </Button>
+                <Button
+                  variant={selectedPreset === "lastMonth" ? "secondary" : "ghost"}
+                  size="sm"
+                  className="w-full justify-start font-normal"
+                  onClick={() => handlePreset("lastMonth")}
+                >
+                  Last Month
+                </Button>
+              </div>
             </div>
+            <div className="flex w-full min-w-0 flex-col gap-2">
+              <h4 className="font-medium leading-none text-sm text-muted-foreground">Custom Range</h4>
+              <div className="grid gap-2">
+                <div className="grid gap-1">
+                  <label className="text-xs font-medium">From</label>
+                  <input
+                    type="date"
+                    className="flex h-9 min-w-0 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
+                    value={formatInputDate(date?.from)}
+                    onChange={handleFromChange}
+                  />
+                </div>
+                <div className="grid gap-1">
+                  <label className="text-xs font-medium">To</label>
+                  <input
+                    type="date"
+                    className="flex h-9 min-w-0 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:[color-scheme:dark]"
+                    value={formatInputDate(date?.to)}
+                    onChange={handleToChange}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </PopoverContent>
       </Popover>
     </div>

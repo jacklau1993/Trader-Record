@@ -11,7 +11,10 @@ export const getAuth = (customOrigin?: string | null) => {
 
     const trustedOrigins = [
         "https://trader-record.pages.dev",
-        "http://localhost:3000" // Always allow local dev
+        "http://localhost:3000", // next dev
+        "http://localhost:8788", // wrangler pages dev
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:8788"
     ];
 
     if (customOrigin && (

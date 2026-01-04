@@ -6,8 +6,9 @@ pages_build_output_dir = ".vercel/output/static"
 [[d1_databases]]
 binding = "DB"
 database_name = "trading-app-db"
-database_id = "b622591d-de94-46f6-9128-53fc17d567ac" # Placeholder for local dev
+database_id = "b622591d-de94-46f6-9128-53fc17d567ac"
 migrations_dir = "drizzle"
+remote = true  # Connect to remote D1 during local dev
 
 [[r2_buckets]]
 binding = "IMAGES"
