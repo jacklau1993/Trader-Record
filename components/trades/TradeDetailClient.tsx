@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Save } from "lucide-react";
 import { updateTrade } from "@/app/actions/trade-actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Flatpickr from "react-flatpickr";
 import { Trade, Category } from "@/lib/types";
 import { TICKERS, CONTRACT_MULTIPLIERS } from "@/lib/constants";
 
@@ -12,6 +13,7 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
     const router = useRouter();
     const [trade, setTrade] = useState<Trade>(initialTrade);
     const [isSaving, setIsSaving] = useState(false);
+    const dateInputClassName = "w-full mt-1 bg-background border border-input rounded px-3 py-2";
 
     // Auto-calculation logic
     const calculateMetrics = useCallback((currentTrade: Trade) => {
@@ -213,11 +215,11 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-sm font-medium">Date</label>
-                                    <input
-                                        type="date"
-                                        className="w-full mt-1 bg-background border border-input rounded px-3 py-2"
+                                    <Flatpickr
+                                        options={{ dateFormat: "Y-m-d", disableMobile: true }}
                                         value={trade.date}
-                                        onChange={e => setTrade({ ...trade, date: e.target.value })}
+                                        onChange={(_dates, dateStr) => setTrade({ ...trade, date: dateStr })}
+                                        className={dateInputClassName}
                                     />
                                 </div>
                                 <div>

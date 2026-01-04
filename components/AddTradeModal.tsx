@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X, Plus, Loader2 } from "lucide-react";
+import Flatpickr from "react-flatpickr";
 import { Modal } from "@/components/ui/modal";
 import { useRouter } from "next/navigation";
 import { createTrade } from "@/app/actions/trade-actions";
@@ -31,6 +32,7 @@ export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }:
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
+    const dateInputClassName = "w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm";
 
     // Form State
     const [formData, setFormData] = useState<Partial<TradeData>>({
@@ -181,9 +183,12 @@ export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }:
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="text-xs font-medium text-muted-foreground mb-1 block">Exit Date (Close)</label>
-                            <input type="date" required className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
+                            <Flatpickr
+                                options={{ dateFormat: "Y-m-d", disableMobile: true }}
                                 value={formData.date || ""}
-                                onChange={e => setFormData({ ...formData, date: e.target.value })}
+                                onChange={(_dates, dateStr) => setFormData({ ...formData, date: dateStr })}
+                                className={dateInputClassName}
+                                required
                             />
                         </div>
                         <div>
@@ -245,9 +250,11 @@ export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }:
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                              <label className="text-xs font-medium text-muted-foreground mb-1 block">Entry Date</label>
-                             <input type="date" className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
+                             <Flatpickr
+                                options={{ dateFormat: "Y-m-d", disableMobile: true }}
                                 value={formData.entryDate || ""}
-                                onChange={e => setFormData({ ...formData, entryDate: e.target.value })}
+                                onChange={(_dates, dateStr) => setFormData({ ...formData, entryDate: dateStr })}
+                                className={dateInputClassName}
                             />
                         </div>
                         <div>

@@ -80,6 +80,13 @@ export function DateRangePicker({
     setSelectedPreset(undefined)
   }
 
+  const handleInteractOutside = (event: Event) => {
+    const target = event.target as HTMLElement | null
+    if (target?.closest(".flatpickr-calendar")) {
+      event.preventDefault()
+    }
+  }
+
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -112,6 +119,7 @@ export function DateRangePicker({
           align="start"
           sideOffset={8}
           collisionPadding={16}
+          onInteractOutside={handleInteractOutside}
         >
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">

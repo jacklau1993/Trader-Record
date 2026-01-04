@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Flatpickr from "react-flatpickr";
 import { Plus, Edit, Trash2, Check, X, Building2 } from "lucide-react";
 import { createAccount, updateAccount, deleteAccount } from "@/app/actions/account-actions";
 import { Modal } from "@/components/ui/modal";
@@ -25,6 +26,7 @@ export function PropFirmManager({ initialPropFirms }: { initialPropFirms: any[] 
     const [currentFirm, setCurrentFirm] = useState<Partial<PropFirm>>({});
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
+    const dateInputClassName = "w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm";
 
     const handleAdd = () => {
         setCurrentFirm({ type: "PROP_FIRM", status: "Active" });
@@ -197,11 +199,11 @@ export function PropFirmManager({ initialPropFirms }: { initialPropFirms: any[] 
                             </div>
                             <div>
                                 <label className="text-xs text-muted-foreground mb-1 block">Last Payout Date</label>
-                                <input
-                                    type="date"
-                                    className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
-                                    value={currentFirm.lastPayoutDate ? new Date(currentFirm.lastPayoutDate).toISOString().split('T')[0] : ""}
-                                    onChange={e => setCurrentFirm({ ...currentFirm, lastPayoutDate: e.target.value })}
+                                <Flatpickr
+                                    options={{ dateFormat: "Y-m-d", disableMobile: true }}
+                                    value={currentFirm.lastPayoutDate ? currentFirm.lastPayoutDate.split("T")[0] : ""}
+                                    onChange={(_dates, dateStr) => setCurrentFirm({ ...currentFirm, lastPayoutDate: dateStr })}
+                                    className={dateInputClassName}
                                 />
                             </div>
                         </div>
