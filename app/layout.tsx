@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     description: "Advanced Trading Journal and Notebook",
     icons: {
         icon: "/favicon.png",
+        apple: "/favicon.png",
     },
 };
 
