@@ -12,9 +12,6 @@ const rajdhani = Rajdhani({
 export const metadata: Metadata = {
     title: "TraderRecord",
     description: "Advanced Trading Journal and Notebook",
-    icons: {
-        icon: "/favicon.png",
-    },
 };
 
 export const runtime = 'edge';
