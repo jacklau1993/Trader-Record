@@ -33,6 +33,7 @@ export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }:
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const dateInputClassName = "w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm";
+    const timeInputClassName = dateInputClassName;
 
     // Form State
     const [formData, setFormData] = useState<Partial<TradeData>>({
@@ -265,16 +266,34 @@ export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }:
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="text-xs font-medium text-muted-foreground mb-1 block">Entry Time</label>
-                            <input type="time" className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
+                            <Flatpickr
+                                options={{
+                                    enableTime: true,
+                                    noCalendar: true,
+                                    dateFormat: "H:i",
+                                    time_24hr: true,
+                                    minuteIncrement: 1,
+                                    disableMobile: true,
+                                }}
                                 value={formData.entryTime || ""}
-                                onChange={e => setFormData({ ...formData, entryTime: e.target.value })}
+                                onChange={(_dates, dateStr) => setFormData({ ...formData, entryTime: dateStr })}
+                                className={timeInputClassName}
                             />
                         </div>
                         <div>
                             <label className="text-xs font-medium text-muted-foreground mb-1 block">Exit Time</label>
-                            <input type="time" className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
+                            <Flatpickr
+                                options={{
+                                    enableTime: true,
+                                    noCalendar: true,
+                                    dateFormat: "H:i",
+                                    time_24hr: true,
+                                    minuteIncrement: 1,
+                                    disableMobile: true,
+                                }}
                                 value={formData.exitTime || ""}
-                                onChange={e => setFormData({ ...formData, exitTime: e.target.value })}
+                                onChange={(_dates, dateStr) => setFormData({ ...formData, exitTime: dateStr })}
+                                className={timeInputClassName}
                             />
                         </div>
                     </div>
