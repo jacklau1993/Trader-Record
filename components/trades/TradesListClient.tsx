@@ -66,7 +66,9 @@ export function TradesListClient({ trades }: { trades: Trade[] }) {
                                         <td colSpan={6} className="p-4 text-center text-muted-foreground">No trades found.</td>
                                     </tr>
                                 ) : (
-                                    trades.map(trade => (
+                                    trades.map(trade => {
+                                        const netPnl = (trade.pnl || 0) - ((trade as any).commission || 0);
+                                        return (
                                         <tr
                                             key={trade.id}
                                             className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
@@ -81,11 +83,12 @@ export function TradesListClient({ trades }: { trades: Trade[] }) {
                                             </td>
                                             <td className="p-4 align-middle">${trade.entryPrice} &rarr; ${trade.exitPrice}</td>
                                             <td className="p-4 align-middle">{trade.contracts || trade.quantity || '-'}</td>
-                                            <td className={`p-4 align-middle text-right font-bold ${trade.pnl > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                                ${trade.pnl.toFixed(2)}
+                                            <td className={`p-4 align-middle text-right font-bold ${netPnl > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                                ${netPnl.toFixed(2)}
                                             </td>
                                         </tr>
-                                    ))
+                                        );
+                                    })
                                 )}
                             </tbody>
                         </table>
@@ -103,17 +106,21 @@ function calculateStats(trades: Trade[]) {
     let wins = 0;
     let totalTrades = trades.length;
 
+    // Helper to get Net P&L
+    const getNetPnl = (t: Trade) => (t.pnl || 0) - ((t as any).commission || 0);
+
     trades.forEach(t => {
-        netPnl += t.pnl;
-        if (t.pnl > 0) {
-            grossProfit += t.pnl;
+        const pnl = getNetPnl(t);
+        netPnl += pnl;
+        if (pnl > 0) {
+            grossProfit += pnl;
             wins++;
-        } else if (t.pnl < 0) {
-            grossLoss += t.pnl;
+        } else if (pnl < 0) {
+            grossLoss += pnl;
         }
     });
 
-    const losingTradesCount = trades.filter(t => t.pnl < 0).length;
+    const losingTradesCount = trades.filter(t => getNetPnl(t) < 0).length;
 
     const profitFactor = Math.abs(grossLoss) > 0 ? (grossProfit / Math.abs(grossLoss)) : (grossProfit > 0 ? Infinity : 0);
     const winRate = totalTrades > 0 ? (wins / totalTrades) * 100 : 0;

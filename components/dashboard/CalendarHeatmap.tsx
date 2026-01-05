@@ -11,12 +11,13 @@ export function CalendarHeatmap({ trades }: { trades: Trade[] }) {
     const [currentDate, setCurrentDate] = useState(new Date());
 
     const { weeks, dailyData, weeklyStats, currentMonthLabel } = useMemo(() => {
-        // 1. Map trades to daily P&L and Count
+        // 1. Map trades to daily Net P&L and Count
         const dailyMap: Record<string, { pnl: number, count: number }> = {};
 
         trades.forEach(t => {
+            const netPnl = (t.pnl || 0) - ((t as any).commission || 0);
             if (!dailyMap[t.date]) dailyMap[t.date] = { pnl: 0, count: 0 };
-            dailyMap[t.date].pnl += t.pnl;
+            dailyMap[t.date].pnl += netPnl;
             dailyMap[t.date].count += 1;
         });
 

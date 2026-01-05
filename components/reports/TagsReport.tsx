@@ -36,16 +36,19 @@ export default function TagsReport({ categories, trades, selectedCategoryId, set
     const tagMetrics: TagMetric[] = useMemo(() => {
         if (!selectedCategory) return [];
 
+        // Helper to get Net P&L
+        const getNetPnl = (t: any) => (t.pnl || 0) - (t.commission || 0);
+
         return selectedCategory.tags.map((tag: any) => {
             const tagTrades = trades.filter((t: any) => t.tags && t.tags.includes(tag.id));
             const total = tagTrades.length;
-            const wins = tagTrades.filter((t: any) => t.pnl > 0).length;
+            const wins = tagTrades.filter((t: any) => getNetPnl(t) > 0).length;
             const losses = total - wins;
-            const pnl = tagTrades.reduce((sum: number, t: any) => sum + t.pnl, 0);
+            const pnl = tagTrades.reduce((sum: number, t: any) => sum + getNetPnl(t), 0);
 
             // Gross Profit/Loss for Avg Win/Loss
-            const grossProfit = tagTrades.reduce((sum: number, t: any) => t.pnl > 0 ? sum + t.pnl : sum, 0);
-            const grossLoss = tagTrades.reduce((sum: number, t: any) => t.pnl < 0 ? sum + t.pnl : sum, 0);
+            const grossProfit = tagTrades.reduce((sum: number, t: any) => getNetPnl(t) > 0 ? sum + getNetPnl(t) : sum, 0);
+            const grossLoss = tagTrades.reduce((sum: number, t: any) => getNetPnl(t) < 0 ? sum + getNetPnl(t) : sum, 0);
 
             return {
                 tagId: tag.id,
@@ -89,9 +92,10 @@ export default function TagsReport({ categories, trades, selectedCategoryId, set
         const tickerMap: Record<string, { wins: number, total: number }> = {};
 
         contentTrades.forEach((t: any) => {
+            const netPnl = (t.pnl || 0) - (t.commission || 0);
             if (!tickerMap[t.ticker]) tickerMap[t.ticker] = { wins: 0, total: 0 };
             tickerMap[t.ticker].total++;
-            if (t.pnl > 0) tickerMap[t.ticker].wins++;
+            if (netPnl > 0) tickerMap[t.ticker].wins++;
         });
 
         return Object.entries(tickerMap).map(([ticker, data]) => ({

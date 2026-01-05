@@ -30,7 +30,9 @@ export function RecentTrades({ trades }: { trades: Trade[] }) {
                                 {recentTrades.length === 0 ? (
                                     <div className="text-sm text-muted-foreground text-center py-8">No recent trades</div>
                                 ) : (
-                                    recentTrades.map(trade => (
+                                    recentTrades.map(trade => {
+                                        const netPnl = (trade.pnl || 0) - ((trade as any).commission || 0);
+                                        return (
                                         <div key={trade.id} className="flex items-center justify-between py-2 px-2 hover:bg-muted/30 rounded-md transition-colors text-sm">
                                             <span className="w-24 text-muted-foreground text-xs">
                                                 {format(new Date(trade.date), 'MM/dd/yyyy')}
@@ -38,11 +40,12 @@ export function RecentTrades({ trades }: { trades: Trade[] }) {
                                             <span className="flex-1 text-center font-medium">
                                                 {trade.ticker}
                                             </span>
-                                            <span className={`w-20 text-right font-mono font-medium ${trade.pnl > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                                {trade.pnl > 0 ? "+" : ""}${trade.pnl.toFixed(0)}
+                                            <span className={`w-20 text-right font-mono font-medium ${netPnl > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                                {netPnl > 0 ? "+" : ""}${netPnl.toFixed(0)}
                                             </span>
                                         </div>
-                                    ))
+                                        );
+                                    })
                                 )}
                             </div>
                         </div>

@@ -35,12 +35,13 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
         return sortedDates.map(date => {
             const dayTrades = dailyTrades[date];
             dayTrades.forEach(t => {
-                if (t.pnl > 0) {
+                const netPnl = (t.pnl || 0) - ((t as any).commission || 0);
+                if (netPnl > 0) {
                     cumulativeWins++;
-                    cumulativeWinSum += t.pnl;
+                    cumulativeWinSum += netPnl;
                 } else {
                     cumulativeLosses++;
-                    cumulativeLossSum += Math.abs(t.pnl);
+                    cumulativeLossSum += Math.abs(netPnl);
                 }
             });
 

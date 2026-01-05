@@ -65,7 +65,8 @@ export function DurationChart({ trades }: { trades: Trade[] }) {
                 else if (minutes < 240) bucket = "1h-4h";
 
                 bucketCounts[bucket]++;
-                bucketPnl[bucket] += t.pnl;
+                const netPnl = (t.pnl || 0) - ((t as any).commission || 0);
+                bucketPnl[bucket] += netPnl;
             } catch (e) {
                 // Ignore parse errors
             }

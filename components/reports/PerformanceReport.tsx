@@ -20,22 +20,25 @@ export default function PerformanceReport({ trades }: PerformanceReportProps) {
     const stats = useMemo(() => {
         if (!trades || trades.length === 0) return null;
 
+        // Helper to get Net P&L
+        const getNetPnl = (t: any) => (t.pnl || 0) - (t.commission || 0);
+
         const totalTrades = trades.length;
-        const wins = trades.filter((t: any) => t.pnl > 0);
-        const losses = trades.filter((t: any) => t.pnl <= 0);
+        const wins = trades.filter((t: any) => getNetPnl(t) > 0);
+        const losses = trades.filter((t: any) => getNetPnl(t) <= 0);
 
         const winCount = wins.length;
         const lossCount = losses.length;
 
-        const grossProfit = wins.reduce((sum: number, t: any) => sum + t.pnl, 0);
-        const grossLoss = losses.reduce((sum: number, t: any) => sum + t.pnl, 0);
+        const grossProfit = wins.reduce((sum: number, t: any) => sum + getNetPnl(t), 0);
+        const grossLoss = losses.reduce((sum: number, t: any) => sum + getNetPnl(t), 0);
         const netPnL = grossProfit + grossLoss;
 
         const winRate = totalTrades > 0 ? (winCount / totalTrades) * 100 : 0;
         const avgWin = winCount > 0 ? grossProfit / winCount : 0;
         const avgLoss = lossCount > 0 ? Math.abs(grossLoss) / lossCount : 0;
-        const maxWin = wins.length > 0 ? Math.max(...wins.map((t: any) => t.pnl)) : 0;
-        const maxLoss = losses.length > 0 ? Math.min(...losses.map((t: any) => t.pnl)) : 0; // It's negative
+        const maxWin = wins.length > 0 ? Math.max(...wins.map((t: any) => getNetPnl(t))) : 0;
+        const maxLoss = losses.length > 0 ? Math.min(...losses.map((t: any) => getNetPnl(t))) : 0; // It's negative
         const profitFactor = Math.abs(grossLoss) > 0 ? grossProfit / Math.abs(grossLoss) : grossProfit > 0 ? 100 : 0;
 
         const expectancy = (winRate / 100 * avgWin) - ((1 - winRate / 100) * avgLoss);
@@ -50,11 +53,11 @@ export default function PerformanceReport({ trades }: PerformanceReportProps) {
         const avgDailyVolume = uniqueDays > 0 ? totalVolume / uniqueDays : 0;
 
         // Drawdown
-        // Group by Date for Daily Net PnP
+        // Group by Date for Daily Net PnL
         const dailyPnLMap: Record<string, number> = {};
         trades.forEach((t: any) => {
             if (!dailyPnLMap[t.date]) dailyPnLMap[t.date] = 0;
-            dailyPnLMap[t.date] += t.pnl;
+            dailyPnLMap[t.date] += getNetPnl(t);
         });
         const dailyPnLs = Object.values(dailyPnLMap);
         const maxDailyNetDrawdown = dailyPnLs.length > 0 ? Math.min(...dailyPnLs) : 0; // Worst day
@@ -110,6 +113,10 @@ export default function PerformanceReport({ trades }: PerformanceReportProps) {
     // Chart Data Preparation
     const equityCurveData = useMemo(() => {
         if (!trades || trades.length === 0) return [];
+
+        // Helper to get Net P&L
+        const getNetPnl = (t: any) => (t.pnl || 0) - (t.commission || 0);
+
         // Sort trades by date
         const sortedTrades = [...trades].sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
@@ -121,7 +128,7 @@ export default function PerformanceReport({ trades }: PerformanceReportProps) {
         const dailyMap: Record<string, number> = {};
         sortedTrades.forEach(t => {
             if (!dailyMap[t.date]) dailyMap[t.date] = 0;
-            dailyMap[t.date] += t.pnl;
+            dailyMap[t.date] += getNetPnl(t);
         });
 
         // Convert to array and accumulate

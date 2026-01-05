@@ -18,10 +18,11 @@ export function DashboardCalendar({ trades }: DashboardCalendarProps) {
         const data: Record<string, { pnl: number; count: number }> = {};
         trades.forEach(t => {
             const dateStr = format(new Date(t.date), 'yyyy-MM-dd');
+            const netPnl = (t.pnl || 0) - ((t as any).commission || 0);
             if (!data[dateStr]) {
                 data[dateStr] = { pnl: 0, count: 0 };
             }
-            data[dateStr].pnl += t.pnl;
+            data[dateStr].pnl += netPnl;
             data[dateStr].count += 1;
         });
         return data;

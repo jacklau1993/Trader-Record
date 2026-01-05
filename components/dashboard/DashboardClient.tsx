@@ -62,6 +62,9 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
             netPnl: 0, winRate: 0, profitFactor: 0, avgWin: 0, avgLoss: 0, totalTrades: 0
         };
 
+        // Helper to get Net P&L (Gross - Commission)
+        const getNetPnl = (t: any) => (t.pnl || 0) - (t.commission || 0);
+
         let totalPnl = 0;
         let wins = 0;
         let grossProfit = 0;
@@ -70,14 +73,15 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
         let lossSum = 0;
 
         data.forEach(t => {
-            totalPnl += t.pnl;
-            if (t.pnl > 0) {
+            const netPnl = getNetPnl(t);
+            totalPnl += netPnl;
+            if (netPnl > 0) {
                 wins++;
-                grossProfit += t.pnl;
-                winSum += t.pnl;
+                grossProfit += netPnl;
+                winSum += netPnl;
             } else {
-                grossLoss += Math.abs(t.pnl);
-                lossSum += Math.abs(t.pnl);
+                grossLoss += Math.abs(netPnl);
+                lossSum += Math.abs(netPnl);
             }
         });
 

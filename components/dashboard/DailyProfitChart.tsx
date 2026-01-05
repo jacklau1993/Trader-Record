@@ -10,10 +10,12 @@ export function DailyProfitChart({ trades }: { trades: Trade[] }) {
     const data = useMemo(() => {
         if (trades.length === 0) return [];
 
+        // Using Net P&L (pnl - commission)
         const dailyPnl: Record<string, number> = {};
         trades.forEach(t => {
             const date = t.date;
-            dailyPnl[date] = (dailyPnl[date] || 0) + t.pnl;
+            const netPnl = (t.pnl || 0) - ((t as any).commission || 0);
+            dailyPnl[date] = (dailyPnl[date] || 0) + netPnl;
         });
 
         const sortedDates = Object.keys(dailyPnl).sort((a, b) => compareAsc(parseISO(a), parseISO(b)));
