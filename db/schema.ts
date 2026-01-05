@@ -84,6 +84,7 @@ export const tradingAccounts = sqliteTable("trading_account", {
     lastPayoutAmount: real("last_payout_amount"),
     lastPayoutDate: integer("last_payout_date", { mode: "timestamp" }),
     totalPayout: real("total_payout"),
+    commissionRates: text("commission_rates"), // JSON: {"MNQ": 0.50, "NQ": 1.75, ...}
 
     createdAt: integer("created_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
     updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date())
@@ -99,6 +100,7 @@ export const trades = sqliteTable("trade", {
     exitPrice: real("exit_price").notNull(),
     quantity: real("quantity").notNull(),
     pnl: real("pnl").notNull(),
+    commission: real("commission").default(0),
     status: text("status").default("Closed").notNull(),
     notes: text("notes"),
 

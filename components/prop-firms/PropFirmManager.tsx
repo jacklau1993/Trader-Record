@@ -6,6 +6,7 @@ import { Plus, Edit, Trash2, Check, X, Building2 } from "lucide-react";
 import { createAccount, updateAccount, deleteAccount } from "@/app/actions/account-actions";
 import { Modal } from "@/components/ui/modal";
 import { useRouter } from "next/navigation";
+import { TICKERS } from "@/lib/constants";
 
 interface PropFirm {
     id: string;
@@ -17,6 +18,7 @@ interface PropFirm {
     lastPayoutAmount?: number;
     lastPayoutDate?: string; // ISO string from JSON/DB serialization
     totalPayout?: number;
+    commissionRates?: string; // JSON: {"MNQ": 0.50, ...}
 }
 
 export function PropFirmManager({ initialPropFirms }: { initialPropFirms: any[] }) {
@@ -24,17 +26,25 @@ export function PropFirmManager({ initialPropFirms }: { initialPropFirms: any[] 
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [currentFirm, setCurrentFirm] = useState<Partial<PropFirm>>({});
+    const [commissionRates, setCommissionRates] = useState<Record<string, number>>({});
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const dateInputClassName = "w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm";
 
     const handleAdd = () => {
         setCurrentFirm({ type: "PROP_FIRM", status: "Active" });
+        setCommissionRates({});
         setIsAddOpen(true);
     };
 
     const handleEdit = (firm: PropFirm) => {
         setCurrentFirm(firm);
+        // Parse commission rates JSON
+        try {
+            setCommissionRates(firm.commissionRates ? JSON.parse(firm.commissionRates) : {});
+        } catch {
+            setCommissionRates({});
+        }
         setIsEditOpen(true);
     };
 
@@ -61,7 +71,8 @@ export function PropFirmManager({ initialPropFirms }: { initialPropFirms: any[] 
                 totalPayout: Number(currentFirm.totalPayout) || 0,
                 // Handle date: if string, keep it? Server expecting Date object or handled by DB adapter?
                 // Drizzle with { mode: 'timestamp' } expects Date object for insert/update usually.
-                lastPayoutDate: currentFirm.lastPayoutDate ? new Date(currentFirm.lastPayoutDate) : undefined
+                lastPayoutDate: currentFirm.lastPayoutDate ? new Date(currentFirm.lastPayoutDate) : undefined,
+                commissionRates: JSON.stringify(commissionRates)
             };
 
             if (isEditOpen && currentFirm.id) {
@@ -215,6 +226,26 @@ export function PropFirmManager({ initialPropFirms }: { initialPropFirms: any[] 
                                 value={currentFirm.totalPayout || ""}
                                 onChange={e => setCurrentFirm({ ...currentFirm, totalPayout: Number(e.target.value) })}
                             />
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 className="text-sm font-semibold mb-2 mt-4">Commission Rates ($ per side)</h3>
+                        <p className="text-xs text-muted-foreground mb-3">Enter the per-side commission for each instrument. Total commission = rate × quantity × 2</p>
+                        <div className="grid grid-cols-3 gap-3">
+                            {TICKERS.map(ticker => (
+                                <div key={ticker}>
+                                    <label className="text-xs text-muted-foreground mb-1 block">{ticker}</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        placeholder="0.00"
+                                        className="w-full bg-muted/50 border border-input rounded px-3 py-2 text-sm"
+                                        value={commissionRates[ticker] || ""}
+                                        onChange={e => setCommissionRates({ ...commissionRates, [ticker]: Number(e.target.value) })}
+                                    />
+                                </div>
+                            ))}
                         </div>
                     </div>
 

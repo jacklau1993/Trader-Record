@@ -119,6 +119,7 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
                 exitPrice: safeNumber(trade.exitPrice),
                 quantity: safeNumber(trade.quantity),
                 pnl: safeNumber(trade.pnl),
+                commission: safeNumber((trade as any).commission),
                 status: trade.status,
                 notes: trade.notes,
                 contracts: safeNullableNumber(trade.contracts),
@@ -280,14 +281,34 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
                                 </div>
                             </div>
 
-                            <div>
-                                <label className="text-sm font-medium">Net P&L ($)</label>
-                                <input
-                                    type="number" step="0.01"
-                                    className={`w-full mt-1 bg-background border border-input rounded px-3 py-2 font-bold ${trade.pnl > 0 ? 'text-green-500' : 'text-red-500'}`}
-                                    value={trade.pnl}
-                                    readOnly
-                                />
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label className="text-sm font-medium">Gross P&L ($)</label>
+                                    <input
+                                        type="number" step="0.01"
+                                        className="w-full mt-1 bg-background border border-input rounded px-3 py-2 font-bold"
+                                        value={trade.pnl}
+                                        readOnly
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium">Commission ($)</label>
+                                    <input
+                                        type="number" step="0.01"
+                                        className="w-full mt-1 bg-background border border-input rounded px-3 py-2"
+                                        value={(trade as any).commission || 0}
+                                        onChange={e => setTrade({ ...trade, commission: Number(e.target.value) } as any)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium">Net P&L ($)</label>
+                                    <input
+                                        type="number" step="0.01"
+                                        className={`w-full mt-1 bg-background border border-input rounded px-3 py-2 font-bold ${(trade.pnl - ((trade as any).commission || 0)) > 0 ? 'text-green-500' : 'text-red-500'}`}
+                                        value={(trade.pnl - ((trade as any).commission || 0)).toFixed(2)}
+                                        readOnly
+                                    />
+                                </div>
                             </div>
                         </CardContent>
                     </Card>

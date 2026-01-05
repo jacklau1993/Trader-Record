@@ -20,6 +20,7 @@ interface TradeData {
     exitPrice: number;
     quantity: number;
     pnl: number;
+    commission: number;
     notes: string;
     tradingAccountId?: string;
     entryDate?: string;
@@ -97,6 +98,7 @@ export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }:
                 exitPrice: Number(formData.exitPrice) || 0,
                 quantity: Number(formData.quantity) || 0,
                 pnl: pnl,
+                commission: Number(formData.commission) || 0,
                 status: "Closed",
                 notes: formData.notes || "",
                 tradingAccountId: formData.tradingAccountId,
@@ -298,10 +300,27 @@ export function AddTradeModal({ onTradeAdded, accounts = [], defaultAccountId }:
                         </div>
                     </div>
 
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Gross P&L ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00" required className="w-full bg-muted/50 border border-input rounded px-3 py-2 font-bold"
+                                value={formData.pnl || ""}
+                                readOnly
+                            />
+                        </div>
+                        <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Commission ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00" className="w-full bg-muted/50 border border-input rounded px-3 py-2"
+                                value={formData.commission || ""}
+                                onChange={e => setFormData({ ...formData, commission: Number(e.target.value) })}
+                            />
+                        </div>
+                    </div>
+
                     <div>
                         <label className="text-xs font-medium text-muted-foreground mb-1 block">Net P&L ($)</label>
-                        <input type="number" step="0.01" placeholder="0.00" required className="w-full bg-muted/50 border border-input rounded px-3 py-2 font-bold"
-                            value={formData.pnl || ""}
+                        <input type="number" step="0.01" placeholder="0.00" className={`w-full bg-muted/50 border border-input rounded px-3 py-2 font-bold ${((formData.pnl || 0) - (formData.commission || 0)) > 0 ? 'text-green-500' : 'text-red-500'}`}
+                            value={((formData.pnl || 0) - (formData.commission || 0)).toFixed(2)}
                             readOnly
                         />
                     </div>

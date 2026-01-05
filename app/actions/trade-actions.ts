@@ -4,7 +4,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { getDb } from "@/lib/db";
-import { trades, tradeTags, notes, sections } from "@/db/schema";
+import { trades, tradeTags, notes, sections, tradingAccounts } from "@/db/schema";
 import { eq, desc, and, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -238,6 +238,17 @@ export async function importTradesFromCsv(formData: FormData) {
     if (!file) throw new Error("No file provided");
     if (!accountId) throw new Error("No account provided");
 
+    // Fetch account's commission rates
+    const account = await db.select().from(tradingAccounts).where(eq(tradingAccounts.id, accountId)).get();
+    let commissionRates: Record<string, number> = {};
+    if (account?.commissionRates) {
+        try {
+            commissionRates = JSON.parse(account.commissionRates);
+        } catch {
+            // Ignore parse errors, default to empty
+        }
+    }
+
     const text = await file.text();
     const lines = text.split(/\r?\n/);
 
@@ -417,6 +428,10 @@ export async function importTradesFromCsv(formData: FormData) {
 
             const tradeId = `trade_${Date.now()}_${importedCount}`;
 
+            // Calculate commission: rate × quantity × 2 (both sides)
+            const commissionRate = commissionRates[ticker] || 0;
+            const commission = commissionRate * (isNaN(qty) ? 0 : qty) * 2;
+
             const tradeData = {
                 id: tradeId,
                 date: dateStr,
@@ -426,6 +441,7 @@ export async function importTradesFromCsv(formData: FormData) {
                 exitPrice: isNaN(exitPrice) ? 0 : exitPrice,
                 quantity: isNaN(qty) ? 0 : qty,
                 pnl: isNaN(pnl) ? 0 : pnl,
+                commission: commission,
                 status: "Closed",
                 notes: `Imported from CSV. Raw Symbol: ${rawSymbol}. Duration: ${duration}`,
                 tradingAccountId: accountId,
