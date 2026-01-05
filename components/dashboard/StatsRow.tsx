@@ -12,6 +12,7 @@ interface DashboardStats {
     avgWin: number;
     avgLoss: number;
     totalTrades: number;
+    consistencyPct: number | null;
 }
 
 interface StatsRowProps {
@@ -35,8 +36,17 @@ export function StatsRow({ stats }: StatsRowProps) {
     ];
     const PF_COLORS = ['#22c55e', '#334155'];
 
+    // Data for Consistency % Gauge (Semi-circle) - Green if <= 50%, Red if > 50%
+    const consistencyValue = stats.consistencyPct ?? 0;
+    const isConsistencyPassing = consistencyValue <= 50;
+    const consistencyData = [
+        { name: 'Consistency', value: Math.min(consistencyValue, 100) },
+        { name: 'Remaining', value: Math.max(100 - consistencyValue, 0) }
+    ];
+    const CONSISTENCY_COLORS = isConsistencyPassing ? ['#22c55e', '#334155'] : ['#ef4444', '#334155'];
+
     return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
             {/* NET P&L */}
             <Card>
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
@@ -215,6 +225,56 @@ export function StatsRow({ stats }: StatsRowProps) {
                     <div className={`text-2xl font-bold ${((stats.winRate / 100 * stats.avgWin) - ((1 - stats.winRate / 100) * stats.avgLoss)) >= 0 ? "text-green-500" : "text-red-500"}`}>
                         ${((stats.winRate / 100 * stats.avgWin) - ((1 - stats.winRate / 100) * stats.avgLoss)).toFixed(2)}
                     </div>
+                </CardContent>
+            </Card>
+
+             {/* CONSISTENCY % */}
+             <Card className="relative overflow-hidden">
+                <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
+                    <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
+                        Consistency %
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Info className="h-3 w-3" />
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-[250px]">
+                                    <p>(Largest Day Profit / Total Profit) × 100</p>
+                                    <p className="text-xs text-muted-foreground mt-1">Target: ≤50% for consistent trading</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-4 flex items-center justify-between">
+                    <div className={`text-2xl font-bold ${stats.consistencyPct === null ? 'text-muted-foreground' : isConsistencyPassing ? 'text-green-500' : 'text-red-500'}`}>
+                        {stats.consistencyPct === null ? 'N/A' : `${stats.consistencyPct.toFixed(1)}%`}
+                    </div>
+                    {/* Small Semi-Circle Chart */}
+                    {stats.consistencyPct !== null && (
+                        <div className="h-10 w-20">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={consistencyData}
+                                        cx="50%"
+                                        cy="100%"
+                                        startAngle={180}
+                                        endAngle={0}
+                                        innerRadius={25}
+                                        outerRadius={35}
+                                        paddingAngle={0}
+                                        dataKey="value"
+                                        stroke="none"
+                                    >
+                                        {consistencyData.map((entry, index) => (
+                                            <Cell key={`cell-consistency-${index}`} fill={CONSISTENCY_COLORS[index % CONSISTENCY_COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>

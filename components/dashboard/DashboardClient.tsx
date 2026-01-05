@@ -59,7 +59,7 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
 
     function calculateStats(data: any[]) {
         if (!data || data.length === 0) return {
-            netPnl: 0, winRate: 0, profitFactor: 0, avgWin: 0, avgLoss: 0, totalTrades: 0
+            netPnl: 0, winRate: 0, profitFactor: 0, avgWin: 0, avgLoss: 0, totalTrades: 0, consistencyPct: null
         };
 
         // Helper to get Net P&L (Gross - Commission)
@@ -72,9 +72,17 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
         let winSum = 0;
         let lossSum = 0;
 
+        // Group trades by date for consistency calculation
+        const dailyPnl: { [key: string]: number } = {};
+
         data.forEach(t => {
             const netPnl = getNetPnl(t);
             totalPnl += netPnl;
+            
+            // Group by date for consistency
+            const dateKey = t.date?.split('T')[0] || t.date;
+            dailyPnl[dateKey] = (dailyPnl[dateKey] || 0) + netPnl;
+            
             if (netPnl > 0) {
                 wins++;
                 grossProfit += netPnl;
@@ -90,13 +98,23 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
         const avgWin = wins === 0 ? 0 : winSum / wins;
         const avgLoss = (data.length - wins) === 0 ? 0 : lossSum / (data.length - wins);
 
+        // Calculate Consistency Percentage
+        // Formula: (Largest Single Day Profit / Total Account Profit) * 100
+        let consistencyPct: number | null = null;
+        if (totalPnl > 0) {
+            const dailyProfits = Object.values(dailyPnl);
+            const largestDayProfit = Math.max(...dailyProfits);
+            consistencyPct = (largestDayProfit / totalPnl) * 100;
+        }
+
         return {
             netPnl: totalPnl,
             winRate,
             profitFactor,
             avgWin,
             avgLoss,
-            totalTrades: data.length
+            totalTrades: data.length,
+            consistencyPct
         };
     }
 
