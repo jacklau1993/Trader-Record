@@ -6,12 +6,22 @@ import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
 import { DollarSign, TrendingUp, Percent, Activity } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
-import { Trade } from "@/lib/types";
+import { Trade, Category } from "@/lib/types";
 
-export function TradesListClient({ trades }: { trades: Trade[] }) {
+export function TradesListClient({ trades, categories }: { trades: Trade[], categories: Category[] }) {
     const router = useRouter();
 
     const stats = calculateStats(trades);
+
+    // Helper to get tag name by category
+    const getTagNameByCategory = (tradeTags: string[], categoryName: string) => {
+        const category = categories.find(c => c.name === categoryName);
+        if (!category) return "-";
+        
+        // precise mapping: find a tag in this category that matches one of the trade's tags
+        const tag = category.tags.find(t => tradeTags.includes(t.id));
+        return tag ? tag.name : "-";
+    };
 
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -57,13 +67,15 @@ export function TradesListClient({ trades }: { trades: Trade[] }) {
                                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Type</th>
                                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Price</th>
                                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Contracts</th>
+                                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">是否符合計劃</th>
+                                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">沒情緒還會否進場</th>
                                     <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Net P&L</th>
                                 </tr>
                             </thead>
                             <tbody className="[&_tr:last-child]:border-0">
                                 {trades.length === 0 ? (
                                     <tr className="border-b transition-colors hover:bg-muted/50">
-                                        <td colSpan={6} className="p-4 text-center text-muted-foreground">No trades found.</td>
+                                        <td colSpan={8} className="p-4 text-center text-muted-foreground">No trades found.</td>
                                     </tr>
                                 ) : (
                                     trades.map(trade => {
@@ -83,6 +95,22 @@ export function TradesListClient({ trades }: { trades: Trade[] }) {
                                             </td>
                                             <td className="p-4 align-middle">${trade.entryPrice} &rarr; ${trade.exitPrice}</td>
                                             <td className="p-4 align-middle">{trade.contracts || trade.quantity || '-'}</td>
+                                            <td className="p-4 align-middle">
+                                                <span className={`px-2 py-1 rounded text-xs ${
+                                                    getTagNameByCategory(trade.tags, "是否符合計劃") === "是" ? "bg-green-500/10 text-green-500" : 
+                                                    getTagNameByCategory(trade.tags, "是否符合計劃") === "否" ? "bg-red-500/10 text-red-500" : "text-muted-foreground"
+                                                }`}>
+                                                    {getTagNameByCategory(trade.tags, "是否符合計劃")}
+                                                </span>
+                                            </td>
+                                            <td className="p-4 align-middle">
+                                                 <span className={`px-2 py-1 rounded text-xs ${
+                                                    getTagNameByCategory(trade.tags, "沒情緒還會否進場") === "會" ? "bg-green-500/10 text-green-500" : 
+                                                    getTagNameByCategory(trade.tags, "沒情緒還會否進場") === "不會" ? "bg-red-500/10 text-red-500" : "text-muted-foreground"
+                                                }`}>
+                                                    {getTagNameByCategory(trade.tags, "沒情緒還會否進場")}
+                                                </span>
+                                            </td>
                                             <td className={`p-4 align-middle text-right font-bold ${netPnl > 0 ? 'text-green-500' : 'text-red-500'}`}>
                                                 ${netPnl.toFixed(2)}
                                             </td>
