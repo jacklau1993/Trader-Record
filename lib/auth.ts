@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { getDb } from "./db";
 import * as schema from "../db/schema";
+import { passkey } from "better-auth/plugins/passkey";
 // import { Resend } from "resend"; // Uncomment when you have a verified domain
 
 // Function to get or create auth instance with proper DB binding
@@ -46,6 +47,9 @@ export const getAuth = (customOrigin?: string | null) => {
                 clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
             },
         },
+        plugins: [
+            passkey()
+        ],
         // Uncomment this section when you have a verified domain in Resend:
         // emailVerification: {
         //     sendOnSignUp: true,

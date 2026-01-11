@@ -62,6 +62,27 @@ export default function SignInPage() {
                         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Sign In
                     </button>
+                    <button
+                        onClick={async () => {
+                            setLoading(true);
+                            await authClient.signIn.passkey({
+                                fetchOptions: {
+                                    onError: (ctx) => {
+                                        alert(ctx.error.message);
+                                        setLoading(false);
+                                    },
+                                    onSuccess: () => {
+                                        router.push("/");
+                                    }
+                                }
+                            });
+                        }}
+                        disabled={loading}
+                        className="inline-flex h-9 w-full items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                    >
+                        <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.74l3.1 1.82a2 2 0 0 0 2.03-.02l2.9-1.66a2 2 0 0 0 .98-1.74v-3.24a2 2 0 0 0-.96-1.74l-3.1-1.87a2 2 0 0 0-2.03.02z"/><path d="M7 16.5c-3 .5-5.5-1.5-3.5-5.5l5.5-7.5c4-4 10.5 0 8 7l-5.5 7.5c-2 2 .5 5 2.5 5 2.5 0 3.5-2.5 5.5-3.5"/><circle cx="15.5" cy="5.5" r="2.5"/></svg>
+                        Sign in with Passkey
+                    </button>
                     <div className="relative">
                         <div className="absolute inset-0 flex items-center">
                             <span className="w-full border-t" />
