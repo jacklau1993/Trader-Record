@@ -3,7 +3,6 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { getDb } from "./db";
 import * as schema from "../db/schema";
 // import { Resend } from "resend"; // Uncomment when you have a verified domain
-// import { Resend } from "resend"; // Uncomment when you have a verified domain
 
 // Function to get or create auth instance with proper DB binding
 export const getAuth = (customOrigin?: string | null) => {

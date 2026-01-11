@@ -1,25 +1,13 @@
 "use server";
 
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { getDb } from "@/lib/db";
 import { tradingAccounts } from "@/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-// Helper to get authenticated user
-async function getUser() {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    });
-    if (!session?.user) {
-        throw new Error("Unauthorized");
-    }
-    return session.user;
-}
-
 export async function getAccounts() {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     return await db.select()
@@ -29,7 +17,7 @@ export async function getAccounts() {
 }
 
 export async function getAccount(id: string) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     return await db.select()
@@ -44,7 +32,7 @@ export async function getAccount(id: string) {
 type CreateAccountInput = Omit<typeof tradingAccounts.$inferInsert, "userId" | "createdAt" | "updatedAt">;
 
 export async function createAccount(data: CreateAccountInput) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     await db.insert(tradingAccounts).values({
@@ -61,7 +49,7 @@ export async function createAccount(data: CreateAccountInput) {
 }
 
 export async function updateAccount(id: string, data: Partial<CreateAccountInput>) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     await db.update(tradingAccounts)
@@ -78,7 +66,7 @@ export async function updateAccount(id: string, data: Partial<CreateAccountInput
 }
 
 export async function deleteAccount(id: string) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     await db.delete(tradingAccounts)

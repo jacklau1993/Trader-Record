@@ -132,29 +132,4 @@ export function DurationChart({ trades }: { trades: Trade[] }) {
             </CardContent>
         </Card>
     );
-
-    return (
-        <Card className="col-span-1 h-full">
-            <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
-                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                    Trade Duration Performance
-                    <TooltipProvider>
-                        <UITooltip>
-                            <TooltipTrigger>
-                                <Info className="h-3 w-3" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Performance based on trade duration</p>
-                            </TooltipContent>
-                        </UITooltip>
-                    </TooltipProvider>
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="px-2 pb-2">
-                 <div className="h-[200px] flex items-center justify-center text-muted-foreground text-xs">
-                    Duration data unavailable
-                </div>
-            </CardContent>
-        </Card>
-    );
 }

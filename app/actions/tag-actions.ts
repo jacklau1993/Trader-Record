@@ -1,23 +1,14 @@
 "use server";
 
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { getDb } from "@/lib/db";
 import { categories, tags } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-async function getUser() {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    });
-    if (!session?.user) throw new Error("Unauthorized");
-    return session.user;
-}
-
 // --- Categories ---
 export async function getCategories() {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     // Fetch categories and their tags
@@ -35,7 +26,7 @@ export async function getCategories() {
 }
 
 export async function createCategory(data: Omit<typeof categories.$inferInsert, "userId">) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     await db.insert(categories).values({
@@ -49,7 +40,7 @@ export async function createCategory(data: Omit<typeof categories.$inferInsert, 
 }
 
 export async function deleteCategory(id: string) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     await db.delete(categories).where(and(eq(categories.id, id), eq(categories.userId, user.id)));
@@ -58,7 +49,7 @@ export async function deleteCategory(id: string) {
 }
 
 export async function updateCategory(id: string, data: Partial<typeof categories.$inferInsert>) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     await db.update(categories)
@@ -80,7 +71,7 @@ export async function updateCategory(id: string, data: Partial<typeof categories
 
 // --- Tags ---
 export async function createTag(data: Omit<typeof tags.$inferInsert, "userId">) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     await db.insert(tags).values({
@@ -93,7 +84,7 @@ export async function createTag(data: Omit<typeof tags.$inferInsert, "userId">) 
 }
 
 export async function deleteTag(id: string) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     await db.delete(tags).where(and(eq(tags.id, id), eq(tags.userId, user.id)));

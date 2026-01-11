@@ -1,26 +1,14 @@
 "use server";
 // Force Rebuild
 
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { getDb } from "@/lib/db";
 import { trades, tradeTags, notes, sections, tradingAccounts } from "@/db/schema";
 import { eq, desc, and, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-// Helper to get authenticated user
-async function getUser() {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    });
-    if (!session?.user) {
-        throw new Error("Unauthorized");
-    }
-    return session.user;
-}
-
 export async function getTrades() {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     // 1. Fetch trades
@@ -57,7 +45,7 @@ export async function getTrades() {
 }
 
 export async function getTradesByAccount(accountId?: string) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     let whereClause = eq(trades.userId, user.id);
@@ -94,7 +82,7 @@ export async function getTradesByAccount(accountId?: string) {
 }
 
 export async function getTrade(id: string) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     const trade = await db.select().from(trades).where(and(eq(trades.id, id), eq(trades.userId, user.id))).get();
@@ -114,7 +102,7 @@ export async function getTrade(id: string) {
 type CreateTradeInput = Omit<typeof trades.$inferInsert, "userId"> & { tags?: string[] };
 
 export async function createTrade(data: CreateTradeInput) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     const { tags: tagIds, ...tradeData } = data;
@@ -150,7 +138,7 @@ export async function createTrade(data: CreateTradeInput) {
 }
 
 export async function updateTrade(id: string, data: Partial<CreateTradeInput>) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     const { tags: tagIds, ...tradeData } = data;
@@ -185,7 +173,7 @@ export async function updateTrade(id: string, data: Partial<CreateTradeInput>) {
 }
 
 export async function deleteTrade(id: string) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     await db.delete(trades)
@@ -229,7 +217,7 @@ function normalizeTicker(rawSymbol: string): string {
 }
 
 export async function importTradesFromCsv(formData: FormData) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     const file = formData.get("file") as File;

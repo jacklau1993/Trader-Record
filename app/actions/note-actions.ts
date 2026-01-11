@@ -1,22 +1,13 @@
 "use server";
 
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { getDb } from "@/lib/db";
 import { notes, sections, noteTags } from "@/db/schema";
 import { eq, desc, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-async function getUser() {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    });
-    if (!session?.user) throw new Error("Unauthorized");
-    return session.user;
-}
-
 export async function getNotes() {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     // Fetch notes descending by date
@@ -27,7 +18,7 @@ export async function getNotes() {
 }
 
 export async function getSections() {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     // Fetch sections or return defaults if empty?
@@ -51,7 +42,7 @@ export async function getSections() {
 }
 
 export async function createNote(data: Omit<typeof notes.$inferInsert, "userId">) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     await db.insert(notes).values({
@@ -64,7 +55,7 @@ export async function createNote(data: Omit<typeof notes.$inferInsert, "userId">
 }
 
 export async function getNoteByTradeId(tradeId: string) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     const note = await db.select()
@@ -76,7 +67,7 @@ export async function getNoteByTradeId(tradeId: string) {
 }
 
 export async function updateNote(id: string, data: Partial<typeof notes.$inferInsert>) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     await db.update(notes)
@@ -88,7 +79,7 @@ export async function updateNote(id: string, data: Partial<typeof notes.$inferIn
 }
 
 export async function deleteNote(id: string) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     await db.delete(notes)

@@ -1,22 +1,13 @@
 "use server";
 
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { getDb } from "@/lib/db";
 import { templates } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-async function getUser() {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    });
-    if (!session?.user) throw new Error("Unauthorized");
-    return session.user;
-}
-
 export async function getTemplates() {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     const userTemplates = await db.select().from(templates).where(eq(templates.userId, user.id));
@@ -44,7 +35,7 @@ export async function getTemplates() {
 }
 
 export async function createTemplate(data: Omit<typeof templates.$inferInsert, "userId">) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     await db.insert(templates).values({
@@ -57,7 +48,7 @@ export async function createTemplate(data: Omit<typeof templates.$inferInsert, "
 }
 
 export async function updateTemplate(id: string, data: Partial<typeof templates.$inferInsert>) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     await db.update(templates)
@@ -67,7 +58,7 @@ export async function updateTemplate(id: string, data: Partial<typeof templates.
 }
 
 export async function deleteTemplate(id: string) {
-    const user = await getUser();
+    const user = await getAuthenticatedUser();
     const db = getDb();
 
     await db.delete(templates).where(and(eq(templates.id, id), eq(templates.userId, user.id)));
