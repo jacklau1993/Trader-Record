@@ -112,7 +112,8 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
                                     contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
                                     itemStyle={{ color: '#f8fafc' }}
                                     labelStyle={{ color: '#f8fafc' }}
-                                    formatter={(value: number, name: string) => {
+                                    formatter={(value: number | undefined, name: string) => {
+                                        if (value === undefined) return ["-", name];
                                         if (name === "Win %") return [`${value}%`, name];
                                         return [`$${value}`, name];
                                     }}
