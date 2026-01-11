@@ -4,6 +4,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
+import { Markdown } from "tiptap-markdown";
 import { useRef, useState, useEffect } from "react";
 import {
     Bold,
@@ -45,6 +46,7 @@ export function RichTextEditor({ content, onChange, placeholder = "Start writing
             Placeholder.configure({
                 placeholder,
             }),
+            Markdown,
         ],
         content,
         onUpdate: ({ editor }) => {
