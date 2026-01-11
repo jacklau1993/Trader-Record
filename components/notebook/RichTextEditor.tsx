@@ -54,7 +54,7 @@ export function RichTextEditor({ content, onChange, placeholder = "Start writing
         },
         editorProps: {
             attributes: {
-                class: "prose prose-sm dark:prose-invert max-w-none focus:outline-none min-h-[300px] px-6 py-4",
+                class: "prose prose-sm dark:prose-invert max-w-none focus:outline-none min-h-[300px] px-6 py-4 prose-headings:font-bold prose-h1:text-xl prose-h2:text-lg prose-h3:text-base prose-p:text-sm prose-li:text-sm",
             },
         },
     });
