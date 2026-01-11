@@ -455,7 +455,19 @@ export async function importTradesFromCsv(formData: FormData) {
 
             await db.insert(trades).values(tradeData);
 
-            const noteContent = `<p><strong># Trade Details</strong></p><p>- <strong>Ticker</strong>: ${ticker}<br>- <strong>Direction</strong>: ${type}<br>- <strong>Date</strong>: ${dateStr}<br>- <strong>Net P&L</strong>: $${(isNaN(pnl) ? 0 : pnl).toFixed(2)}</p><p><strong>## Notes</strong></p><p>Imported from CSV.<br>Raw Symbol: ${rawSymbol}<br>Duration: ${duration}</p><p><strong>## Review</strong></p><p></p>`;
+            const noteContent = `
+# Trade Details
+
+## Ticker: ${ticker}
+## Direction: ${type}
+## Date: ${dateStr}
+## Net P&L: $${(isNaN(pnl) ? 0 : pnl).toFixed(2)}
+
+## Notes
+- Imported from CSV. Raw Symbol: ${rawSymbol}. Duration: ${duration}
+
+## Review
+`;
 
             const uniqueNoteId = `note_${Date.now()}_${importedCount}`;
 
