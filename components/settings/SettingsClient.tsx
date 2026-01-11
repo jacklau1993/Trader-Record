@@ -16,7 +16,7 @@ import {
     Check,
     Loader2,
     AlertTriangle,
-    Fingerprint,
+    AlertTriangle,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
@@ -485,43 +485,7 @@ export default function SettingsClient({ user, preferences, initialAccounts }: S
                     </div>
                 </section>
 
-                {/* Security Section */}
-                <section className="rounded-lg border border-border bg-card p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                        <Fingerprint className="h-5 w-5 text-primary" />
-                        <h3 className="text-lg font-semibold">Security</h3>
-                    </div>
-                    <div className="space-y-4">
-                        <p className="text-sm text-muted-foreground">
-                            Passkeys allow you to sign in safely and securely without a password.
-                        </p>
-                        <button
-                            onClick={async () => {
-                                const name = prompt("Enter a name for this passkey (e.g. My MacBook)");
-                                if (!name) return;
-                                try {
-                                    await authClient.passkey.addPasskey({
-                                        name,
-                                        fetchOptions: {
-                                            onSuccess: () => {
-                                                alert("Passkey registered successfully!");
-                                            },
-                                            onError: (ctx) => {
-                                                alert(ctx.error.message);
-                                            }
-                                        }
-                                    });
-                                } catch (e) {
-                                    alert("Failed to register passkey. Make sure your device supports it.");
-                                }
-                            }}
-                            className="inline-flex items-center gap-2 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-2 text-sm font-medium transition-colors"
-                        >
-                            <Fingerprint className="h-4 w-4" />
-                            Register New Passkey
-                        </button>
-                    </div>
-                </section>
+
                 {/* Account Section */}
                 <section className="rounded-lg border border-border bg-card p-6">
                     <div className="flex items-center gap-3 mb-4">
