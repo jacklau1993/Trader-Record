@@ -1,70 +1,31 @@
 "use client";
 
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Image from "@tiptap/extension-image";
-import Placeholder from "@tiptap/extension-placeholder";
-import { Markdown } from "tiptap-markdown";
-import { useRef, useState, useEffect } from "react";
-import {
-    Bold,
-    Italic,
-    List,
-    ListOrdered,
-    Quote,
-    Undo,
-    Redo,
-    Upload,
-    Loader2,
-    Heading1,
-    Heading2,
-    Code,
-} from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Loader2, Upload, Eye, Edit2, Columns } from "lucide-react";
 
 interface RichTextEditorProps {
     content: string;
-    onChange: (html: string) => void;
+    onChange: (markdown: string) => void;
     placeholder?: string;
 }
 
+type ViewMode = "edit" | "preview" | "split";
+
 export function RichTextEditor({ content, onChange, placeholder = "Start writing..." }: RichTextEditorProps) {
+    const [viewMode, setViewMode] = useState<ViewMode>("edit");
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    const editor = useEditor({
-        extensions: [
-            StarterKit.configure({
-                heading: {
-                    levels: [1, 2, 3],
-                },
-            }),
-            Image.configure({
-                HTMLAttributes: {
-                    class: "rounded-lg max-w-full my-4",
-                },
-            }),
-            Placeholder.configure({
-                placeholder,
-            }),
-            Markdown,
-        ],
-        content,
-        onUpdate: ({ editor }) => {
-            onChange(editor.getHTML());
-        },
-        editorProps: {
-            attributes: {
-                class: "prose prose-sm dark:prose-invert max-w-none focus:outline-none min-h-[300px] px-6 py-4 prose-headings:font-bold prose-h1:text-xl prose-h2:text-lg prose-h3:text-base prose-p:text-sm prose-li:text-sm",
-            },
-        },
-    });
-
-    // Update editor content when prop changes
+    // Auto-resize textarea
     useEffect(() => {
-        if (editor && content !== editor.getHTML()) {
-            editor.commands.setContent(content);
+        if (textareaRef.current) {
+            textareaRef.current.style.height = "auto";
+            textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
         }
-    }, [content, editor]);
+    }, [content, viewMode]);
 
     const handleImageClick = () => {
         fileInputRef.current?.click();
@@ -72,7 +33,7 @@ export function RichTextEditor({ content, onChange, placeholder = "Start writing
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file || !editor) return;
+        if (!file) return;
 
         setIsUploading(true);
         try {
@@ -91,8 +52,26 @@ export function RichTextEditor({ content, onChange, placeholder = "Start writing
                 return;
             }
 
-            // Insert image at current cursor position
-            editor.chain().focus().setImage({ src: data.url, alt: file.name }).run();
+            // Insert markdown image syntax at cursor position or end
+            const imageMarkdown = `![${file.name}](${data.url})`;
+            
+            if (textareaRef.current) {
+                const start = textareaRef.current.selectionStart;
+                const end = textareaRef.current.selectionEnd;
+                const newContent = content.substring(0, start) + imageMarkdown + content.substring(end);
+                onChange(newContent);
+                
+                // Restore cursor position after update (approximated)
+                setTimeout(() => {
+                     if(textareaRef.current) {
+                        textareaRef.current.focus();
+                        textareaRef.current.setSelectionRange(start + imageMarkdown.length, start + imageMarkdown.length);
+                     }
+                }, 0);
+            } else {
+                onChange(content + "\n" + imageMarkdown);
+            }
+
         } catch (error: any) {
             alert("Upload failed: " + error.message);
         } finally {
@@ -103,12 +82,8 @@ export function RichTextEditor({ content, onChange, placeholder = "Start writing
         }
     };
 
-    if (!editor) {
-        return <div className="h-[300px] animate-pulse bg-muted/20" />;
-    }
-
     return (
-        <div className="flex h-full min-h-0 flex-col">
+        <div className="flex h-full min-h-0 flex-col bg-card rounded-lg border border-border shadow-sm overflow-hidden">
             {/* Hidden file input */}
             <input
                 ref={fileInputRef}
@@ -119,141 +94,118 @@ export function RichTextEditor({ content, onChange, placeholder = "Start writing
             />
 
             {/* Toolbar */}
-            <div className="flex flex-wrap items-center gap-1 border-b border-border bg-muted/20 px-2 py-2">
-                <ToolbarButton
-                    onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                    active={editor.isActive("heading", { level: 1 })}
-                    title="Heading 1"
-                >
-                    <Heading1 className="h-4 w-4" />
-                </ToolbarButton>
-                <ToolbarButton
-                    onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                    active={editor.isActive("heading", { level: 2 })}
-                    title="Heading 2"
-                >
-                    <Heading2 className="h-4 w-4" />
-                </ToolbarButton>
+            <div className="flex items-center justify-between border-b border-border bg-muted/30 px-3 py-2">
+                <div className="flex items-center space-x-1">
+                    <ToolbarButton
+                        active={viewMode === "edit"}
+                        onClick={() => setViewMode("edit")}
+                        title="Edit Mode"
+                    >
+                        <Edit2 className="h-4 w-4 mr-1" />
+                        <span className="text-xs font-medium">Edit</span>
+                    </ToolbarButton>
+                    <ToolbarButton
+                        active={viewMode === "preview"}
+                        onClick={() => setViewMode("preview")}
+                        title="Preview Mode"
+                    >
+                        <Eye className="h-4 w-4 mr-1" />
+                        <span className="text-xs font-medium">Preview</span>
+                    </ToolbarButton>
+                     <ToolbarButton
+                        active={viewMode === "split"}
+                        onClick={() => setViewMode("split")}
+                        title="Split View (Large Screens)"
+                        className="hidden md:flex"
+                    >
+                        <Columns className="h-4 w-4 mr-1" />
+                        <span className="text-xs font-medium">Split</span>
+                    </ToolbarButton>
+                </div>
 
-                <ToolbarDivider />
-
-                <ToolbarButton
-                    onClick={() => editor.chain().focus().toggleBold().run()}
-                    active={editor.isActive("bold")}
-                    title="Bold"
-                >
-                    <Bold className="h-4 w-4" />
-                </ToolbarButton>
-                <ToolbarButton
-                    onClick={() => editor.chain().focus().toggleItalic().run()}
-                    active={editor.isActive("italic")}
-                    title="Italic"
-                >
-                    <Italic className="h-4 w-4" />
-                </ToolbarButton>
-                <ToolbarButton
-                    onClick={() => editor.chain().focus().toggleCode().run()}
-                    active={editor.isActive("code")}
-                    title="Code"
-                >
-                    <Code className="h-4 w-4" />
-                </ToolbarButton>
-
-                <ToolbarDivider />
-
-                <ToolbarButton
-                    onClick={() => editor.chain().focus().toggleBulletList().run()}
-                    active={editor.isActive("bulletList")}
-                    title="Bullet List"
-                >
-                    <List className="h-4 w-4" />
-                </ToolbarButton>
-                <ToolbarButton
-                    onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                    active={editor.isActive("orderedList")}
-                    title="Numbered List"
-                >
-                    <ListOrdered className="h-4 w-4" />
-                </ToolbarButton>
-                <ToolbarButton
-                    onClick={() => editor.chain().focus().toggleBlockquote().run()}
-                    active={editor.isActive("blockquote")}
-                    title="Quote"
-                >
-                    <Quote className="h-4 w-4" />
-                </ToolbarButton>
-
-                <ToolbarDivider />
-
-                <ToolbarButton
-                    onClick={handleImageClick}
-                    disabled={isUploading}
-                    title="Add Image"
-                >
-                    {isUploading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                        <Upload className="h-4 w-4" />
-                    )}
-                </ToolbarButton>
-
-                <ToolbarDivider />
-
-                <ToolbarButton
-                    onClick={() => editor.chain().focus().undo().run()}
-                    disabled={!editor.can().undo()}
-                    title="Undo"
-                >
-                    <Undo className="h-4 w-4" />
-                </ToolbarButton>
-                <ToolbarButton
-                    onClick={() => editor.chain().focus().redo().run()}
-                    disabled={!editor.can().redo()}
-                    title="Redo"
-                >
-                    <Redo className="h-4 w-4" />
-                </ToolbarButton>
+                <div className="flex items-center space-x-2">
+                     <button
+                        onClick={handleImageClick}
+                        disabled={isUploading || viewMode === "preview"} // Disable upload in preview mode
+                        className={`flex items-center space-x-1 px-2 py-1.5 text-xs rounded hover:bg-muted transition-colors ${
+                            isUploading || viewMode === "preview" ? "opacity-50 cursor-not-allowed" : "text-muted-foreground hover:text-foreground"
+                        }`}
+                        title="Upload Image"
+                    >
+                        {isUploading ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                            <Upload className="h-3.5 w-3.5" />
+                        )}
+                        <span>Image</span>
+                    </button>
+                    <a 
+                        href="https://www.markdownguide.org/basic-syntax/" 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="text-xs text-muted-foreground hover:text-primary transition-colors hover:underline"
+                    >
+                        Markdown Guide
+                    </a>
+                </div>
             </div>
 
-            {/* Editor Content */}
-            <div className="flex-1 min-h-0 overflow-y-auto">
-                <EditorContent editor={editor} />
+            {/* Content Area */}
+            <div className={`flex-1 min-h-0 flex relative overflow-hidden ${viewMode === 'split' ? 'md:flex-row flex-col' : ''}`}>
+                
+                {/* Editor Pane */}
+                {(viewMode === "edit" || viewMode === "split") && (
+                    <div className={`flex-1 h-full min-h-0 relative ${viewMode === 'split' ? 'border-r border-border' : ''}`}>
+                        <textarea
+                            ref={textareaRef}
+                            value={content}
+                            onChange={(e) => onChange(e.target.value)}
+                            placeholder={placeholder}
+                            className="w-full h-full p-4 bg-transparent resize-none focus:outline-none font-mono text-sm leading-relaxed"
+                            spellCheck={false}
+                        />
+                    </div>
+                )}
+
+                {/* Preview Pane */}
+                {(viewMode === "preview" || viewMode === "split") && (
+                    <div className="flex-1 h-full min-h-0 overflow-y-auto bg-background/50 p-6">
+                        <article className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-bold prose-h1:text-xl prose-h2:text-lg prose-h3:text-base prose-p:text-sm prose-li:text-sm">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {content || "*No content*"}
+                            </ReactMarkdown>
+                        </article>
+                    </div>
+                )}
             </div>
         </div>
     );
 }
 
-// Toolbar Button Component
 function ToolbarButton({
-    onClick,
     active,
-    disabled,
+    onClick,
     children,
     title,
+    className = ""
 }: {
+    active: boolean;
     onClick: () => void;
-    active?: boolean;
-    disabled?: boolean;
     children: React.ReactNode;
-    title?: string;
+    title: string;
+    className?: string;
 }) {
     return (
         <button
-            type="button"
             onClick={onClick}
-            disabled={disabled}
             title={title}
-            className={`p-1.5 rounded transition-colors ${active
-                    ? "bg-primary/20 text-primary"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+            className={`flex items-center px-3 py-1.5 rounded transition-all ${
+                active
+                    ? "bg-background shadow-sm text-foreground font-medium ring-1 ring-border/50"
+                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            } ${className}`}
         >
             {children}
         </button>
     );
-}
-
-// Toolbar Divider
-function ToolbarDivider() {
-    return <div className="w-px h-5 bg-border mx-1" />;
 }
