@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Folder, Plus, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { Folder, Plus, Trash2, ChevronDown, ChevronRight, Tag, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Editor } from "@/components/notebook/Editor";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createNote, deleteNote } from "@/app/actions/note-actions";
+import { assignNoteTagToNote, unassignNoteTagFromNote } from "@/app/actions/note-tag-actions";
 import { useRouter } from "next/navigation";
 
 // Types
@@ -24,15 +25,48 @@ interface Note {
     userId: string;
 }
 
-export default function NotebookClient({ initialSections, initialNotes }: { initialSections: Section[], initialNotes: Note[] }) {
+interface NoteTag {
+    id: string;
+    name: string;
+    color: string;
+    categoryId: string;
+}
+
+interface NoteTagCategory {
+    id: string;
+    name: string;
+    color: string;
+    tags: NoteTag[];
+}
+
+interface NotebookClientProps {
+    initialSections: Section[];
+    initialNotes: Note[];
+    noteTagCategories: NoteTagCategory[];
+    noteTagMap: Record<string, string[]>;
+    tagMap: Record<string, NoteTag>;
+}
+
+export default function NotebookClient({ 
+    initialSections, 
+    initialNotes,
+    noteTagCategories,
+    noteTagMap: initialNoteTagMap,
+    tagMap
+}: NotebookClientProps) {
     const [sections, setSections] = useState<Section[]>(initialSections);
     const [notes, setNotes] = useState<Note[]>(initialNotes);
+    const [noteTagMap, setNoteTagMap] = useState<Record<string, string[]>>(initialNoteTagMap);
     const [activeSection, setActiveSection] = useState(initialSections[0]?.id || "s1");
     const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
     const [showNotebooks, setShowNotebooks] = useState(true);
     const [showPages, setShowPages] = useState(true);
     const [mobileView, setMobileView] = useState<"notebooks" | "pages" | "note">("pages");
+    const [showTagSelector, setShowTagSelector] = useState<string | null>(null);
     const router = useRouter();
+
+    // All available tags flattened
+    const allTags = noteTagCategories.flatMap(cat => cat.tags);
 
     useEffect(() => {
         setSections(initialSections);
@@ -93,6 +127,43 @@ export default function NotebookClient({ initialSections, initialNotes }: { init
         // We might want to re-fetch or use router.refresh().
         // Editor calls onSave which we passed.
         router.refresh();
+    };
+
+    const handleAddTag = async (noteId: string, tagId: string) => {
+        // Optimistic update
+        setNoteTagMap(prev => ({
+            ...prev,
+            [noteId]: [...(prev[noteId] || []), tagId]
+        }));
+        setShowTagSelector(null);
+
+        try {
+            await assignNoteTagToNote(noteId, tagId);
+            router.refresh();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleRemoveTag = async (noteId: string, tagId: string) => {
+        // Optimistic update
+        setNoteTagMap(prev => ({
+            ...prev,
+            [noteId]: (prev[noteId] || []).filter(id => id !== tagId)
+        }));
+
+        try {
+            await unassignNoteTagFromNote(noteId, tagId);
+            router.refresh();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    // Helper to get tags for a note
+    const getTagsForNote = (noteId: string) => {
+        const tagIds = noteTagMap[noteId] || [];
+        return tagIds.map(id => tagMap[id]).filter(Boolean);
     };
 
     const currentNotes = notes.filter(n => n.sectionId === activeSection);
@@ -209,6 +280,67 @@ export default function NotebookClient({ initialSections, initialNotes }: { init
                                     <div className="flex items-center justify-between mt-1 w-full">
                                         <span className="text-xs text-muted-foreground">{note.date}</span>
                                     </div>
+                                    
+                                    {/* Note Tags */}
+                                    <div className="flex flex-wrap gap-1 mt-2">
+                                        {getTagsForNote(note.id).map(tag => (
+                                            <span 
+                                                key={tag.id} 
+                                                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${tag.color || 'bg-primary/10 text-primary'}`}
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {tag.name}
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleRemoveTag(note.id, tag.id);
+                                                    }}
+                                                    className="hover:text-destructive"
+                                                >
+                                                    <X className="h-2.5 w-2.5" />
+                                                </button>
+                                            </span>
+                                        ))}
+                                        
+                                        {/* Add tag button */}
+                                        <div className="relative">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setShowTagSelector(showTagSelector === note.id ? null : note.id);
+                                                }}
+                                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                                            >
+                                                <Tag className="h-2.5 w-2.5" />
+                                                <Plus className="h-2.5 w-2.5" />
+                                            </button>
+                                            
+                                            {/* Tag selector dropdown */}
+                                            {showTagSelector === note.id && (
+                                                <div 
+                                                    className="absolute z-50 left-0 top-full mt-1 bg-popover border border-border rounded-md shadow-lg p-1 min-w-[150px] max-h-[200px] overflow-y-auto"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    {allTags.length === 0 ? (
+                                                        <div className="px-2 py-1 text-xs text-muted-foreground">No tags available. Create tags in Note Tags.</div>
+                                                    ) : (
+                                                        allTags.filter(t => !(noteTagMap[note.id] || []).includes(t.id)).map(tag => (
+                                                            <button
+                                                                key={tag.id}
+                                                                onClick={() => handleAddTag(note.id, tag.id)}
+                                                                className="w-full text-left px-2 py-1 text-xs hover:bg-muted rounded transition-colors"
+                                                            >
+                                                                <span className={`inline-block px-1.5 py-0.5 rounded ${tag.color || 'bg-primary/10 text-primary'}`}>
+                                                                    {tag.name}
+                                                                </span>
+                                                            </button>
+                                                        ))
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    
                                     <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{note.content.substring(0, 30)}...</p>
                                 </div>
                             ))
