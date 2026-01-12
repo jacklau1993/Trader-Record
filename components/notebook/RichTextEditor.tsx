@@ -19,14 +19,6 @@ export function RichTextEditor({ content, onChange, placeholder = "Start writing
     const fileInputRef = useRef<HTMLInputElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    // Auto-resize textarea
-    useEffect(() => {
-        if (textareaRef.current) {
-            textareaRef.current.style.height = "auto";
-            textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
-        }
-    }, [content, viewMode]);
-
     const handleImageClick = () => {
         fileInputRef.current?.click();
     };
@@ -155,7 +147,7 @@ export function RichTextEditor({ content, onChange, placeholder = "Start writing
                 
                 {/* Editor Pane */}
                 {(viewMode === "edit" || viewMode === "split") && (
-                    <div className={`flex-1 h-full min-h-0 relative ${viewMode === 'split' ? 'border-r border-border' : ''}`}>
+                    <div className={`flex-1 h-full min-h-0 relative overflow-y-auto ${viewMode === 'split' ? 'border-r border-border' : ''}`}>
                         <textarea
                             ref={textareaRef}
                             value={content}
