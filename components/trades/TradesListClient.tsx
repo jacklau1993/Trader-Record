@@ -23,6 +23,14 @@ export function TradesListClient({ trades, categories }: { trades: Trade[], cate
         return tag ? tag.name : "-";
     };
 
+    // Helper to convert rating number to grade
+    const ratingToGrade = (rating: number | null | undefined): string => {
+        if (rating === 3) return "A+";
+        if (rating === 2) return "B+";
+        if (rating === 1) return "C+";
+        return "-";
+    };
+
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between">
@@ -69,13 +77,14 @@ export function TradesListClient({ trades, categories }: { trades: Trade[], cate
                                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Contracts</th>
                                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">是否符合計劃</th>
                                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">沒情緒還會否進場</th>
+                                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Grade</th>
                                     <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Net P&L</th>
                                 </tr>
                             </thead>
                             <tbody className="[&_tr:last-child]:border-0">
                                 {trades.length === 0 ? (
                                     <tr className="border-b transition-colors hover:bg-muted/50">
-                                        <td colSpan={8} className="p-4 text-center text-muted-foreground">No trades found.</td>
+                                        <td colSpan={9} className="p-4 text-center text-muted-foreground">No trades found.</td>
                                     </tr>
                                 ) : (
                                     trades.map(trade => {
@@ -109,6 +118,15 @@ export function TradesListClient({ trades, categories }: { trades: Trade[], cate
                                                     getTagNameByCategory(trade.tags, "沒情緒還會否進場") === "不會" ? "bg-red-500/10 text-red-500" : "text-muted-foreground"
                                                 }`}>
                                                     {getTagNameByCategory(trade.tags, "沒情緒還會否進場")}
+                                                </span>
+                                            </td>
+                                            <td className="p-4 align-middle">
+                                                <span className={`px-2 py-1 rounded text-xs ${
+                                                    trade.rating === 3 ? "bg-green-500/10 text-green-500" :
+                                                    trade.rating === 2 ? "bg-yellow-500/10 text-yellow-500" :
+                                                    trade.rating === 1 ? "bg-red-500/10 text-red-500" : "text-muted-foreground"
+                                                }`}>
+                                                    {ratingToGrade(trade.rating)}
                                                 </span>
                                             </td>
                                             <td className={`p-4 align-middle text-right font-bold ${netPnl > 0 ? 'text-green-500' : 'text-red-500'}`}>
