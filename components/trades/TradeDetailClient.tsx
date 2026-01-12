@@ -370,13 +370,17 @@ export function TradeDetailClient({ trade: initialTrade, categories }: { trade: 
                                     />
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium">Rating (1-10)</label>
-                                    <input
-                                        type="number" min="1" max="10"
+                                    <label className="text-sm font-medium">Rating</label>
+                                    <select
                                         className="w-full mt-1 bg-background border border-input rounded px-3 py-2"
                                         value={trade.rating || ""}
-                                        onChange={e => setTrade({ ...trade, rating: Number(e.target.value) })}
-                                    />
+                                        onChange={e => setTrade({ ...trade, rating: e.target.value ? Number(e.target.value) : null })}
+                                    >
+                                        <option value="">-</option>
+                                        <option value="3">A+</option>
+                                        <option value="2">B+</option>
+                                        <option value="1">C+</option>
+                                    </select>
                                 </div>
                             </div>
                         </CardContent>
