@@ -17,10 +17,17 @@ export const getAuth = (customOrigin?: string | null) => {
         "http://127.0.0.1:8788"
     ];
 
+    // Determine the base URL for OAuth redirects
+    // Priority: customOrigin (from request) > BETTER_AUTH_URL env var > default
+    let baseURL = process.env.BETTER_AUTH_URL || "https://trader-record.pages.dev";
+    
     if (customOrigin && (
         customOrigin.endsWith(".trader-record.pages.dev") || 
+        customOrigin.endsWith("trader-record.pages.dev") ||
         customOrigin.includes("localhost")
     )) {
+        // Use the request origin as base URL for preview deployments
+        baseURL = customOrigin;
         if (!trustedOrigins.includes(customOrigin)) {
             trustedOrigins.push(customOrigin);
         }
@@ -32,6 +39,7 @@ export const getAuth = (customOrigin?: string | null) => {
 
     // Create auth instance with current DB
     return betterAuth({
+        baseURL, // Dynamic base URL for OAuth redirects
         database: drizzleAdapter(db, {
             provider: "sqlite",
             schema: schema

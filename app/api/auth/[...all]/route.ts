@@ -4,9 +4,20 @@ import { getAuth } from "@/lib/auth";
 
 export const runtime = "edge";
 
+// Helper to get origin from request (works for both direct requests and OAuth callbacks)
+function getOriginFromRequest(request: NextRequest): string | null {
+    // First try the origin header (for direct requests)
+    const originHeader = request.headers.get("origin");
+    if (originHeader) return originHeader;
+    
+    // For OAuth callbacks, derive from the request URL
+    const url = new URL(request.url);
+    return `${url.protocol}//${url.host}`;
+}
+
 export async function GET(request: NextRequest) {
     try {
-        const origin = request.headers.get("origin");
+        const origin = getOriginFromRequest(request);
         const auth = getAuth(origin);
         const handler = toNextJsHandler(auth);
         return await handler.GET(request);
@@ -21,7 +32,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
-        const origin = request.headers.get("origin");
+        const origin = getOriginFromRequest(request);
         const auth = getAuth(origin);
         const handler = toNextJsHandler(auth);
         return await handler.POST(request);
@@ -33,5 +44,3 @@ export async function POST(request: NextRequest) {
         );
     }
 }
-
-
