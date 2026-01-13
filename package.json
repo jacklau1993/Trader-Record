@@ -60,9 +60,16 @@
     "typescript": "^5.9.3",
     "wrangler": "^4.53.0"
   },
-  "overrides": {
-    "@cloudflare/next-on-pages": {
-      "next": "$next"
-    }
+  "pnpm": {
+    "overrides": {
+      "@cloudflare/next-on-pages>next": "$next"
+    },
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "esbuild",
+      "sharp",
+      "unrs-resolver",
+      "workerd"
+    ]
   }
 }
