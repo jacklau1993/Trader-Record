@@ -52,38 +52,35 @@ export async function PATCH(
                         // Structure: 
                         // # Trade Details ... ## Notes ... ## Review
 
-                        // Use HTML for TipTap
-                        const newDetails = `<p><strong># Trade Details</strong></p>
-                        <p>
-                        - <strong>Ticker</strong>: ${updatedTrade.ticker}<br>
-                        - <strong>Direction</strong>: ${updatedTrade.type}<br>
-                        - <strong>Date</strong>: ${updatedTrade.date}<br>
-                        - <strong>Net P&L</strong>: $${updatedTrade.pnl.toFixed(2)}
-                        </p>`;
+                        // Use Markdown format
+                        const newDetails = `# Trade Details
+
+## Ticker: ${updatedTrade.ticker}
+## Direction: ${updatedTrade.type}
+## Date: ${updatedTrade.date}
+## Net P&L: $${updatedTrade.pnl.toFixed(2)}
+
+`;
 
                         let newContent = note.content;
 
                         // Replace Trade Details section
-                        // We need to match likely HTML structure or plain text
-                        // Simple approach: Match from "# Trade Details" to "## Notes" loosely
-                        // We assume the markers might be inside tags like <p># Trade Details</p>
+                        // Match from "# Trade Details" to "## Notes" in Markdown
                         const detailsRegex = /# Trade Details[\s\S]*?(?=## Notes)/;
                         if (detailsRegex.test(newContent)) {
-                            // If we found the text marker, we replace the block.
-                            // We need to be careful not to leave dangling tags if we split HTML.
-                            // But usually these sections are somewhat distinct paragraphs.
-                            newContent = newContent.replace(detailsRegex, newDetails + "<p></p>");
+                            newContent = newContent.replace(detailsRegex, newDetails);
                         } else {
-                            newContent = newDetails + "<p></p>" + newContent;
+                            newContent = newDetails + newContent;
                         }
 
                         if (tradeData.notes !== undefined) {
-                            const notesHeader = "## Notes";
                             const notesRegex = /## Notes[\s\S]*?(?=## Review|$)/;
 
-                            // Convert newlines in user notes to <br>
-                            const formattedNotes = (updatedTrade.notes || "No notes.").replace(/\n/g, "<br>");
-                            const newNotesSection = `<p><strong>${notesHeader}</strong></p><p>${formattedNotes}</p><p></p>`;
+                            const formattedNotes = updatedTrade.notes || "No notes.";
+                            const newNotesSection = `## Notes
+- ${formattedNotes}
+
+`;
 
                             if (notesRegex.test(newContent)) {
                                 newContent = newContent.replace(notesRegex, newNotesSection);
