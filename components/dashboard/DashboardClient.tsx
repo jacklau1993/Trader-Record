@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ProfitChart } from "@/components/dashboard/ProfitChart";
 import { DailyProfitChart } from "@/components/dashboard/DailyProfitChart";
 import { RecentTrades } from "@/components/dashboard/RecentTrades";
@@ -19,6 +20,9 @@ import { startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
 
 
 export default function DashboardClient({ initialTrades, initialAccounts }: { initialTrades: any[], initialAccounts: any[] }) {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
     const [trades, setTrades] = useState(initialTrades);
     const [accounts, setAccounts] = useState(initialAccounts);
     const [selectedAccountId, setSelectedAccountId] = useState<string>("all");
@@ -34,6 +38,31 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
     useEffect(() => {
         setAccounts(initialAccounts);
     }, [initialAccounts]);
+
+    useEffect(() => {
+        const accountFromQuery = searchParams.get("account");
+        if (!accountFromQuery) {
+            setSelectedAccountId((prev) => (prev === "all" ? prev : "all"));
+            return;
+        }
+
+        const isValidAccount = accounts.some((account) => account.id === accountFromQuery);
+        const nextAccount = isValidAccount ? accountFromQuery : "all";
+        setSelectedAccountId((prev) => (prev === nextAccount ? prev : nextAccount));
+    }, [searchParams, accounts]);
+
+    const handleSelectAccount = (value: string | "all") => {
+        setSelectedAccountId(value);
+
+        const nextParams = new URLSearchParams(searchParams.toString());
+        if (value === "all") {
+            nextParams.delete("account");
+        } else {
+            nextParams.set("account", value);
+        }
+        const nextQuery = nextParams.toString();
+        router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false });
+    };
 
 
     const filteredTrades = trades.filter(t => {
@@ -140,7 +169,7 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
                     <AccountSwitcher
                         accounts={accounts}
                         selectedAccountId={selectedAccountId}
-                        onSelect={setSelectedAccountId}
+                        onSelect={handleSelectAccount}
                     />
                     <div className="flex gap-2 ml-2">
                          <ImportTradesModal accounts={accounts} defaultAccountId={selectedAccountId === "all" ? undefined : selectedAccountId} />

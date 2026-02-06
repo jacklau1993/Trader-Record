@@ -1,17 +1,69 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
 import { DollarSign, TrendingUp, Percent, Activity } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Trade, Category } from "@/lib/types";
+import { buildAccountLabels } from "@/lib/account-labels";
 
-export function TradesListClient({ trades, categories }: { trades: Trade[], categories: Category[] }) {
+const ACCOUNT_FILTER_STORAGE_KEY = "trades:selectedAccountId";
+
+function normalizeAccountSelection(value: string | null | undefined, validAccountIds: Set<string>) {
+    if (!value || value === "all") return "all";
+    return validAccountIds.has(value) ? value : "all";
+}
+
+export function TradesListClient({ trades, categories, accounts = [] }: { trades: Trade[], categories: Category[], accounts?: any[] }) {
     const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const [selectedAccountId, setSelectedAccountId] = useState<string>("all");
+    const accountLabels = useMemo(() => buildAccountLabels(accounts), [accounts]);
+    const validAccountIds = useMemo(() => new Set(accounts.map((account) => account.id)), [accounts]);
+    const brokerAccounts = useMemo(() => accounts.filter((account) => account.type === "BROKER"), [accounts]);
+    const propFirmAccounts = useMemo(() => accounts.filter((account) => account.type === "PROP_FIRM"), [accounts]);
+    const queryAccount = searchParams.get("account");
 
-    const stats = calculateStats(trades);
+    useEffect(() => {
+        const fromQuery = normalizeAccountSelection(queryAccount, validAccountIds);
+        if (queryAccount) {
+            setSelectedAccountId((prev) => (prev === fromQuery ? prev : fromQuery));
+            return;
+        }
+
+        if (typeof window === "undefined") return;
+        const savedSelection = window.localStorage.getItem(ACCOUNT_FILTER_STORAGE_KEY);
+        const fromStorage = normalizeAccountSelection(savedSelection, validAccountIds);
+        setSelectedAccountId((prev) => (prev === fromStorage ? prev : fromStorage));
+    }, [queryAccount, validAccountIds]);
+
+    const handleAccountChange = (value: string) => {
+        const normalized = normalizeAccountSelection(value, validAccountIds);
+        setSelectedAccountId(normalized);
+
+        if (typeof window !== "undefined") {
+            window.localStorage.setItem(ACCOUNT_FILTER_STORAGE_KEY, normalized);
+        }
+
+        const nextParams = new URLSearchParams(searchParams.toString());
+        if (normalized === "all") {
+            nextParams.delete("account");
+        } else {
+            nextParams.set("account", normalized);
+        }
+        const nextQuery = nextParams.toString();
+        router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false });
+    };
+
+    const filteredTrades = useMemo(() => {
+        if (selectedAccountId === "all") return trades;
+        return trades.filter((trade) => trade.tradingAccountId === selectedAccountId);
+    }, [selectedAccountId, trades]);
+
+    const stats = calculateStats(filteredTrades);
 
     // Helper to get tag name by category
     const getTagNameByCategory = (tradeTags: string[], categoryName: string) => {
@@ -33,8 +85,35 @@ export function TradesListClient({ trades, categories }: { trades: Trade[], cate
 
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <h2 className="text-3xl font-bold tracking-tight">Trades</h2>
+                {accounts.length > 1 && (
+                    <select
+                        className="w-full sm:w-[260px] h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                        value={selectedAccountId}
+                        onChange={(e) => handleAccountChange(e.target.value)}
+                    >
+                        <option value="all">All Accounts</option>
+                        {brokerAccounts.length > 0 && (
+                            <optgroup label="Personal Accounts">
+                                {brokerAccounts.map((account) => (
+                                    <option key={account.id} value={account.id}>
+                                        {accountLabels.get(account.id) || account.name}
+                                    </option>
+                                ))}
+                            </optgroup>
+                        )}
+                        {propFirmAccounts.length > 0 && (
+                            <optgroup label="Prop Firms">
+                                {propFirmAccounts.map((account) => (
+                                    <option key={account.id} value={account.id}>
+                                        {accountLabels.get(account.id) || account.name}
+                                    </option>
+                                ))}
+                            </optgroup>
+                        )}
+                    </select>
+                )}
             </div>
 
             {/* Stats Overview */}
@@ -82,12 +161,14 @@ export function TradesListClient({ trades, categories }: { trades: Trade[], cate
                                 </tr>
                             </thead>
                             <tbody className="[&_tr:last-child]:border-0">
-                                {trades.length === 0 ? (
+                                {filteredTrades.length === 0 ? (
                                     <tr className="border-b transition-colors hover:bg-muted/50">
-                                        <td colSpan={9} className="p-4 text-center text-muted-foreground">No trades found.</td>
+                                        <td colSpan={9} className="p-4 text-center text-muted-foreground">
+                                            {selectedAccountId === "all" ? "No trades found." : "No trades found for this account."}
+                                        </td>
                                     </tr>
                                 ) : (
-                                    trades.map(trade => {
+                                    filteredTrades.map(trade => {
                                         const netPnl = (trade.pnl || 0) - ((trade as any).commission || 0);
                                         return (
                                         <tr
