@@ -68,8 +68,10 @@ const SidebarContent = () => {
           const isActive =
             pathname === item.href ||
             (item.href !== "/" && pathname.startsWith(item.href));
+          const shouldCarryAccount =
+            item.href === "/trades" || item.href === "/reports";
           const href =
-            item.href === "/trades" && accountQuery
+            shouldCarryAccount && accountQuery
               ? { pathname: item.href, query: { account: accountQuery } }
               : item.href;
           return (
