@@ -15,14 +15,22 @@ export default async function PropFirmsPage() {
   let availableYears: string[] = [];
 
   try {
-    [accounts, transactions, availableYears] = await Promise.all([
-      getAccounts(),
+    accounts = await getAccounts();
+  } catch (e) {
+    console.error("Failed to fetch accounts:", e);
+    redirect("/sign-in");
+  }
+
+  // Fetch transactions separately — table may not exist yet after migration
+  try {
+    [transactions, availableYears] = await Promise.all([
       getTransactions(),
       getAvailableYears(),
     ]);
   } catch (e) {
-    console.error("Failed to fetch prop firms data:", e);
-    redirect("/sign-in");
+    console.error("Failed to fetch transactions (table may not exist yet):", e);
+    transactions = [];
+    availableYears = [];
   }
 
   const propFirms = accounts.filter((a: any) => a.type === "PROP_FIRM");
