@@ -36,9 +36,6 @@ interface PropFirm {
   status?: string;
   accountNumber?: string;
   cost?: number;
-  lastPayoutAmount?: number;
-  lastPayoutDate?: string;
-  totalPayout?: number;
   commissionRates?: string;
 }
 
@@ -209,35 +206,18 @@ export function PropFirmManager({
         status: currentFirm.status,
         accountNumber: currentFirm.accountNumber,
         cost: Number(currentFirm.cost) || 0,
-        lastPayoutAmount: Number(currentFirm.lastPayoutAmount) || 0,
-        totalPayout: Number(currentFirm.totalPayout) || 0,
-        lastPayoutDate: currentFirm.lastPayoutDate
-          ? new Date(currentFirm.lastPayoutDate)
-          : undefined,
         commissionRates: JSON.stringify(commissionRates),
       };
       if (isEditOpen && currentFirm.id) {
         await updateAccount(currentFirm.id, data);
         setPropFirms(
           propFirms.map((p) =>
-            p.id === currentFirm.id
-              ? {
-                  ...p,
-                  ...data,
-                  lastPayoutDate: data.lastPayoutDate?.toISOString(),
-                }
-              : p,
+            p.id === currentFirm.id ? { ...p, ...data } : p,
           ),
         );
       } else {
         await createAccount(data);
-        setPropFirms([
-          ...propFirms,
-          {
-            ...data,
-            lastPayoutDate: data.lastPayoutDate?.toISOString(),
-          } as any,
-        ]);
+        setPropFirms([...propFirms, data as any]);
       }
       setIsAddOpen(false);
       setIsEditOpen(false);
@@ -437,28 +417,11 @@ export function PropFirmManager({
                     </button>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="text-muted-foreground">Cost:</div>
-                  <div className="font-medium text-right">
-                    £{firm.cost?.toFixed(2)}
+                {firm.cost ? (
+                  <div className="text-sm text-muted-foreground">
+                    Monthly Cost: £{firm.cost.toFixed(2)}
                   </div>
-                  <div className="text-muted-foreground">Total Payout:</div>
-                  <div className="font-medium text-right text-green-500">
-                    £{firm.totalPayout?.toFixed(2)}
-                  </div>
-                  <div className="text-muted-foreground">Last Payout:</div>
-                  <div className="font-medium text-right">
-                    {firm.lastPayoutAmount
-                      ? `£${firm.lastPayoutAmount.toFixed(2)}`
-                      : "-"}
-                  </div>
-                  <div className="text-muted-foreground">Payout Date:</div>
-                  <div className="font-medium text-right">
-                    {firm.lastPayoutDate
-                      ? new Date(firm.lastPayoutDate).toLocaleDateString()
-                      : "-"}
-                  </div>
-                </div>
+                ) : null}
               </div>
             ))}
           </div>
@@ -1046,62 +1009,7 @@ export function PropFirmManager({
               />
             </div>
           </div>
-          <div>
-            <h3 className="text-sm font-semibold mb-2 mt-4">
-              Payout Information
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs text-muted-foreground mb-1 block">
-                  Last Payout Amount (£)
-                </label>
-                <input
-                  type="number"
-                  className={dateInputClassName}
-                  value={currentFirm.lastPayoutAmount || ""}
-                  onChange={(e) =>
-                    setCurrentFirm({
-                      ...currentFirm,
-                      lastPayoutAmount: Number(e.target.value),
-                    })
-                  }
-                />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground mb-1 block">
-                  Last Payout Date
-                </label>
-                <Flatpickr
-                  options={{ dateFormat: "Y-m-d", disableMobile: true }}
-                  value={
-                    currentFirm.lastPayoutDate
-                      ? currentFirm.lastPayoutDate.split("T")[0]
-                      : ""
-                  }
-                  onChange={(_dates, dateStr) =>
-                    setCurrentFirm({ ...currentFirm, lastPayoutDate: dateStr })
-                  }
-                  className={dateInputClassName}
-                />
-              </div>
-            </div>
-            <div className="mt-2">
-              <label className="text-xs text-muted-foreground mb-1 block">
-                Total Payout (£)
-              </label>
-              <input
-                type="number"
-                className={dateInputClassName}
-                value={currentFirm.totalPayout || ""}
-                onChange={(e) =>
-                  setCurrentFirm({
-                    ...currentFirm,
-                    totalPayout: Number(e.target.value),
-                  })
-                }
-              />
-            </div>
-          </div>
+
           <div>
             <h3 className="text-sm font-semibold mb-2 mt-4">
               Commission Rates ($ per side)
