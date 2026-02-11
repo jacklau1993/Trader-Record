@@ -417,11 +417,6 @@ export function PropFirmManager({
                     </button>
                   </div>
                 </div>
-                {firm.cost ? (
-                  <div className="text-sm text-muted-foreground">
-                    Monthly Cost: £{firm.cost.toFixed(2)}
-                  </div>
-                ) : null}
               </div>
             ))}
           </div>
@@ -770,6 +765,7 @@ export function PropFirmManager({
                   {propFirms.map((f) => (
                     <option key={f.id} value={f.id}>
                       {f.name}
+                      {f.accountNumber ? ` - ${f.accountNumber}` : ""}
                     </option>
                   ))}
                 </select>
