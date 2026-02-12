@@ -1,0 +1,118 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: clip;
+  background: #090b10;
+  color: #f4f8ff;
+  font-family: var(--font-rajdhani), "Segoe UI", sans-serif;
+}
+
+.display {
+  font-family: var(--font-rajdhani), "Segoe UI", sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.mono {
+  font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.mesh {
+  pointer-events: none;
+  position: fixed;
+  inset: -12rem -4rem auto;
+  height: 36rem;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 16% 36%, rgba(110, 242, 186, 0.28), transparent 36%),
+    radial-gradient(circle at 78% 22%, rgba(91, 204, 255, 0.26), transparent 40%),
+    radial-gradient(circle at 55% 80%, rgba(108, 113, 255, 0.2), transparent 38%);
+  filter: blur(18px);
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+.noise {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.22;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0.55px, transparent 0.7px);
+  background-size: 3px 3px;
+}
+
+.shellWrap {
+  position: relative;
+}
+
+.shellGlow {
+  position: absolute;
+  inset: 5% -5% -10%;
+  z-index: 0;
+  border-radius: 1.8rem;
+  background: radial-gradient(circle at 30% 35%, rgba(94, 242, 183, 0.32), transparent 58%);
+  filter: blur(34px);
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  border-radius: 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: linear-gradient(180deg, rgba(12, 18, 28, 0.96), rgba(8, 12, 20, 0.97));
+  box-shadow:
+    0 20px 50px -28px rgba(0, 0, 0, 0.95),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.volumeBarLive {
+  border-radius: 0.5rem;
+  background: linear-gradient(180deg, rgba(111, 245, 193, 0.95), rgba(95, 191, 255, 0.45));
+  transform-origin: bottom;
+  transform: scaleY(1);
+}
+
+.scanLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(125, 238, 192, 0.7), transparent);
+  box-shadow: 0 0 18px rgba(125, 238, 192, 0.6);
+  pointer-events: none;
+}
+
+.typeCursor {
+  display: inline-block;
+  margin-left: 2px;
+  animation: blink 1s steps(1, end) infinite;
+}
+
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  50.1%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    transform: translate3d(-2.4%, 1.4%, 0) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mesh,
+  .typeCursor {
+    animation: none !important;
+  }
+}
