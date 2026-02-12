@@ -30,7 +30,7 @@ const navigation = [
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
-const SidebarContent = () => {
+const SidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { data: session, isPending } = authClient.useSession();
@@ -79,6 +79,7 @@ const SidebarContent = () => {
               key={item.name}
               href={href}
               prefetch={false}
+              onClick={onNavigate}
               className={cn(
                 "group flex items-center rounded-lg border px-3 py-2 text-sm font-medium transition-all",
                 isActive
@@ -130,6 +131,7 @@ const SidebarContent = () => {
           <Link
             href="/sign-in"
             prefetch={false}
+            onClick={onNavigate}
             className="flex w-full items-center gap-2 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-zinc-300 transition-all hover:border-white/10 hover:bg-white/[0.04] hover:text-white"
           >
             <LogIn className="h-4 w-4" />
@@ -157,7 +159,6 @@ export function Sidebar() {
 
 export function MobileSidebar() {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
 
   return (
     <div className="sticky top-0 z-40 flex h-14 items-center border-b border-white/10 bg-[#0d1420]/95 px-4 backdrop-blur-xl md:hidden">
@@ -170,15 +171,13 @@ export function MobileSidebar() {
       </button>
       <div className="font-semibold tracking-wide text-zinc-100">TraderRecord</div>
       <Sheet open={open} onOpenChange={setOpen}>
-        <div onClick={() => setOpen(false)} className="h-full">
-          <Suspense
-            fallback={
-              <div className="h-full border-r border-white/10 bg-[#0d1420]/95 animate-pulse" />
-            }
-          >
-            <SidebarContent />
-          </Suspense>
-        </div>
+        <Suspense
+          fallback={
+            <div className="h-full border-r border-white/10 bg-[#0d1420]/95 animate-pulse" />
+          }
+        >
+          <SidebarContent onNavigate={() => setOpen(false)} />
+        </Suspense>
       </Sheet>
     </div>
   );
