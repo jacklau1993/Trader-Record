@@ -64,35 +64,39 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-.curve {
-  stroke-dasharray: 540;
-  stroke-dashoffset: 540;
-  animation: draw 1.8s cubic-bezier(0.19, 1, 0.22, 1) 0.3s forwards;
-}
-
-.volumeBar {
+.volumeBarLive {
   border-radius: 0.5rem;
   background: linear-gradient(180deg, rgba(111, 245, 193, 0.95), rgba(95, 191, 255, 0.45));
   transform-origin: bottom;
-  opacity: 0;
-  animation: rise 0.9s ease forwards;
+  transform: scaleY(1);
 }
 
-@keyframes draw {
-  to {
-    stroke-dashoffset: 0;
-  }
+.scanLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(125, 238, 192, 0.7), transparent);
+  box-shadow: 0 0 18px rgba(125, 238, 192, 0.6);
+  pointer-events: none;
 }
 
-@keyframes rise {
-  from {
-    transform: scaleY(0.15);
-    opacity: 0;
-  }
+.typeCursor {
+  display: inline-block;
+  margin-left: 2px;
+  animation: blink 1s steps(1, end) infinite;
+}
 
-  to {
-    transform: scaleY(1);
+@keyframes blink {
+  0%,
+  50% {
     opacity: 1;
+  }
+
+  50.1%,
+  100% {
+    opacity: 0;
   }
 }
 
@@ -108,8 +112,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .mesh,
-  .curve,
-  .volumeBar {
+  .typeCursor {
     animation: none !important;
   }
 }

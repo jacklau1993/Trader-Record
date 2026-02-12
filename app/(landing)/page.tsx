@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import AnimatedInsightBoard from "./_components/AnimatedInsightBoard";
 import styles from "./landing.module.css";
 
 const proofStats = [
@@ -221,55 +222,7 @@ export default function LandingPage() {
                   </article>
                 </div>
 
-                <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#080c12] p-4">
-                  <div className="mb-4 flex items-center justify-between">
-                    <p className="text-xs uppercase tracking-[0.14em] text-zinc-400">
-                      Equity Curve
-                    </p>
-                    <p className={`${styles.mono} text-xs text-emerald-300`}>
-                      +12.7% this month
-                    </p>
-                  </div>
-
-                  <svg viewBox="0 0 420 170" className="h-[170px] w-full">
-                    <defs>
-                      <linearGradient id="line" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#6bf4c0" />
-                        <stop offset="100%" stopColor="#8dc5ff" />
-                      </linearGradient>
-                      <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#6bf4c0" stopOpacity="0.25" />
-                        <stop offset="100%" stopColor="#6bf4c0" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-
-                    <path
-                      d="M0 140 C40 120 55 122 90 98 C130 68 150 78 190 66 C230 53 250 42 290 38 C330 34 355 10 420 18 L420 170 L0 170 Z"
-                      fill="url(#fill)"
-                    />
-                    <path
-                      d="M0 140 C40 120 55 122 90 98 C130 68 150 78 190 66 C230 53 250 42 290 38 C330 34 355 10 420 18"
-                      fill="none"
-                      stroke="url(#line)"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      className={styles.curve}
-                    />
-                  </svg>
-
-                  <div className="mt-3 grid grid-cols-5 gap-2">
-                    {[36, 44, 58, 63, 79].map((height, index) => (
-                      <div
-                        key={height}
-                        className={styles.volumeBar}
-                        style={{
-                          height: `${height}%`,
-                          animationDelay: `${index * 110}ms`,
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
+                <AnimatedInsightBoard />
 
                 <p className="rounded-xl border border-emerald-300/25 bg-emerald-300/10 px-3 py-2 text-xs text-emerald-100">
                   Rule break alert: most losses came after 10:45 AM. Consider
