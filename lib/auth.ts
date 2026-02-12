@@ -6,79 +6,80 @@ import * as schema from "../db/schema";
 
 // Function to get or create auth instance with proper DB binding
 export const getAuth = (customOrigin?: string | null) => {
-    // Always get fresh DB in case context changed
-    const db = getDb();
+  // Always get fresh DB in case context changed
+  const db = getDb();
 
-    const trustedOrigins = [
-        "https://trader-record.pages.dev",
-        "http://localhost:3000", // next dev
-        "http://localhost:8788", // wrangler pages dev
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:8788"
-    ];
+  const trustedOrigins = [
+    "https://trader-record.pages.dev",
+    "https://traderrecord.uk",
+    "http://localhost:3000", // next dev
+    "http://localhost:8788", // wrangler pages dev
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8788",
+  ];
 
-    // Determine the base URL for OAuth redirects
-    // Priority: customOrigin (from request) > BETTER_AUTH_URL env var > default
-    let baseURL = process.env.BETTER_AUTH_URL || "https://trader-record.pages.dev";
-    
-    if (customOrigin && (
-        customOrigin.endsWith(".trader-record.pages.dev") || 
-        customOrigin.endsWith("trader-record.pages.dev") ||
-        customOrigin.includes("localhost")
-    )) {
-        // Use the request origin as base URL for preview deployments
-        baseURL = customOrigin;
-        if (!trustedOrigins.includes(customOrigin)) {
-            trustedOrigins.push(customOrigin);
-        }
+  // Determine the base URL for OAuth redirects
+  // Priority: customOrigin (from request) > BETTER_AUTH_URL env var > default
+  let baseURL =
+    process.env.BETTER_AUTH_URL || "https://trader-record.pages.dev";
+
+  if (
+    customOrigin &&
+    (customOrigin.endsWith(".trader-record.pages.dev") ||
+      customOrigin.endsWith("trader-record.pages.dev") ||
+      customOrigin.includes("localhost"))
+  ) {
+    // Use the request origin as base URL for preview deployments
+    baseURL = customOrigin;
+    if (!trustedOrigins.includes(customOrigin)) {
+      trustedOrigins.push(customOrigin);
     }
+  }
 
-    // Note: Email verification is disabled because Resend's test domain (onboarding@resend.dev)
-    // can only send to the email registered with your Resend account.
-    // To enable, verify a custom domain in Resend and uncomment the email sections below.
+  // Note: Email verification is disabled because Resend's test domain (onboarding@resend.dev)
+  // can only send to the email registered with your Resend account.
+  // To enable, verify a custom domain in Resend and uncomment the email sections below.
 
-    // Create auth instance with current DB
-    return betterAuth({
-        baseURL, // Dynamic base URL for OAuth redirects
-        database: drizzleAdapter(db, {
-            provider: "sqlite",
-            schema: schema
-        }),
-        emailAndPassword: {
-            enabled: true,
-            // requireEmailVerification: true, // Enable when you have a verified domain
-        },
-        socialProviders: {
-            google: {
-                clientId: process.env.GOOGLE_CLIENT_ID!,
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-            },
-        },
-        plugins: [],
-        // Uncomment this section when you have a verified domain in Resend:
-        // emailVerification: {
-        //     sendOnSignUp: true,
-        //     autoSignInAfterVerification: true,
-        //     sendVerificationEmail: async ({ user, url }) => {
-        //         const resend = new Resend(process.env.RESEND_API_KEY);
-        //         await resend.emails.send({
-        //             from: "TraderRecord <noreply@yourdomain.com>",
-        //             to: user.email,
-        //             subject: "Verify Your Email",
-        //             html: `<a href="${url}">Verify Email</a>`
-        //         });
-        //     }
-        // },
-        trustedOrigins: trustedOrigins
-    });
+  // Create auth instance with current DB
+  return betterAuth({
+    baseURL, // Dynamic base URL for OAuth redirects
+    database: drizzleAdapter(db, {
+      provider: "sqlite",
+      schema: schema,
+    }),
+    emailAndPassword: {
+      enabled: true,
+      // requireEmailVerification: true, // Enable when you have a verified domain
+    },
+    socialProviders: {
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID!,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      },
+    },
+    plugins: [],
+    // Uncomment this section when you have a verified domain in Resend:
+    // emailVerification: {
+    //     sendOnSignUp: true,
+    //     autoSignInAfterVerification: true,
+    //     sendVerificationEmail: async ({ user, url }) => {
+    //         const resend = new Resend(process.env.RESEND_API_KEY);
+    //         await resend.emails.send({
+    //             from: "TraderRecord <noreply@yourdomain.com>",
+    //             to: user.email,
+    //             subject: "Verify Your Email",
+    //             html: `<a href="${url}">Verify Email</a>`
+    //         });
+    //     }
+    // },
+    trustedOrigins: trustedOrigins,
+  });
 };
 
 // For backward compatibility, export a lazy getter
 export const auth = new Proxy({} as ReturnType<typeof betterAuth>, {
-    get(target, prop) {
-        const authInstance = getAuth();
-        return (authInstance as any)[prop];
-    }
+  get(target, prop) {
+    const authInstance = getAuth();
+    return (authInstance as any)[prop];
+  },
 });
-
-
