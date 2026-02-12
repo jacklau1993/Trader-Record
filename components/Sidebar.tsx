@@ -161,12 +161,14 @@ export function MobileSidebar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="sticky top-0 z-40 flex h-14 items-center border-b border-white/10 bg-[#0d1420]/95 px-4 backdrop-blur-xl md:hidden">
+    <div className="sticky top-0 z-40 flex h-14 items-center gap-2 border-b border-white/10 bg-[#0d1420]/95 px-4 backdrop-blur-xl pointer-events-auto md:hidden">
       <button
+        type="button"
+        aria-label="Open menu"
         onClick={() => setOpen(true)}
-        className="mr-2 rounded-md p-2 text-zinc-300 hover:bg-white/10 focus:outline-none focus:ring-1 focus:ring-ring"
+        className="relative z-[60] inline-flex h-9 w-9 items-center justify-center rounded-lg border border-emerald-300/35 bg-emerald-300/12 text-emerald-100 shadow-[0_0_0_1px_rgba(94,242,183,0.12)] transition hover:bg-emerald-300/20 focus:outline-none focus:ring-2 focus:ring-emerald-300/60"
       >
-        <Menu className="h-5 w-5" />
+        <Menu className="h-5 w-5" strokeWidth={2.4} />
         <span className="sr-only">Open sidebar</span>
       </button>
       <div className="font-semibold tracking-wide text-zinc-100">TraderRecord</div>
