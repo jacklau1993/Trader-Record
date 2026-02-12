@@ -1,389 +1,477 @@
-"use client";
-
-import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import {
-  BarChart3,
-  LineChart,
-  BookOpen,
-  ShieldCheck,
-  Zap,
-  Globe,
-  Menu,
-  X,
-  CheckCircle2,
   ArrowRight,
+  BarChart3,
+  BookOpenText,
+  CalendarCheck2,
+  Link2,
+  ShieldCheck,
+  Sparkles,
+  Star,
 } from "lucide-react";
-import { Sheet } from "@/components/ui/sheet";
-import { useState, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import HeroGraphic from "./_components/HeroGraphic";
-import { cn } from "@/lib/utils";
 
-// --- Components ---
+import { Button } from "@/components/ui/button";
+import styles from "./landing.module.css";
 
-const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const proofStats = [
+  { label: "Tracked Trades", value: "2.4M+" },
+  { label: "Profitable Setups Tagged", value: "310K+" },
+  { label: "Broker + Prop Feeds", value: "40+" },
+];
 
-  return (
-    <motion.nav
-      className="fixed top-0 w-full z-50 border-b border-white/5 bg-background/60 backdrop-blur-xl"
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-    >
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
-            <Image
-              src="/favicon.png"
-              width={32}
-              height={32}
-              alt="TraderRecord Logo"
-            />
-          </div>
-          <span className="font-bold text-xl tracking-tight text-white">
-            TraderRecord
-          </span>
-        </Link>
+const featureCards = [
+  {
+    icon: Link2,
+    title: "Auto-Sync Every Account",
+    description:
+      "Connect brokers and prop firm accounts once, then keep all journals in sync without CSV cleanup.",
+  },
+  {
+    icon: BarChart3,
+    title: "Metrics That Expose Edge",
+    description:
+      "Break down expectancy, time-of-day performance, execution quality, and strategy heatmaps in one place.",
+  },
+  {
+    icon: BookOpenText,
+    title: "Context-Rich Journaling",
+    description:
+      "Capture screenshots, notes, and emotions next to each position so your reviews are about decisions, not memory.",
+  },
+  {
+    icon: CalendarCheck2,
+    title: "Daily Review System",
+    description:
+      "Use session templates and reminders to close each day with clear wins, mistakes, and one next improvement.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Private by Design",
+    description:
+      "Read-only trade connections, encrypted storage, and secure auth keep your account and data under your control.",
+  },
+];
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-6">
-          <Link href="/sign-in">
-            <Button className="bg-gradient-to-r from-amber-500 to-purple-600 hover:from-amber-600 hover:to-purple-700 text-white border-0 shadow-lg shadow-purple-500/20">
-              Get Started
-            </Button>
-          </Link>
-        </div>
+const habitLoops = [
+  {
+    step: "01",
+    title: "Capture",
+    description: "Your trades, screenshots, and notes are logged instantly with no manual spreadsheet work.",
+  },
+  {
+    step: "02",
+    title: "Diagnose",
+    description: "Find the exact setup, time window, and behavior patterns behind your best and worst weeks.",
+  },
+  {
+    step: "03",
+    title: "Refine",
+    description: "Turn insights into rules, track adherence, and compound consistency with a repeatable process.",
+  },
+];
 
-        {/* Mobile Nav */}
-        <div className="md:hidden">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-gray-300"
-            onClick={() => setIsOpen(true)}
-          >
-            <Menu className="w-6 h-6" />
-          </Button>
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <div className="flex flex-col gap-6 mt-10 p-6 bg-[#0F172A] h-full">
-              <Link href="/sign-in" onClick={() => setIsOpen(false)}>
-                <Button className="w-full bg-gradient-to-r from-amber-500 to-purple-600 text-white">
-                  Get Started
-                </Button>
-              </Link>
-            </div>
-          </Sheet>
-        </div>
-      </div>
-    </motion.nav>
-  );
-};
+const testimonials = [
+  {
+    quote:
+      "I stopped guessing which setup was actually paying me. The review flow made my execution noticeably cleaner in two weeks.",
+    name: "M. Rivera",
+    role: "Futures Trader",
+  },
+  {
+    quote:
+      "The multi-account view solved my prop firm chaos. I finally see my true risk across accounts before I overtrade.",
+    name: "A. Foster",
+    role: "Prop Firm Trader",
+  },
+  {
+    quote:
+      "The psychology notes tied to performance are the difference. I can literally see when discipline slips and fix it fast.",
+    name: "J. Patel",
+    role: "Index Scalper",
+  },
+];
 
-const FeatureCard = ({
-  icon: Icon,
-  title,
-  description,
-  className,
-}: {
-  icon: any;
-  title: string;
-  description: string;
-  className?: string;
-}) => (
-  <motion.div
-    variants={{
-      hidden: { opacity: 0, y: 20 },
-      visible: { opacity: 1, y: 0 },
-    }}
-    className={cn(
-      "group relative overflow-hidden rounded-2xl border border-white/5 bg-white/5 p-6 hover:bg-white/10 transition-colors duration-300",
-      className,
-    )}
-  >
-    <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-    <div className="relative z-10">
-      <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-4 text-amber-500 group-hover:scale-110 transition-transform duration-300">
-        <Icon className="w-6 h-6" />
-      </div>
-      <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-      <p className="text-gray-400 leading-relaxed">{description}</p>
-    </div>
-  </motion.div>
-);
-
-const BentoGrid = () => {
-  return (
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ staggerChildren: 0.1 }}
-      className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[minmax(180px,auto)]"
-    >
-      {/* Main Feature - Spans 2 cols, 2 rows */}
-      <FeatureCard
-        icon={BarChart3}
-        title="Advanced Analytics Dashboard"
-        description="Gain deep insights into your trading performance with our powerful analytics engine. Track win rates, profit factors, and more in real-time."
-        className="md:col-span-2 md:row-span-2 bg-gradient-to-br from-white/5 to-white/0"
-      />
-
-      {/* Secondary Features */}
-      <FeatureCard
-        icon={BookOpen}
-        title="Smart Journaling"
-        description="Log trades with rich context. Attach notes, tags, and screenshots."
-        className="md:col-span-1 md:row-span-1"
-      />
-      <FeatureCard
-        icon={ShieldCheck}
-        title="Secure & Private"
-        description="Your data is encrypted and stored securely. We prioritize your privacy above all."
-        className="md:col-span-1 md:row-span-1"
-      />
-
-      {/* Bottom Row */}
-      <FeatureCard
-        icon={Zap}
-        title="Fast Data Sync"
-        description="Instant synchronization across all your devices. Never miss a beat."
-        className="md:col-span-1"
-      />
-      <FeatureCard
-        icon={Globe}
-        title="Prop Firm Manager"
-        description="Manage multiple prop firm accounts in one centralized place."
-        className="md:col-span-2"
-      />
-    </motion.div>
-  );
-};
-
-const StepCard = ({
-  number,
-  title,
-  description,
-  delay,
-}: {
-  number: string;
-  title: string;
-  description: string;
-  delay: number;
-}) => (
-  <motion.div
-    initial={{ opacity: 0, x: -20 }}
-    whileInView={{ opacity: 1, x: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay, type: "spring", stiffness: 100 }}
-    className="relative pl-8 md:pl-0"
-  >
-    <div className="md:hidden absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-amber-500/50 to-transparent"></div>
-    <div className="md:hidden absolute left-[-4px] top-0 w-2 h-2 rounded-full bg-amber-500"></div>
-
-    <h3 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-white/20 mb-2">
-      {number}
-    </h3>
-    <h4 className="text-xl font-bold text-white mb-2">{title}</h4>
-    <p className="text-gray-400">{description}</p>
-  </motion.div>
-);
+const brokerTape = [
+  "Tradovate",
+  "NinjaTrader",
+  "Rithmic",
+  "TradingView",
+  "MetaTrader",
+  "cTrader",
+  "Interactive Brokers",
+  "Topstep",
+  "Apex",
+  "Take Profit Trader",
+];
 
 export default function LandingPage() {
   return (
-    <div className="relative min-h-screen overflow-x-hidden text-foreground bg-[#0F172A] selection:bg-amber-500/30">
-      <Navbar />
+    <main className={styles.page}>
+      <div className={styles.mesh} aria-hidden />
+      <div className={styles.noise} aria-hidden />
 
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="text-center lg:text-left z-10"
-            >
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6 leading-[1.1]">
-                Master Your Strategy <br />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-purple-500 animate-gradient">
-                  Maximize Your Edge
-                </span>
-              </h1>
-              <p className="text-lg md:text-xl text-gray-400 mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                The professional trading journal designed for serious traders.
-                Analyze your performance, manage prop firm accounts, and scale
-                your success.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link href="/sign-in">
-                  <Button
-                    size="lg"
-                    className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-purple-600 hover:from-amber-600 hover:to-purple-700 text-white border-0 shadow-lg shadow-purple-500/20 text-lg px-8 h-12 rounded-full transition-transform hover:scale-105"
-                  >
-                    Start Journaling Free
-                  </Button>
-                </Link>
-              </div>
-
-              <div className="mt-10 flex items-center justify-center lg:justify-start gap-8 opacity-70">
-                <div>
-                  <div className="text-2xl font-bold text-white">100%</div>
-                  <div className="text-xs text-gray-400 uppercase tracking-wider">
-                    Secure
-                  </div>
-                </div>
-                <div className="w-px h-10 bg-white/10"></div>
-                <div>
-                  <div className="text-2xl font-bold text-white">Fast</div>
-                  <div className="text-xs text-gray-400 uppercase tracking-wider">
-                    Sync
-                  </div>
-                </div>
-                <div className="w-px h-10 bg-white/10"></div>
-                <div>
-                  <div className="text-2xl font-bold text-white">Cloud</div>
-                  <div className="text-xs text-gray-400 uppercase tracking-wider">
-                    Storage
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1, delay: 0.2 }}
-              className="relative"
-            >
-              <HeroGraphic />
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Background Glows */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-purple-600/20 blur-[120px] rounded-full pointer-events-none -z-10 opacity-30"></div>
-        <div className="absolute bottom-0 right-0 w-[800px] h-[600px] bg-amber-500/10 blur-[100px] rounded-full pointer-events-none -z-10 opacity-20"></div>
-      </section>
-
-      {/* Features Section - Bento Grid */}
-      <section className="py-24 relative">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-              Everything You Need to Win
-            </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto text-lg">
-              Powerful tools built to help you find your edge and stay
-              consistent.
-            </p>
-          </motion.div>
-
-          <BentoGrid />
-        </div>
-      </section>
-
-      {/* Workflow Section */}
-      <section className="py-24 bg-white/5 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[#0F172A]/80 backdrop-blur-3xl"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-              Your Path to Consistency
-            </h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-12 text-center md:text-left">
-            <StepCard
-              number="01"
-              title="Record"
-              description="Log your trades effortlessely. Capture entries, exits, and emotions in real-time."
-              delay={0.1}
-            />
-            <StepCard
-              number="02"
-              title="Analyze"
-              description="visualize your performance. Identify mistakes and double down on what works."
-              delay={0.2}
-            />
-            <StepCard
-              number="03"
-              title="Refine"
-              description="Adjust your strategy based on data. Build discipline and scale your account."
-              delay={0.3}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-32 relative overflow-hidden">
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-3xl p-12 md:p-20 shadow-2xl relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/20 blur-[80px] rounded-full pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/20 blur-[80px] rounded-full pointer-events-none"></div>
-
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">
-              Ready to Level Up?
-            </h2>
-            <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
-              Join thousands of traders who are taking control of their
-              performance with TraderRecord.
-            </p>
-            <Link href="/sign-in">
-              <Button
-                size="lg"
-                className="bg-white text-black hover:bg-gray-200 text-lg px-10 h-14 rounded-full font-bold shadow-lg shadow-white/10 transition-transform hover:scale-105"
-              >
-                Get Started Now
-              </Button>
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/5 py-12 bg-black/20 backdrop-blur-md">
-        <div className="container mx-auto px-4 text-center text-gray-500">
-          <div className="flex items-center justify-center gap-2 mb-4 opacity-50">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#090b10]/70 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 md:px-6">
+          <Link href="/" className="flex items-center gap-3">
             <Image
               src="/favicon.png"
-              width={24}
-              height={24}
-              alt="TraderRecord Logo"
-              className="rounded-md"
+              width={34}
+              height={34}
+              alt="TraderRecord"
+              className="rounded-lg"
             />
-            <span className="font-semibold text-white">TraderRecord</span>
+            <span className={`text-lg tracking-wide ${styles.display}`}>
+              TraderRecord
+            </span>
+          </Link>
+
+          <div className="flex items-center gap-2 md:gap-3">
+            <Button
+              asChild
+              variant="ghost"
+              className="hidden text-zinc-300 hover:bg-white/10 hover:text-white sm:inline-flex"
+            >
+              <Link href="/sign-in">Sign in</Link>
+            </Button>
+            <Button
+              asChild
+              className="h-10 rounded-full bg-[#5ef2b7] px-5 text-sm font-semibold text-[#06100d] shadow-[0_0_0_1px_rgba(255,255,255,0.12)] transition hover:bg-[#74ffc5]"
+            >
+              <Link href="/sign-in">Start Free</Link>
+            </Button>
           </div>
-          <p className="mb-8">
-            © {new Date().getFullYear()} TraderRecord. All rights reserved.
+        </div>
+      </header>
+
+      <section className="relative overflow-hidden px-4 pb-20 pt-14 md:px-6 md:pb-24 md:pt-20">
+        <div className="mx-auto grid w-full max-w-6xl gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+          <div>
+            <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-300/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">
+              <Sparkles className="h-4 w-4" />
+              Precision Journaling for Serious Traders
+            </p>
+
+            <h1
+              className={`text-5xl leading-[0.9] text-white sm:text-6xl md:text-7xl lg:text-8xl ${styles.display}`}
+            >
+              Trade Less Noise.
+              <br />
+              Compound More Edge.
+            </h1>
+
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-zinc-300 md:text-lg">
+              TraderRecord transforms raw executions into actionable decisions.
+              Connect your accounts, surface the patterns that actually pay, and
+              build a review routine that sharpens performance week after week.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Button
+                asChild
+                className="h-12 rounded-full bg-[#5ef2b7] px-7 text-base font-semibold text-[#06100d] transition hover:bg-[#74ffc5]"
+              >
+                <Link href="/sign-in" className="inline-flex items-center gap-2">
+                  Start Journaling Free
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="h-12 rounded-full border-white/20 bg-white/5 px-7 text-base text-zinc-100 hover:bg-white/10"
+              >
+                <Link href="/sign-in">See Demo Dashboard</Link>
+              </Button>
+            </div>
+
+            <div className="mt-10 grid max-w-2xl gap-3 sm:grid-cols-3">
+              {proofStats.map((item) => (
+                <article
+                  key={item.label}
+                  className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4"
+                >
+                  <p className={`${styles.mono} text-xl text-emerald-200`}>
+                    {item.value}
+                  </p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.12em] text-zinc-400">
+                    {item.label}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.shellWrap}>
+            <div className={styles.shellGlow} aria-hidden />
+            <div className={styles.shell}>
+              <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-rose-400/90" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-amber-300/90" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-300/90" />
+                </div>
+                <p className={`${styles.mono} text-xs text-zinc-400`}>
+                  Session Overview
+                </p>
+              </div>
+
+              <div className="space-y-4 p-5">
+                <div className="grid grid-cols-3 gap-3">
+                  <article className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                    <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-400">
+                      Win Rate
+                    </p>
+                    <p className={`${styles.mono} mt-1 text-lg text-emerald-200`}>
+                      68.4%
+                    </p>
+                  </article>
+                  <article className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                    <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-400">
+                      Expectancy
+                    </p>
+                    <p className={`${styles.mono} mt-1 text-lg text-cyan-200`}>
+                      +0.42R
+                    </p>
+                  </article>
+                  <article className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                    <p className="text-[11px] uppercase tracking-[0.14em] text-zinc-400">
+                      Rule Score
+                    </p>
+                    <p className={`${styles.mono} mt-1 text-lg text-amber-200`}>
+                      91/100
+                    </p>
+                  </article>
+                </div>
+
+                <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#080c12] p-4">
+                  <div className="mb-4 flex items-center justify-between">
+                    <p className="text-xs uppercase tracking-[0.14em] text-zinc-400">
+                      Equity Curve
+                    </p>
+                    <p className={`${styles.mono} text-xs text-emerald-300`}>
+                      +12.7% this month
+                    </p>
+                  </div>
+
+                  <svg viewBox="0 0 420 170" className="h-[170px] w-full">
+                    <defs>
+                      <linearGradient id="line" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#6bf4c0" />
+                        <stop offset="100%" stopColor="#8dc5ff" />
+                      </linearGradient>
+                      <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#6bf4c0" stopOpacity="0.25" />
+                        <stop offset="100%" stopColor="#6bf4c0" stopOpacity="0" />
+                      </linearGradient>
+                    </defs>
+
+                    <path
+                      d="M0 140 C40 120 55 122 90 98 C130 68 150 78 190 66 C230 53 250 42 290 38 C330 34 355 10 420 18 L420 170 L0 170 Z"
+                      fill="url(#fill)"
+                    />
+                    <path
+                      d="M0 140 C40 120 55 122 90 98 C130 68 150 78 190 66 C230 53 250 42 290 38 C330 34 355 10 420 18"
+                      fill="none"
+                      stroke="url(#line)"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      className={styles.curve}
+                    />
+                  </svg>
+
+                  <div className="mt-3 grid grid-cols-5 gap-2">
+                    {[36, 44, 58, 63, 79].map((height, index) => (
+                      <div
+                        key={height}
+                        className={styles.volumeBar}
+                        style={{
+                          height: `${height}%`,
+                          animationDelay: `${index * 110}ms`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <p className="rounded-xl border border-emerald-300/25 bg-emerald-300/10 px-3 py-2 text-xs text-emerald-100">
+                  Rule break alert: most losses came after 10:45 AM. Consider
+                  hard stop after 3 consecutive losing trades.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-white/10 bg-black/20 py-4">
+        <div className="mx-auto w-full max-w-6xl overflow-hidden">
+          <div className={styles.ticker}>
+            {[...brokerTape, ...brokerTape].map((broker, index) => (
+              <span
+                key={`${broker}-${index}`}
+                className="mx-2 inline-flex items-center rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs uppercase tracking-[0.14em] text-zinc-300"
+              >
+                {broker}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-20 md:px-6">
+        <div className="mx-auto w-full max-w-6xl">
+          <div className="mb-12 flex flex-col gap-4 md:mb-14 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">
+                Platform Highlights
+              </p>
+              <h2
+                className={`mt-3 text-4xl leading-[0.95] text-white sm:text-5xl md:text-6xl ${styles.display}`}
+              >
+                Built for Traders Who Review Like Professionals
+              </h2>
+            </div>
+            <p className="max-w-md text-zinc-300">
+              Inspired by modern journaling products, redesigned with a sharper
+              structure: less marketing noise, more outcome-focused clarity.
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {featureCards.map(({ icon: Icon, title, description }) => (
+              <article
+                key={title}
+                className="group rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition hover:border-emerald-300/35 hover:bg-white/[0.05]"
+              >
+                <div className="mb-4 inline-flex rounded-xl border border-emerald-300/30 bg-emerald-300/10 p-3 text-emerald-200">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <h3 className="text-xl font-semibold text-white">{title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-zinc-300">
+                  {description}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 pb-20 md:px-6">
+        <div className="mx-auto grid w-full max-w-6xl gap-6 rounded-3xl border border-white/10 bg-white/[0.03] p-6 md:grid-cols-[1.05fr_0.95fr] md:p-8">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">
+              Trading Improvement Loop
+            </p>
+            <h2
+              className={`mt-3 text-4xl leading-[0.95] text-white sm:text-5xl ${styles.display}`}
+            >
+              A Weekly Routine You Can Actually Stick To
+            </h2>
+            <p className="mt-5 max-w-xl text-zinc-300">
+              Most landing pages sell features. TraderRecord is designed to
+              build behavior. Every section of the product points back to one
+              goal: repeatable, data-backed execution.
+            </p>
+            <div className="mt-8 space-y-4">
+              {habitLoops.map((loop) => (
+                <article
+                  key={loop.step}
+                  className="rounded-2xl border border-white/10 bg-black/20 p-4"
+                >
+                  <p className={`${styles.mono} text-sm text-cyan-200`}>
+                    Step {loop.step}
+                  </p>
+                  <h3 className="mt-1 text-lg font-semibold text-white">
+                    {loop.title}
+                  </h3>
+                  <p className="mt-2 text-sm text-zinc-300">{loop.description}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4">
+            {testimonials.map((entry) => (
+              <article
+                key={entry.name}
+                className="rounded-2xl border border-white/10 bg-[#0a0f15] p-5"
+              >
+                <div className="mb-3 flex text-amber-300">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <Star key={index} className="h-4 w-4 fill-current" />
+                  ))}
+                </div>
+                <p className="text-sm leading-relaxed text-zinc-200">
+                  {entry.quote}
+                </p>
+                <p className="mt-4 text-sm font-semibold text-white">
+                  {entry.name}
+                </p>
+                <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">
+                  {entry.role}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 pb-24 md:px-6">
+        <div className="mx-auto w-full max-w-6xl overflow-hidden rounded-3xl border border-emerald-200/20 bg-gradient-to-r from-emerald-300/20 via-cyan-300/15 to-blue-300/20 p-8 md:p-10">
+          <p className="text-xs uppercase tracking-[0.2em] text-emerald-100/90">
+            Ready to level up your execution?
+          </p>
+          <h2
+            className={`mt-3 text-4xl leading-[0.95] text-white sm:text-5xl md:text-6xl ${styles.display}`}
+          >
+            Replace Guesswork With Measurable Progress
+          </h2>
+          <p className="mt-5 max-w-2xl text-zinc-100/90">
+            Start your journal, connect accounts, and get your first improvement
+            report in minutes.
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Button
+              asChild
+              className="h-12 rounded-full bg-[#5ef2b7] px-7 text-base font-semibold text-[#06100d] transition hover:bg-[#74ffc5]"
+            >
+              <Link href="/sign-in" className="inline-flex items-center gap-2">
+                Create Free Account
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="h-12 rounded-full border-white/30 bg-white/5 px-7 text-base text-white hover:bg-white/10"
+            >
+              <Link href="/sign-in">Explore Trading Journal</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-white/10 px-4 py-8 md:px-6">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 text-zinc-400 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/favicon.png"
+              width={22}
+              height={22}
+              alt="TraderRecord"
+              className="rounded"
+            />
+            <span className={`text-base text-zinc-200 ${styles.display}`}>
+              TraderRecord
+            </span>
+          </div>
+          <p className="text-xs uppercase tracking-[0.12em]">
+            © {new Date().getFullYear()} TraderRecord. Built for disciplined
+            trading.
           </p>
         </div>
       </footer>
-    </div>
+    </main>
   );
 }
