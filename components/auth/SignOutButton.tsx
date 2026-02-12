@@ -27,7 +27,7 @@ export function SignOutButton({ className, collapsed }: SignOutButtonProps) {
         <button
             onClick={handleSignOut}
             className={cn(
-                "flex items-center w-full p-2 text-sm font-medium rounded-md hover:bg-muted text-red-500 hover:text-red-600 transition-colors",
+                "flex w-full items-center rounded-lg border border-transparent p-2 text-sm font-medium text-rose-300 transition-all hover:border-rose-300/20 hover:bg-rose-400/10 hover:text-rose-200",
                 className
             )}
             title="Sign Out"

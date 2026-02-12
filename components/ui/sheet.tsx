@@ -17,13 +17,13 @@ export function Sheet({ open, onOpenChange, children }: SheetProps) {
         <div className="fixed inset-0 z-50 flex">
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/80 transition-opacity animate-in fade-in-0"
+                className="fixed inset-0 bg-black/70 backdrop-blur-[1px] transition-opacity animate-in fade-in-0"
                 onClick={() => onOpenChange(false)}
             />
 
             {/* Drawer */}
             <div className={cn(
-                "relative z-50 h-full w-3/4 max-w-[300px] border-r bg-background p-0 shadow-lg transition ease-in-out animate-in slide-in-from-left-full duration-300 sm:max-w-sm",
+                "relative z-50 h-full w-3/4 max-w-[300px] border-r border-white/10 bg-[#0d1420]/95 p-0 shadow-2xl backdrop-blur-xl transition ease-in-out animate-in slide-in-from-left-full duration-300 sm:max-w-sm",
             )}>
                 <button
                     className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary"

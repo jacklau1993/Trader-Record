@@ -57,13 +57,14 @@ const SidebarContent = () => {
   const initials = getInitials(user?.name, user?.email);
 
   return (
-    <div className="flex h-full flex-col border-r border-border bg-card">
-      <div className="flex h-14 items-center border-b border-border px-6">
-        <span className="text-xl font-bold bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
+    <div className="relative flex h-full flex-col border-r border-white/10 bg-[#0d1420]/95 backdrop-blur-xl">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-emerald-300/10 via-transparent to-cyan-300/5" />
+      <div className="relative flex h-14 items-center border-b border-white/10 px-6">
+        <span className="text-xl font-bold tracking-wide bg-gradient-to-r from-emerald-200 to-cyan-100 bg-clip-text text-transparent">
           TraderRecord
         </span>
       </div>
-      <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
+      <nav className="relative flex-1 space-y-1 overflow-y-auto px-3 py-4">
         {navigation.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
@@ -78,18 +79,18 @@ const SidebarContent = () => {
               key={item.name}
               href={href}
               className={cn(
-                "group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "group flex items-center rounded-lg border px-3 py-2 text-sm font-medium transition-all",
                 isActive
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  ? "border-emerald-300/30 bg-emerald-300/12 text-emerald-200 shadow-[0_0_0_1px_rgba(94,242,183,0.14)]"
+                  : "border-transparent text-zinc-300 hover:border-white/10 hover:bg-white/[0.04] hover:text-white",
               )}
             >
               <item.icon
                 className={cn(
                   "mr-3 h-5 w-5 flex-shrink-0",
                   isActive
-                    ? "text-primary"
-                    : "text-muted-foreground group-hover:text-foreground",
+                    ? "text-emerald-200"
+                    : "text-zinc-500 group-hover:text-zinc-200",
                 )}
                 aria-hidden="true"
               />
@@ -98,26 +99,26 @@ const SidebarContent = () => {
           );
         })}
       </nav>
-      <div className="border-t border-border p-4">
+      <div className="relative border-t border-white/10 p-4">
         {isPending ? (
           <div className="flex items-center mb-4">
-            <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+            <div className="h-8 w-8 rounded-full bg-white/10 animate-pulse" />
             <div className="ml-3 space-y-1">
-              <div className="h-4 w-20 bg-muted rounded animate-pulse" />
-              <div className="h-3 w-16 bg-muted rounded animate-pulse" />
+              <div className="h-4 w-20 rounded bg-white/10 animate-pulse" />
+              <div className="h-3 w-16 rounded bg-white/10 animate-pulse" />
             </div>
           </div>
         ) : user ? (
           <>
             <div className="flex items-center mb-4">
-              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full border border-emerald-200/30 bg-emerald-200/15 font-bold text-emerald-100">
                 {initials}
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium truncate max-w-[140px]">
+                <p className="max-w-[140px] truncate text-sm font-medium text-zinc-100">
                   {displayName}
                 </p>
-                <p className="text-xs text-muted-foreground truncate max-w-[140px]">
+                <p className="max-w-[140px] truncate text-xs text-zinc-400">
                   {user.email}
                 </p>
               </div>
@@ -127,7 +128,7 @@ const SidebarContent = () => {
         ) : (
           <Link
             href="/sign-in"
-            className="flex items-center gap-2 w-full rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="flex w-full items-center gap-2 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-zinc-300 transition-all hover:border-white/10 hover:bg-white/[0.04] hover:text-white"
           >
             <LogIn className="h-4 w-4" />
             Sign In
@@ -143,7 +144,7 @@ export function Sidebar() {
     <div className="hidden md:flex h-screen w-64 flex-col">
       <Suspense
         fallback={
-          <div className="flex h-full flex-col border-r border-border bg-card animate-pulse" />
+          <div className="flex h-full flex-col border-r border-white/10 bg-[#0d1420]/95 animate-pulse" />
         }
       >
         <SidebarContent />
@@ -157,20 +158,20 @@ export function MobileSidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="sticky top-0 z-40 flex h-14 items-center border-b border-border bg-background px-4 md:hidden">
+    <div className="sticky top-0 z-40 flex h-14 items-center border-b border-white/10 bg-[#0d1420]/95 px-4 backdrop-blur-xl md:hidden">
       <button
         onClick={() => setOpen(true)}
-        className="mr-2 rounded-md p-2 text-muted-foreground hover:bg-muted focus:outline-none focus:ring-1 focus:ring-ring"
+        className="mr-2 rounded-md p-2 text-zinc-300 hover:bg-white/10 focus:outline-none focus:ring-1 focus:ring-ring"
       >
         <Menu className="h-5 w-5" />
         <span className="sr-only">Open sidebar</span>
       </button>
-      <div className="font-semibold">TraderRecord</div>
+      <div className="font-semibold tracking-wide text-zinc-100">TraderRecord</div>
       <Sheet open={open} onOpenChange={setOpen}>
         <div onClick={() => setOpen(false)} className="h-full">
           <Suspense
             fallback={
-              <div className="h-full border-r border-border bg-card animate-pulse" />
+              <div className="h-full border-r border-white/10 bg-[#0d1420]/95 animate-pulse" />
             }
           >
             <SidebarContent />

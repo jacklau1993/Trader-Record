@@ -6,10 +6,10 @@ export default function AppLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex h-screen overflow-hidden flex-col md:flex-row w-full">
+    <div className="tr-app-shell flex h-screen w-full flex-col overflow-hidden md:flex-row">
       <MobileSidebar />
       <Sidebar />
-      <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden">
+      <main className="tr-app-main min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
         {children}
       </main>
     </div>
