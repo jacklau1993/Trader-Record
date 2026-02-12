@@ -8,7 +8,7 @@
 - 交易管理：新增/編輯/刪除，支援多標籤、方向/倉位/進出場時間與價格/P&L，依預設合約乘數自動算淨 P&L，並自動計算 Points、Planned/Realized R:R、風險、評分。
 - 多帳戶管理：
   - 個人帳戶：於「設定」中管理（如 Interactive Brokers, TD Ameritrade）。
-  - Prop Firm：專屬「Prop Firms」模組，追蹤成本、出金、考試狀態。
+  - Prop Firm：專屬「Prop Firms」模組，分頁式管理（帳戶總覽、月度收支、P&L 摘要、交易紀錄），支援 GBP 支出／USD 出金追蹤、ROI 計算。
 - 標籤與分類：自訂分類+標籤，顏色同步，供報表分析。
 - 報表：
   - **績效報表 (Performance Report)**：淨 P&L、獲利因子、勝率、期望值、最大回撤 (Drawdown)、平均持倉時間 (Avg Hold Time)、權益曲線 (Equity Curve)、日收益圖。
@@ -140,11 +140,12 @@ The dashboard provides a real-time overview of your trading performance.
 
 ### 3. Prop Firm Manager
 
-A dedicated module to track your funded trader journey.
+A dedicated module to track your funded trader journey with a **4-tab dashboard**:
 
-- **Track Status**: Monitor accounts by status: **Active**, **Pending**, **Passed**, or **Failed**.
-- **Financials**: Log the **Cost** (Evaluation fees) vs. **Payouts** (Realized gains) to track your true ROI.
-- **Payout History**: Record payout amounts and dates to keep financial records accurate.
+- **Prop Firms**: Manage accounts with status tracking (**Active**, **Pending**, **Passed**, **Failed**) and commission rates per instrument.
+- **Monthly View**: Side-by-side monthly tables for Expenses (£ GBP) and Payouts ($ USD), with per-month revenue summary.
+- **P&L Summary**: Per-firm breakdown of total expenses, payouts, net profit, and ROI (%).
+- **Transactions**: Add, edit, and delete individual expense/payout entries per firm, filtered by year.
 
 ### 4. Advanced Analytics & Reports
 
