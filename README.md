@@ -80,6 +80,8 @@ npx wrangler r2 bucket create trading-app-images
 ```
 
 3. 在 Pages/Workers 設定環境變數：`BETTER_AUTH_SECRET`、`BETTER_AUTH_URL`（正式網域）、`RESEND_API_KEY`（若啟用驗證信）。
+   - Google OAuth 的 Authorized redirect URI 需加入：`https://<你的 BETTER_AUTH_URL 網域>/api/auth/callback/google`
+   - 本地開發也需加入：`http://localhost:3000/api/auth/callback/google`
 4. 建置與部署
 
 ```bash
@@ -255,4 +257,7 @@ Access the app at `http://localhost:3000`.
 4.  **Configure Environment**:
     - Go to Cloudflare Dashboard > Pages > Settings > Environment Variables.
     - Add `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` (your production URL), and `RESEND_API_KEY`.
+    - In Google Cloud OAuth client settings, add Authorized redirect URI:
+      - `https://<your BETTER_AUTH_URL host>/api/auth/callback/google`
+      - `http://localhost:3000/api/auth/callback/google` (local dev)
     - Ensure the **D1 Database** binding (`DB`) and **R2 Bucket** binding (`IMAGES`) are correctly linked in the Pages settings.

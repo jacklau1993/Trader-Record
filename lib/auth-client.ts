@@ -1,6 +1,5 @@
 import { createAuthClient } from "better-auth/react"
 
-// No baseURL needed - the client will use relative URLs
-// which automatically work on any domain (localhost, staging, production)
+// Client uses same-origin /api/auth endpoints.
+// OAuth provider callback URLs are decided server-side by BETTER_AUTH_URL.
 export const authClient = createAuthClient()
-

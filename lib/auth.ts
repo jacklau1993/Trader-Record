@@ -4,6 +4,25 @@ import { getDb } from "./db";
 import * as schema from "../db/schema";
 // import { Resend } from "resend"; // Uncomment when you have a verified domain
 
+const DEFAULT_AUTH_URL = "https://trader-record.pages.dev";
+
+const normalizeOrigin = (url: string) => {
+  try {
+    return new URL(url).origin;
+  } catch {
+    return url.replace(/\/+$/, "");
+  }
+};
+
+const isLocalDevOrigin = (origin: string) => {
+  try {
+    const { hostname } = new URL(origin);
+    return hostname === "localhost" || hostname === "127.0.0.1";
+  } catch {
+    return false;
+  }
+};
+
 // Function to get or create auth instance with proper DB binding
 export const getAuth = (customOrigin?: string | null) => {
   // Always get fresh DB in case context changed
@@ -18,21 +37,22 @@ export const getAuth = (customOrigin?: string | null) => {
     "http://127.0.0.1:8788",
   ];
 
-  // Determine the base URL for OAuth redirects
-  // Priority: customOrigin (from request) > BETTER_AUTH_URL env var > default
-  let baseURL =
-    process.env.BETTER_AUTH_URL || "https://trader-record.pages.dev";
+  // Use a stable OAuth base URL to avoid Google redirect_uri_mismatch on preview domains.
+  const configuredBaseURL = normalizeOrigin(
+    process.env.BETTER_AUTH_URL || DEFAULT_AUTH_URL,
+  );
+  let baseURL = configuredBaseURL;
 
-  if (
-    customOrigin &&
-    (customOrigin.endsWith(".trader-record.pages.dev") ||
-      customOrigin.endsWith("trader-record.pages.dev") ||
-      customOrigin.includes("localhost"))
-  ) {
-    // Use the request origin as base URL for preview deployments
-    baseURL = customOrigin;
-    if (!trustedOrigins.includes(customOrigin)) {
-      trustedOrigins.push(customOrigin);
+  if (!trustedOrigins.includes(configuredBaseURL)) {
+    trustedOrigins.push(configuredBaseURL);
+  }
+
+  // Only allow dynamic origin in local development.
+  if (customOrigin && isLocalDevOrigin(customOrigin)) {
+    const localOrigin = normalizeOrigin(customOrigin);
+    baseURL = localOrigin;
+    if (!trustedOrigins.includes(localOrigin)) {
+      trustedOrigins.push(localOrigin);
     }
   }
 
@@ -42,7 +62,7 @@ export const getAuth = (customOrigin?: string | null) => {
 
   // Create auth instance with current DB
   return betterAuth({
-    baseURL, // Dynamic base URL for OAuth redirects
+    baseURL, // Stable OAuth base URL (except localhost dev)
     database: drizzleAdapter(db, {
       provider: "sqlite",
       schema: schema,
