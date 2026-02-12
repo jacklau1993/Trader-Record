@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -20,6 +20,13 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
+
+  useEffect(() => {
+    if (!isPending && session?.user) {
+      router.replace("/dashboard");
+    }
+  }, [isPending, session, router]);
 
   const handleSignUp = async () => {
     setLoading(true);
@@ -108,6 +115,10 @@ export default function SignUpPage() {
             onClick={async () => {
               await authClient.signIn.social({
                 provider: "google",
+                callbackURL: "/dashboard",
+                newUserCallbackURL: "/dashboard",
+                errorCallbackURL: "/sign-up",
+                requestSignUp: true,
               });
             }}
             className="inline-flex h-9 w-full items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
