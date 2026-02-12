@@ -28,14 +28,14 @@ export function DailyProfitChart({ trades }: { trades: Trade[] }) {
     }, [trades]);
 
     return (
-        <Card className="col-span-4">
+        <Card className="col-span-4 min-w-0">
             <CardHeader>
                 <CardTitle>Daily Net P&L</CardTitle>
             </CardHeader>
             <CardContent className="pl-2">
-                <div className="h-[300px]">
+                <div className="h-[300px] min-w-0 min-h-[300px]">
                     {data.length > 0 ? (
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <BarChart data={data}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
                                 <XAxis

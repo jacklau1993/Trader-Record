@@ -160,10 +160,10 @@ export default function TagsReport({ categories, trades, selectedCategoryId, set
                     {/* 3. Charts Row */}
                     <div className="grid gap-4 md:grid-cols-2">
                         {/* A. Composed Chart: Net P&L (Bar) and Trade Count (Line) */}
-                        <Card>
+                        <Card className="min-w-0">
                             <CardHeader><CardTitle>Net P&L & Volume by Tag</CardTitle></CardHeader>
-                            <CardContent className="h-[300px]">
-                                <ResponsiveContainer width="100%" height="100%">
+                            <CardContent className="h-[300px] min-w-0 min-h-[300px]">
+                                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     <ComposedChart data={tagMetrics}>
                                         <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                                         <XAxis dataKey="tagName" fontSize={12} tickLine={false} axisLine={false} />
@@ -183,10 +183,10 @@ export default function TagsReport({ categories, trades, selectedCategoryId, set
                         </Card>
 
                         {/* B. Win % Bar Chart */}
-                        <Card>
+                        <Card className="min-w-0">
                             <CardHeader><CardTitle>Win Rate by Tag</CardTitle></CardHeader>
-                            <CardContent className="h-[300px]">
-                                <ResponsiveContainer width="100%" height="100%">
+                            <CardContent className="h-[300px] min-w-0 min-h-[300px]">
+                                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     <BarChart data={tagMetrics} layout="vertical">
                                         <CartesianGrid strokeDasharray="3 3" opacity={0.1} horizontal={false} />
                                         <XAxis type="number" domain={[0, 100]} unit="%" fontSize={12} />

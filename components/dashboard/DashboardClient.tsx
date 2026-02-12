@@ -185,13 +185,13 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
 
             {/* Row 2: Charts & Recent Activity */}
             <div className="grid gap-4 grid-cols-1 md:grid-cols-12 h-auto">
-                <div className="md:col-span-4 h-full min-h-[300px]">
+                <div className="md:col-span-4 h-full min-h-[300px] min-w-0">
                     <ProfitChart trades={filteredTrades} />
                 </div>
-                <div className="md:col-span-4 h-full min-h-[300px]">
+                <div className="md:col-span-4 h-full min-h-[300px] min-w-0">
                     <DailyProfitChart trades={filteredTrades} />
                 </div>
-                <div className="md:col-span-4 h-full">
+                <div className="md:col-span-4 h-full min-w-0">
                     <RecentTrades trades={filteredTrades} />
                 </div>
             </div>
@@ -201,11 +201,11 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
                 <DashboardCalendar trades={filteredTrades} />
                 
                 {/* Right Column: Advanced charts */}
-                <div className="md:col-span-4 space-y-4">
-                     <div className="h-auto">
+                <div className="md:col-span-4 space-y-4 min-w-0">
+                     <div className="h-auto min-w-0">
                         <WinLossChart trades={filteredTrades} />
                      </div>
-                     <div className="h-auto">
+                     <div className="h-auto min-w-0">
                         <DurationChart trades={filteredTrades} />
                      </div>
                 </div>

@@ -105,7 +105,7 @@ export default function LandingPage() {
 
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#090b10]/70 backdrop-blur-xl">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 md:px-6">
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" prefetch={false} className="flex items-center gap-3">
             <Image
               src="/favicon.png"
               width={34}
@@ -123,7 +123,7 @@ export default function LandingPage() {
               asChild
               className="h-10 rounded-full bg-[#5ef2b7] px-5 text-sm font-semibold text-[#06100d] shadow-[0_0_0_1px_rgba(255,255,255,0.12)] transition hover:bg-[#74ffc5]"
             >
-              <Link href="/sign-in">Start Free</Link>
+              <Link href="/sign-in" prefetch={false}>Start Free</Link>
             </Button>
           </div>
         </div>
@@ -156,7 +156,7 @@ export default function LandingPage() {
                 asChild
                 className="h-12 rounded-full bg-[#5ef2b7] px-7 text-base font-semibold text-[#06100d] transition hover:bg-[#74ffc5]"
               >
-                <Link href="/sign-in" className="inline-flex items-center gap-2">
+                <Link href="/sign-in" prefetch={false} className="inline-flex items-center gap-2">
                   Start Journaling Free
                   <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -353,7 +353,7 @@ export default function LandingPage() {
               asChild
               className="h-12 rounded-full bg-[#5ef2b7] px-7 text-base font-semibold text-[#06100d] transition hover:bg-[#74ffc5]"
             >
-              <Link href="/sign-in" className="inline-flex items-center gap-2">
+              <Link href="/sign-in" prefetch={false} className="inline-flex items-center gap-2">
                 Create Free Account
                 <ArrowRight className="h-4 w-4" />
               </Link>

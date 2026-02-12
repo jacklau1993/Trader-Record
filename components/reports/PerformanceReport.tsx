@@ -183,10 +183,10 @@ export default function PerformanceReport({ trades }: PerformanceReportProps) {
 
             {/* Second Row: Detailed Stats Grid */}
             <div className="grid gap-4 md:grid-cols-3">
-                <Card className="md:col-span-2">
+                <Card className="md:col-span-2 min-w-0">
                     <CardHeader><CardTitle>Equity Curve</CardTitle></CardHeader>
-                    <CardContent className="h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <CardContent className="h-[300px] min-w-0 min-h-[300px]">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <AreaChart data={equityCurveData}>
                                 <defs>
                                     <linearGradient id="colorPnL" x1="0" y1="0" x2="0" y2="1">
@@ -205,7 +205,7 @@ export default function PerformanceReport({ trades }: PerformanceReportProps) {
                 </Card>
 
                 {/* Metrics List */}
-                <Card>
+                <Card className="min-w-0">
                     <CardHeader><CardTitle>Detailed Metrics</CardTitle></CardHeader>
                     <CardContent>
                         <div className="space-y-4 text-sm">
@@ -253,10 +253,10 @@ export default function PerformanceReport({ trades }: PerformanceReportProps) {
             </div>
 
             {/* Daily P&L Chart */}
-            <Card>
+            <Card className="min-w-0">
                 <CardHeader><CardTitle>Daily Net P&L</CardTitle></CardHeader>
-                <CardContent className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
+                <CardContent className="h-[300px] min-w-0 min-h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                         <BarChart data={equityCurveData}>
                             <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                             <XAxis dataKey="date" tickFormatter={(str) => format(parseISO(str), 'MM/dd')} fontSize={12} />

@@ -48,7 +48,7 @@ export function StatsRow({ stats }: StatsRowProps) {
     return (
         <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
             {/* NET P&L */}
-            <Card>
+            <Card className="min-w-0">
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                         Net P&L
@@ -73,7 +73,7 @@ export function StatsRow({ stats }: StatsRowProps) {
             </Card>
 
             {/* WIN RATE */}
-            <Card className="relative overflow-hidden">
+            <Card className="relative overflow-hidden min-w-0">
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                         Trade win %
@@ -94,8 +94,8 @@ export function StatsRow({ stats }: StatsRowProps) {
                         {stats.winRate.toFixed(2)}%
                     </div>
                     {/* Small Semi-Circle Chart */}
-                    <div className="h-10 w-20">
-                         <ResponsiveContainer width="100%" height="100%">
+                    <div className="h-10 w-20 min-w-[80px] min-h-[40px]">
+                         <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <PieChart>
                                 <Pie
                                     data={winData}
@@ -120,7 +120,7 @@ export function StatsRow({ stats }: StatsRowProps) {
             </Card>
 
             {/* PROFIT FACTOR */}
-            <Card>
+            <Card className="min-w-0">
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                         Profit factor
@@ -141,8 +141,8 @@ export function StatsRow({ stats }: StatsRowProps) {
                         {stats.profitFactor.toFixed(2)}
                     </div>
                     {/* Small Ring Chart */}
-                    <div className="h-10 w-10">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <div className="h-10 w-10 min-w-[40px] min-h-[40px]">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <PieChart>
                                 <Pie
                                     data={pfData}
@@ -164,7 +164,7 @@ export function StatsRow({ stats }: StatsRowProps) {
             </Card>
 
             {/* AVG WIN/LOSS */}
-            <Card>
+            <Card className="min-w-0">
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                         Avg win/loss trade
@@ -204,7 +204,7 @@ export function StatsRow({ stats }: StatsRowProps) {
             </Card>
 
              {/* TRADE EXPECTANCY */}
-             <Card>
+             <Card className="min-w-0">
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                         Trade expectancy
@@ -229,7 +229,7 @@ export function StatsRow({ stats }: StatsRowProps) {
             </Card>
 
              {/* CONSISTENCY % */}
-             <Card className="relative overflow-hidden">
+             <Card className="relative overflow-hidden min-w-0">
                 <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                         Consistency %
@@ -252,8 +252,8 @@ export function StatsRow({ stats }: StatsRowProps) {
                     </div>
                     {/* Small Semi-Circle Chart */}
                     {stats.consistencyPct !== null && (
-                        <div className="h-10 w-20">
-                            <ResponsiveContainer width="100%" height="100%">
+                        <div className="h-10 w-20 min-w-[80px] min-h-[40px]">
+                            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                 <PieChart>
                                     <Pie
                                         data={consistencyData}

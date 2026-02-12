@@ -168,10 +168,10 @@ export default function NoteTagsReport({
                     {/* Charts Row */}
                     <div className="grid gap-4 md:grid-cols-2">
                         {/* Tag Distribution (Days) */}
-                        <Card>
+                        <Card className="min-w-0">
                             <CardHeader><CardTitle>Tag Distribution (Days)</CardTitle></CardHeader>
-                            <CardContent className="h-[300px]">
-                                <ResponsiveContainer width="100%" height="100%">
+                            <CardContent className="h-[300px] min-w-0 min-h-[300px]">
+                                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     <BarChart data={tagMetrics} layout="vertical">
                                         <CartesianGrid strokeDasharray="3 3" opacity={0.1} horizontal={false} />
                                         <XAxis type="number" fontSize={12} />
@@ -192,10 +192,10 @@ export default function NoteTagsReport({
                         </Card>
 
                         {/* Tag Usage Pie Chart */}
-                        <Card>
+                        <Card className="min-w-0">
                             <CardHeader><CardTitle>Tag Usage Share</CardTitle></CardHeader>
-                            <CardContent className="h-[300px]">
-                                <ResponsiveContainer width="100%" height="100%">
+                            <CardContent className="h-[300px] min-w-0 min-h-[300px]">
+                                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     <PieChart>
                                         <Pie
                                             data={tagMetrics as any}

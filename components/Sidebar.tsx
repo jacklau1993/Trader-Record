@@ -78,6 +78,7 @@ const SidebarContent = () => {
             <Link
               key={item.name}
               href={href}
+              prefetch={false}
               className={cn(
                 "group flex items-center rounded-lg border px-3 py-2 text-sm font-medium transition-all",
                 isActive
@@ -128,6 +129,7 @@ const SidebarContent = () => {
         ) : (
           <Link
             href="/sign-in"
+            prefetch={false}
             className="flex w-full items-center gap-2 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-zinc-300 transition-all hover:border-white/10 hover:bg-white/[0.04] hover:text-white"
           >
             <LogIn className="h-4 w-4" />

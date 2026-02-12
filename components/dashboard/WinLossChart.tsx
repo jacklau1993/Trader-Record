@@ -60,7 +60,7 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
     }, [trades]);
 
     return (
-        <Card className="col-span-1 h-full">
+        <Card className="col-span-1 h-full min-w-0">
             <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                 <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1 flex-wrap">
                     Win % - Avg Win - Avg Loss Chart
@@ -77,9 +77,9 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
                 </CardTitle>
             </CardHeader>
             <CardContent className="p-0 pb-2">
-                 <div className="h-[250px] sm:h-[200px] w-full">
+                 <div className="h-[250px] sm:h-[200px] w-full min-w-0 min-h-[200px]">
                     {data.length > 0 ? (
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <LineChart data={data} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" />
                                 <XAxis 

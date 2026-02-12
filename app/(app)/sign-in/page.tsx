@@ -127,7 +127,7 @@ export default function SignInPage() {
           </button>
           <div className="text-center text-sm text-muted-foreground">
             Don{`'`}t have an account?{" "}
-            <Link href="/sign-up" className="underline hover:text-primary">
+            <Link href="/sign-up" prefetch={false} className="underline hover:text-primary">
               Sign up
             </Link>
           </div>
