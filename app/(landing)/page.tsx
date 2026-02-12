@@ -5,7 +5,6 @@ import {
   BarChart3,
   BookOpenText,
   CalendarCheck2,
-  Link2,
   ShieldCheck,
   Sparkles,
   Star,
@@ -15,41 +14,46 @@ import { Button } from "@/components/ui/button";
 import styles from "./landing.module.css";
 
 const proofStats = [
-  { label: "Tracked Trades", value: "2.4M+" },
-  { label: "Profitable Setups Tagged", value: "310K+" },
-  { label: "Broker + Prop Feeds", value: "40+" },
+  { label: "Core Workspace", value: "Trade Journal" },
+  { label: "Insight Layer", value: "Performance Reports" },
+  { label: "Focused Tracking", value: "Prop Firm Manager" },
 ];
 
 const featureCards = [
   {
-    icon: Link2,
-    title: "Auto-Sync Every Account",
-    description:
-      "Connect brokers and prop firm accounts once, then keep all journals in sync without CSV cleanup.",
-  },
-  {
     icon: BarChart3,
-    title: "Metrics That Expose Edge",
+    title: "Performance Breakdown That Finds Patterns",
     description:
-      "Break down expectancy, time-of-day performance, execution quality, and strategy heatmaps in one place.",
+      "Track win rate, expectancy, drawdown behavior, and execution quality with clear weekly reporting.",
+    className: "md:col-span-2 md:row-span-2",
   },
   {
     icon: BookOpenText,
-    title: "Context-Rich Journaling",
+    title: "Trade Journal + Notes",
     description:
-      "Capture screenshots, notes, and emotions next to each position so your reviews are about decisions, not memory.",
-  },
-  {
-    icon: CalendarCheck2,
-    title: "Daily Review System",
-    description:
-      "Use session templates and reminders to close each day with clear wins, mistakes, and one next improvement.",
+      "Attach context to every trade with comments, screenshots, and post-session lessons.",
+    className: "md:col-span-1",
   },
   {
     icon: ShieldCheck,
+    title: "Prop Firm Account Tracking",
+    description:
+      "Monitor funded-account progress and transactions in one dedicated workspace.",
+    className: "md:col-span-1",
+  },
+  {
+    icon: CalendarCheck2,
+    title: "Daily Review Workflow",
+    description:
+      "Close each session with a repeatable process so improvements compound instead of resetting.",
+    className: "md:col-span-1",
+  },
+  {
+    icon: Sparkles,
     title: "Private by Design",
     description:
       "Read-only trade connections, encrypted storage, and secure auth keep your account and data under your control.",
+    className: "md:col-span-2",
   },
 ];
 
@@ -92,19 +96,6 @@ const testimonials = [
   },
 ];
 
-const brokerTape = [
-  "Tradovate",
-  "NinjaTrader",
-  "Rithmic",
-  "TradingView",
-  "MetaTrader",
-  "cTrader",
-  "Interactive Brokers",
-  "Topstep",
-  "Apex",
-  "Take Profit Trader",
-];
-
 export default function LandingPage() {
   return (
     <main className={styles.page}>
@@ -127,13 +118,6 @@ export default function LandingPage() {
           </Link>
 
           <div className="flex items-center gap-2 md:gap-3">
-            <Button
-              asChild
-              variant="ghost"
-              className="hidden text-zinc-300 hover:bg-white/10 hover:text-white sm:inline-flex"
-            >
-              <Link href="/sign-in">Sign in</Link>
-            </Button>
             <Button
               asChild
               className="h-10 rounded-full bg-[#5ef2b7] px-5 text-sm font-semibold text-[#06100d] shadow-[0_0_0_1px_rgba(255,255,255,0.12)] transition hover:bg-[#74ffc5]"
@@ -162,7 +146,7 @@ export default function LandingPage() {
 
             <p className="mt-6 max-w-2xl text-base leading-relaxed text-zinc-300 md:text-lg">
               TraderRecord transforms raw executions into actionable decisions.
-              Connect your accounts, surface the patterns that actually pay, and
+              Capture your trades, surface the patterns that actually pay, and
               build a review routine that sharpens performance week after week.
             </p>
 
@@ -175,13 +159,6 @@ export default function LandingPage() {
                   Start Journaling Free
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                className="h-12 rounded-full border-white/20 bg-white/5 px-7 text-base text-zinc-100 hover:bg-white/10"
-              >
-                <Link href="/sign-in">See Demo Dashboard</Link>
               </Button>
             </div>
 
@@ -304,21 +281,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-black/20 py-4">
-        <div className="mx-auto w-full max-w-6xl overflow-hidden">
-          <div className={styles.ticker}>
-            {[...brokerTape, ...brokerTape].map((broker, index) => (
-              <span
-                key={`${broker}-${index}`}
-                className="mx-2 inline-flex items-center rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs uppercase tracking-[0.14em] text-zinc-300"
-              >
-                {broker}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="px-4 py-20 md:px-6">
         <div className="mx-auto w-full max-w-6xl">
           <div className="mb-12 flex flex-col gap-4 md:mb-14 md:flex-row md:items-end md:justify-between">
@@ -338,16 +300,18 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {featureCards.map(({ icon: Icon, title, description }) => (
+          <div className="grid auto-rows-[minmax(180px,auto)] gap-4 md:grid-cols-3">
+            {featureCards.map(({ icon: Icon, title, description, className }) => (
               <article
                 key={title}
-                className="group rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition hover:border-emerald-300/35 hover:bg-white/[0.05]"
+                className={`group rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition hover:border-emerald-300/35 hover:bg-white/[0.05] ${className}`}
               >
                 <div className="mb-4 inline-flex rounded-xl border border-emerald-300/30 bg-emerald-300/10 p-3 text-emerald-200">
                   <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="text-xl font-semibold text-white">{title}</h3>
+                <h3 className="text-xl font-semibold text-white md:text-2xl">
+                  {title}
+                </h3>
                 <p className="mt-3 text-sm leading-relaxed text-zinc-300">
                   {description}
                 </p>
@@ -428,8 +392,8 @@ export default function LandingPage() {
             Replace Guesswork With Measurable Progress
           </h2>
           <p className="mt-5 max-w-2xl text-zinc-100/90">
-            Start your journal, connect accounts, and get your first improvement
-            report in minutes.
+            Start your journal and get your first improvement report in
+            minutes.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button
@@ -440,13 +404,6 @@ export default function LandingPage() {
                 Create Free Account
                 <ArrowRight className="h-4 w-4" />
               </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="h-12 rounded-full border-white/30 bg-white/5 px-7 text-base text-white hover:bg-white/10"
-            >
-              <Link href="/sign-in">Explore Trading Journal</Link>
             </Button>
           </div>
         </div>

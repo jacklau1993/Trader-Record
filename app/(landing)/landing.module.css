@@ -78,12 +78,6 @@
   animation: rise 0.9s ease forwards;
 }
 
-.ticker {
-  white-space: nowrap;
-  animation: marquee 34s linear infinite;
-  will-change: transform;
-}
-
 @keyframes draw {
   to {
     stroke-dashoffset: 0;
@@ -102,16 +96,6 @@
   }
 }
 
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(-50%);
-  }
-}
-
 @keyframes drift {
   from {
     transform: translate3d(0, 0, 0) scale(1);
@@ -125,8 +109,7 @@
 @media (prefers-reduced-motion: reduce) {
   .mesh,
   .curve,
-  .volumeBar,
-  .ticker {
+  .volumeBar {
     animation: none !important;
   }
 }
