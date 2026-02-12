@@ -858,46 +858,26 @@ export function PropFirmManager({
                 No transactions for {selectedYear}.
               </div>
             ) : (
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="px-4 py-2 text-left text-muted-foreground font-medium">
-                      Month
-                    </th>
-                    <th className="px-4 py-2 text-left text-muted-foreground font-medium">
-                      Firm
-                    </th>
-                    <th className="px-4 py-2 text-left text-muted-foreground font-medium">
-                      Type
-                    </th>
-                    <th className="px-4 py-2 text-right text-muted-foreground font-medium">
-                      Amount
-                    </th>
-                    <th className="px-4 py-2 text-left text-muted-foreground font-medium">
-                      Note
-                    </th>
-                    <th className="px-4 py-2 text-right text-muted-foreground font-medium">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
+              <>
+                <div className="space-y-2 p-3 md:hidden">
                   {yearTransactions.map((tx) => {
                     const firm = propFirms.find(
                       (f) => f.id === tx.tradingAccountId,
                     );
                     return (
-                      <tr
+                      <article
                         key={tx.id}
-                        className="border-t border-border/50 hover:bg-muted/20"
+                        className="rounded-lg border border-border/70 bg-muted/10 p-3"
                       >
-                        <td className="px-4 py-2">{tx.month}</td>
-                        <td className="px-4 py-2 font-medium">
-                          {firm?.name || "Unknown"}
-                        </td>
-                        <td className="px-4 py-2">
+                        <div className="mb-2 flex items-start justify-between gap-3">
+                          <div>
+                            <p className="text-xs text-muted-foreground">Firm</p>
+                            <p className="text-sm font-semibold">
+                              {firm?.name || "Unknown"}
+                            </p>
+                          </div>
                           <span
-                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                            className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${
                               tx.type === "EXPENSE"
                                 ? "bg-red-500/10 text-red-500"
                                 : "bg-green-500/10 text-green-500"
@@ -905,32 +885,123 @@ export function PropFirmManager({
                           >
                             {tx.type}
                           </span>
-                        </td>
-                        <td className="px-4 py-2 text-right tabular-nums font-medium">
-                          {fmt(tx.amount, tx.currency as "GBP" | "USD")}
-                        </td>
-                        <td className="px-4 py-2 text-muted-foreground">
-                          {tx.note || "-"}
-                        </td>
-                        <td className="px-4 py-2 text-right">
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div>
+                            <p className="text-muted-foreground">Month</p>
+                            <p className="text-sm">{tx.month}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Amount</p>
+                            <p className="text-sm font-semibold tabular-nums">
+                              {fmt(tx.amount, tx.currency as "GBP" | "USD")}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-2">
+                          <p className="text-xs text-muted-foreground">Note</p>
+                          <p className="text-sm text-muted-foreground break-words">
+                            {tx.note || "-"}
+                          </p>
+                        </div>
+
+                        <div className="mt-3 flex justify-end gap-2">
                           <button
                             onClick={() => handleTxEdit(tx)}
-                            className="p-1 hover:bg-muted rounded"
+                            className="rounded-md border border-border px-2.5 py-1.5 text-xs hover:bg-muted"
                           >
-                            <Edit className="h-3.5 w-3.5 text-muted-foreground" />
+                            Edit
                           </button>
                           <button
                             onClick={() => handleTxDelete(tx.id)}
-                            className="p-1 hover:bg-muted rounded ml-1"
+                            className="rounded-md border border-destructive/30 px-2.5 py-1.5 text-xs text-destructive hover:bg-destructive/10"
                           >
-                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                            Delete
                           </button>
-                        </td>
-                      </tr>
+                        </div>
+                      </article>
                     );
                   })}
-                </tbody>
-              </table>
+                </div>
+
+                <div className="hidden overflow-x-auto md:block">
+                  <table className="w-full min-w-[720px] text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="px-4 py-2 text-left text-muted-foreground font-medium">
+                          Month
+                        </th>
+                        <th className="px-4 py-2 text-left text-muted-foreground font-medium">
+                          Firm
+                        </th>
+                        <th className="px-4 py-2 text-left text-muted-foreground font-medium">
+                          Type
+                        </th>
+                        <th className="px-4 py-2 text-right text-muted-foreground font-medium">
+                          Amount
+                        </th>
+                        <th className="px-4 py-2 text-left text-muted-foreground font-medium">
+                          Note
+                        </th>
+                        <th className="px-4 py-2 text-right text-muted-foreground font-medium">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {yearTransactions.map((tx) => {
+                        const firm = propFirms.find(
+                          (f) => f.id === tx.tradingAccountId,
+                        );
+                        return (
+                          <tr
+                            key={tx.id}
+                            className="border-t border-border/50 hover:bg-muted/20"
+                          >
+                            <td className="px-4 py-2">{tx.month}</td>
+                            <td className="px-4 py-2 font-medium">
+                              {firm?.name || "Unknown"}
+                            </td>
+                            <td className="px-4 py-2">
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                  tx.type === "EXPENSE"
+                                    ? "bg-red-500/10 text-red-500"
+                                    : "bg-green-500/10 text-green-500"
+                                }`}
+                              >
+                                {tx.type}
+                              </span>
+                            </td>
+                            <td className="px-4 py-2 text-right tabular-nums font-medium">
+                              {fmt(tx.amount, tx.currency as "GBP" | "USD")}
+                            </td>
+                            <td className="px-4 py-2 text-muted-foreground">
+                              {tx.note || "-"}
+                            </td>
+                            <td className="px-4 py-2 text-right">
+                              <button
+                                onClick={() => handleTxEdit(tx)}
+                                className="p-1 hover:bg-muted rounded"
+                              >
+                                <Edit className="h-3.5 w-3.5 text-muted-foreground" />
+                              </button>
+                              <button
+                                onClick={() => handleTxDelete(tx.id)}
+                                className="p-1 hover:bg-muted rounded ml-1"
+                              >
+                                <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         </div>
