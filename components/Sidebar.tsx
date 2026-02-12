@@ -20,7 +20,7 @@ import { authClient } from "@/lib/auth-client";
 import { Sheet } from "@/components/ui/sheet";
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: Home },
+  { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Trades", href: "/trades", icon: List },
   { name: "Notebook", href: "/notebook", icon: Book },
   { name: "Reports", href: "/reports", icon: BarChart2 },
@@ -66,8 +66,7 @@ const SidebarContent = () => {
       <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
         {navigation.map((item) => {
           const isActive =
-            pathname === item.href ||
-            (item.href !== "/" && pathname.startsWith(item.href));
+            pathname === item.href || pathname.startsWith(item.href + "/");
           const shouldCarryAccount =
             item.href === "/trades" || item.href === "/reports";
           const href =
