@@ -9,6 +9,12 @@ import { differenceInMinutes, parseISO } from "date-fns";
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function DurationChart({ trades }: { trades: Trade[] }) {
+    const chartAxisColor = "var(--chart-axis)";
+    const chartGridColor = "var(--chart-grid)";
+    const chartTooltipBackground = "var(--chart-tooltip-bg)";
+    const chartTooltipBorder = "var(--chart-tooltip-border)";
+    const chartTooltipText = "var(--chart-tooltip-text)";
+
     const data = useMemo(() => {
         if (!trades || trades.length === 0) return [];
 
@@ -102,20 +108,20 @@ export function DurationChart({ trades }: { trades: Trade[] }) {
                     {data.some(d => d.count > 0) ? (
                         <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <BarChart data={data} layout="vertical" margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#334155" />
+                                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke={chartGridColor} />
                                 <XAxis type="number" hide />
-                                <YAxis dataKey="name" type="category" width={50} tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                                <YAxis dataKey="name" type="category" width={50} tick={{ fontSize: 10, fill: chartAxisColor }} axisLine={false} tickLine={false} />
                                 <Tooltip
                                     cursor={{fill: 'transparent'}}
-                                    contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
-                                    itemStyle={{ color: '#f8fafc' }}
-                                    labelStyle={{ color: '#f8fafc' }}
+                                    contentStyle={{ backgroundColor: chartTooltipBackground, border: `1px solid ${chartTooltipBorder}`, borderRadius: "8px", color: chartTooltipText }}
+                                    itemStyle={{ color: chartTooltipText }}
+                                    labelStyle={{ color: chartTooltipText }}
                                     formatter={(value: any, name: any, props: any) => [
                                         `$${value.toFixed(2)}`, 
                                         `Net P&L (${props.payload.count} trades)`
                                     ]}
                                 />
-                                <ReferenceLine x={0} stroke="#64748b" />
+                                <ReferenceLine x={0} stroke={chartAxisColor} />
                                 <Bar dataKey="value" barSize={15} radius={[0, 4, 4, 0]}>
                                     {data.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={entry.value >= 0 ? '#22c55e' : '#ef4444'} />

@@ -22,14 +22,14 @@ interface Category {
 }
 
 const COLORS = [
-    { name: "Blue", value: "blue", class: "text-blue-500 bg-blue-500/10", border: "border-blue-500/20" },
-    { name: "Green", value: "green", class: "text-green-500 bg-green-500/10", border: "border-green-500/20" },
-    { name: "Red", value: "red", class: "text-red-500 bg-red-500/10", border: "border-red-500/20" },
-    { name: "Yellow", value: "yellow", class: "text-yellow-500 bg-yellow-500/10", border: "border-yellow-500/20" },
-    { name: "Purple", value: "purple", class: "text-purple-500 bg-purple-500/10", border: "border-purple-500/20" },
-    { name: "Orange", value: "orange", class: "text-orange-500 bg-orange-500/10", border: "border-orange-500/20" },
-    { name: "Pink", value: "pink", class: "text-pink-500 bg-pink-500/10", border: "border-pink-500/20" },
-    { name: "Gray", value: "gray", class: "text-gray-500 bg-gray-500/10", border: "border-gray-500/20" },
+    { name: "Blue", value: "blue", class: "border border-blue-500/25 bg-blue-500/15 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300", border: "border-blue-500/35" },
+    { name: "Green", value: "green", class: "border border-emerald-500/25 bg-emerald-500/15 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300", border: "border-emerald-500/35" },
+    { name: "Red", value: "red", class: "border border-red-500/25 bg-red-500/15 text-red-700 dark:bg-red-500/15 dark:text-red-300", border: "border-red-500/35" },
+    { name: "Yellow", value: "yellow", class: "border border-amber-500/25 bg-amber-500/15 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300", border: "border-amber-500/35" },
+    { name: "Purple", value: "purple", class: "border border-violet-500/25 bg-violet-500/15 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300", border: "border-violet-500/35" },
+    { name: "Orange", value: "orange", class: "border border-orange-500/25 bg-orange-500/15 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300", border: "border-orange-500/35" },
+    { name: "Pink", value: "pink", class: "border border-pink-500/25 bg-pink-500/15 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300", border: "border-pink-500/35" },
+    { name: "Gray", value: "gray", class: "border border-slate-500/25 bg-slate-500/15 text-slate-700 dark:bg-slate-500/15 dark:text-slate-300", border: "border-slate-500/35" },
 ];
 
 export default function NoteTagsClient({ initialCategories }: { initialCategories: any[] }) {
@@ -144,11 +144,11 @@ export default function NoteTagsClient({ initialCategories }: { initialCategorie
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h2 className="text-3xl font-bold tracking-tight">Note Tags Management</h2>
 
-                <div className="flex flex-col md:flex-row items-center gap-2 bg-muted/30 p-2 rounded-lg border border-border w-full md:w-auto">
+                <div className="flex flex-col md:flex-row items-center gap-2 bg-card/70 p-2 rounded-lg border border-border/80 w-full md:w-auto">
                     <input
                         type="text"
                         placeholder="New Category Name"
-                        className="bg-transparent border-none px-3 py-1.5 text-sm w-full md:w-48 focus:outline-none border-b md:border-b-0 border-border/50 md:border-none mb-2 md:mb-0"
+                        className="bg-background/70 border border-input px-3 py-1.5 text-sm w-full md:w-48 rounded-md focus:outline-none focus:ring-2 focus:ring-ring mb-2 md:mb-0"
                         value={newCatName}
                         onChange={(e) => setNewCatName(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
@@ -156,12 +156,12 @@ export default function NoteTagsClient({ initialCategories }: { initialCategorie
 
                     {/* Color Picker for New Category */}
                     <div className="flex items-center justify-between w-full md:w-auto gap-2">
-                        <div className="flex space-x-1 px-2 md:border-l border-border">
+                        <div className="flex space-x-1 px-2 md:border-l border-border/70">
                             {COLORS.slice(0, 5).map(c => (
                                 <button
                                     key={c.value}
                                     onClick={() => setSelectedColor(c.value)}
-                                    className={`w-4 h-4 rounded-full transition-transform hover:scale-110 ${c.value === selectedColor ? 'ring-2 ring-primary ring-offset-1' : ''}`}
+                                    className={`w-4 h-4 rounded-full transition-transform hover:scale-110 ${c.value === selectedColor ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : ''}`}
                                     style={{ backgroundColor: c.value === 'white' ? 'white' : `var(--color-${c.value}-500, ${c.value})` }}
                                     title={c.name}
                                 />
@@ -196,7 +196,7 @@ export default function NoteTagsClient({ initialCategories }: { initialCategorie
                                             <button
                                                 key={c.value}
                                                 onClick={() => handleUpdateCategoryColor(category.id, c.value)}
-                                                className={`w-3 h-3 rounded-full transition-transform hover:scale-125 ${category.color === c.value ? 'ring-2 ring-offset-1 ring-primary' : ''}`}
+                                                className={`w-3 h-3 rounded-full transition-transform hover:scale-125 ${category.color === c.value ? 'ring-2 ring-offset-1 ring-primary ring-offset-card' : ''}`}
                                                 style={{ backgroundColor: c.value === 'white' ? '#e2e8f0' : `var(--color-${c.value}-500, ${c.value})` }}
                                                 title={`Set color to ${c.name}`}
                                             />
@@ -229,14 +229,14 @@ export default function NoteTagsClient({ initialCategories }: { initialCategorie
                                     <input
                                         type="text"
                                         placeholder="Add tag..."
-                                        className="flex-1 bg-muted/50 border-none text-xs px-2 py-1.5 rounded focus:outline-none focus:ring-1 focus:ring-primary"
+                                        className="flex-1 bg-background border border-input text-xs px-2 py-1.5 rounded focus:outline-none focus:ring-2 focus:ring-primary/40"
                                         value={newTagNames[category.id] || ""}
                                         onChange={(e) => setNewTagNames(prev => ({ ...prev, [category.id]: e.target.value }))}
                                         onKeyDown={(e) => e.key === 'Enter' && handleAddTag(category.id)}
                                     />
                                     <button
                                         onClick={() => handleAddTag(category.id)}
-                                        className="p-1.5 hover:bg-muted rounded text-primary"
+                                        className="p-1.5 hover:bg-accent rounded text-primary"
                                     >
                                         <Plus className="h-3 w-3" />
                                     </button>

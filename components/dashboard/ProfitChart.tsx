@@ -7,6 +7,12 @@ import { Trade } from "@/lib/types";
 import { format, parseISO, compareAsc } from "date-fns";
 
 export function ProfitChart({ trades }: { trades: Trade[] }) {
+    const chartAxisColor = "var(--chart-axis)";
+    const chartGridColor = "var(--chart-grid)";
+    const chartTooltipBackground = "var(--chart-tooltip-bg)";
+    const chartTooltipBorder = "var(--chart-tooltip-border)";
+    const chartTooltipText = "var(--chart-tooltip-text)";
+
     const data = useMemo(() => {
         if (trades.length === 0) return [];
 
@@ -50,23 +56,23 @@ export function ProfitChart({ trades }: { trades: Trade[] }) {
                                 </defs>
                                 <XAxis
                                     dataKey="date"
-                                    stroke="#64748b"
+                                    stroke={chartAxisColor}
                                     fontSize={12}
                                     tickLine={false}
                                     axisLine={false}
                                 />
                                 <YAxis
-                                    stroke="#64748b"
+                                    stroke={chartAxisColor}
                                     fontSize={12}
                                     tickLine={false}
                                     axisLine={false}
                                     tickFormatter={(value) => `$${value}`}
                                 />
-                                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                                <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} vertical={false} />
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
-                                    itemStyle={{ color: '#f8fafc' }}
-                                    labelStyle={{ color: '#f8fafc' }}
+                                    contentStyle={{ backgroundColor: chartTooltipBackground, border: `1px solid ${chartTooltipBorder}`, borderRadius: "8px", color: chartTooltipText }}
+                                    itemStyle={{ color: chartTooltipText }}
+                                    labelStyle={{ color: chartTooltipText }}
                                     formatter={(value: any) => [`$${value}`, "Net P&L"]}
                                 />
                                 <Area

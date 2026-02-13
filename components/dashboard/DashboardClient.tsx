@@ -152,7 +152,7 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                    <h2 className="text-2xl font-bold tracking-tight text-white">Dashboard</h2>
+                    <h2 className="text-2xl font-bold tracking-tight text-foreground">Dashboard</h2>
                 </div>
                 
                 <div className="flex flex-col w-full sm:w-auto sm:flex-row items-stretch sm:items-center gap-2">
@@ -164,7 +164,7 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
                         />
                      </div>
 
-                    <div className="w-[1px] h-6 bg-[#27272a] mx-2 hidden sm:block"></div>
+                    <div className="w-[1px] h-6 bg-border mx-2 hidden sm:block"></div>
 
                     <AccountSwitcher
                         accounts={accounts}

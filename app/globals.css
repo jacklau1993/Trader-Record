@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "flatpickr/dist/themes/dark.css";
+@import "flatpickr/dist/flatpickr.css";
 
 @theme {
   --color-background: var(--background);
@@ -46,29 +46,57 @@
   --border: #2a3a4f;
   --input: #30455c;
   --ring: #74ffc5;
+  --shell-glow-a: rgba(94, 242, 183, 0.16);
+  --shell-glow-b: rgba(111, 195, 255, 0.18);
+  --shell-noise-dot: rgba(255, 255, 255, 0.16);
+  --shell-main: linear-gradient(180deg, rgba(10, 15, 23, 0.8), rgba(9, 13, 19, 0.7));
+  --scrollbar-thumb: rgba(118, 147, 177, 0.55);
+  --scrollbar-track: rgba(9, 13, 19, 0.4);
+  --chart-track: #334155;
+  --chart-axis: #7f93ab;
+  --chart-grid: #334155;
+  --chart-tooltip-bg: #1e293b;
+  --chart-tooltip-border: #334155;
+  --chart-tooltip-text: #f8fafc;
+  --chart-cursor: #334155;
+  --overlay-backdrop: rgba(0, 0, 0, 0.7);
 }
 
 /* Light mode */
 .light {
-  --background: #f2f7fd;
-  --foreground: #111b2a;
+  --background: #f5f9ff;
+  --foreground: #0f1d31;
   --card: #ffffff;
-  --card-foreground: #111b2a;
+  --card-foreground: #0f1d31;
   --popover: #ffffff;
-  --popover-foreground: #111b2a;
+  --popover-foreground: #0f1d31;
   --primary: #139d72;
   --primary-foreground: #f2fffa;
-  --secondary: #deebf8;
-  --secondary-foreground: #111b2a;
-  --muted: #e4eef8;
-  --muted-foreground: #53667f;
-  --accent: #dceafb;
-  --accent-foreground: #111b2a;
+  --secondary: #e8f1fb;
+  --secondary-foreground: #0f1d31;
+  --muted: #edf4fb;
+  --muted-foreground: #4e627d;
+  --accent: #e3eefb;
+  --accent-foreground: #0f1d31;
   --destructive: #d64242;
   --destructive-foreground: #fff7f7;
-  --border: #c5d7ea;
-  --input: #c5d7ea;
-  --ring: #26b989;
+  --border: #c8d9ea;
+  --input: #bfcee0;
+  --ring: #1ea97d;
+  --shell-glow-a: rgba(34, 197, 143, 0.13);
+  --shell-glow-b: rgba(59, 130, 246, 0.15);
+  --shell-noise-dot: rgba(15, 29, 49, 0.08);
+  --shell-main: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(241, 248, 255, 0.96));
+  --scrollbar-thumb: rgba(120, 145, 173, 0.55);
+  --scrollbar-track: rgba(225, 236, 248, 0.85);
+  --chart-track: #bdd0e4;
+  --chart-axis: #667b96;
+  --chart-grid: #cad9ea;
+  --chart-tooltip-bg: #ffffff;
+  --chart-tooltip-border: #c8d9ea;
+  --chart-tooltip-text: #0f1d31;
+  --chart-cursor: #cbdcf0;
+  --overlay-backdrop: rgba(15, 23, 42, 0.35);
 }
 
 /* Base styles */
@@ -90,15 +118,15 @@ body {
 }
 
 * {
-  scrollbar-color: rgba(118, 147, 177, 0.55) rgba(9, 13, 19, 0.4);
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 .tr-app-shell {
   position: relative;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 15% -10%, rgba(94, 242, 183, 0.16), transparent 42%),
-    radial-gradient(circle at 95% 0%, rgba(111, 195, 255, 0.18), transparent 37%),
+    radial-gradient(circle at 15% -10%, var(--shell-glow-a), transparent 42%),
+    radial-gradient(circle at 95% 0%, var(--shell-glow-b), transparent 37%),
     var(--background);
 }
 
@@ -109,14 +137,14 @@ body {
   pointer-events: none;
   opacity: 0.14;
   z-index: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.16) 0.55px, transparent 0.8px);
+  background-image: radial-gradient(circle, var(--shell-noise-dot) 0.55px, transparent 0.8px);
   background-size: 3px 3px;
 }
 
 .tr-app-main {
   position: relative;
   z-index: 1;
-  background: linear-gradient(180deg, rgba(10, 15, 23, 0.8), rgba(9, 13, 19, 0.7));
+  background: var(--shell-main);
 }
 
 .flatpickr-calendar {
@@ -124,6 +152,10 @@ body {
   border: 1px solid var(--border);
   color: var(--popover-foreground);
   box-shadow: 0 10px 25px -12px rgba(0, 0, 0, 0.6);
+}
+
+.light .flatpickr-calendar {
+  box-shadow: 0 18px 40px -28px rgba(30, 64, 105, 0.35);
 }
 
 .flatpickr-months .flatpickr-month,
@@ -136,6 +168,11 @@ body {
 
 .flatpickr-day {
   color: var(--popover-foreground);
+}
+
+.flatpickr-day:hover {
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 .flatpickr-day.today {

@@ -9,6 +9,13 @@ import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger }
 import { format, parseISO, compareAsc } from "date-fns";
 
 export function WinLossChart({ trades }: { trades: Trade[] }) {
+    const chartAxisColor = "var(--chart-axis)";
+    const chartGridColor = "var(--chart-grid)";
+    const chartTooltipBackground = "var(--chart-tooltip-bg)";
+    const chartTooltipBorder = "var(--chart-tooltip-border)";
+    const chartTooltipText = "var(--chart-tooltip-text)";
+    const legendTextColor = "var(--muted-foreground)";
+
     const data = useMemo(() => {
         if (!trades || trades.length === 0) return [];
 
@@ -81,10 +88,10 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
                     {data.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <LineChart data={data} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartGridColor} />
                                 <XAxis 
                                     dataKey="date" 
-                                    stroke="#64748b" 
+                                    stroke={chartAxisColor}
                                     fontSize={12} 
                                     tickLine={false} 
                                     axisLine={false}
@@ -93,7 +100,7 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
                                 <YAxis 
                                     yAxisId="left"
                                     orientation="left"
-                                    stroke="#64748b"
+                                    stroke={chartAxisColor}
                                     fontSize={12}
                                     tickLine={false}
                                     axisLine={false}
@@ -102,23 +109,23 @@ export function WinLossChart({ trades }: { trades: Trade[] }) {
                                 <YAxis 
                                     yAxisId="right"
                                     orientation="right"
-                                    stroke="#64748b"
+                                    stroke={chartAxisColor}
                                     fontSize={12}
                                     tickLine={false}
                                     axisLine={false}
                                     tickFormatter={(value) => `${value}%`}
                                 />
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
-                                    itemStyle={{ color: '#f8fafc' }}
-                                    labelStyle={{ color: '#f8fafc' }}
+                                    contentStyle={{ backgroundColor: chartTooltipBackground, border: `1px solid ${chartTooltipBorder}`, borderRadius: "8px", color: chartTooltipText }}
+                                    itemStyle={{ color: chartTooltipText }}
+                                    labelStyle={{ color: chartTooltipText }}
                                     formatter={(value: number | undefined, name: string | undefined) => {
                                         if (value === undefined) return ["-", name];
                                         if (name === "Win %") return [`${value}%`, name];
                                         return [`$${value}`, name];
                                     }}
                                 />
-                                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                                <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "10px", color: legendTextColor }} />
                                 
                                 <Line 
                                     yAxisId="right"

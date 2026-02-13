@@ -30,6 +30,13 @@ interface TagsReportProps {
 }
 
 export default function TagsReport({ categories, trades, selectedCategoryId, setSelectedCategoryId }: TagsReportProps) {
+    const chartAxisColor = "var(--chart-axis)";
+    const chartGridColor = "var(--chart-grid)";
+    const chartTooltipBackground = "var(--chart-tooltip-bg)";
+    const chartTooltipBorder = "var(--chart-tooltip-border)";
+    const chartTooltipText = "var(--chart-tooltip-text)";
+    const legendTextColor = "var(--muted-foreground)";
+
     const selectedCategory = categories.find(c => c.id === selectedCategoryId);
 
     // --- Metrics Calculation ---
@@ -165,12 +172,12 @@ export default function TagsReport({ categories, trades, selectedCategoryId, set
                             <CardContent className="h-[300px] min-w-0 min-h-[300px]">
                                 <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     <ComposedChart data={tagMetrics}>
-                                        <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
-                                        <XAxis dataKey="tagName" fontSize={12} tickLine={false} axisLine={false} />
-                                        <YAxis yAxisId="left" orientation="left" stroke="#8884d8" fontSize={12} tickFormatter={(val) => `$${val}`} />
-                                        <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" fontSize={12} />
-                                        <RechartsTooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none' }} />
-                                        <Legend />
+                                        <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} opacity={0.3} />
+                                        <XAxis dataKey="tagName" stroke={chartAxisColor} fontSize={12} tickLine={false} axisLine={false} />
+                                        <YAxis yAxisId="left" orientation="left" stroke={chartAxisColor} fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `$${val}`} />
+                                        <YAxis yAxisId="right" orientation="right" stroke={chartAxisColor} fontSize={12} tickLine={false} axisLine={false} />
+                                        <RechartsTooltip contentStyle={{ backgroundColor: chartTooltipBackground, border: `1px solid ${chartTooltipBorder}`, color: chartTooltipText }} itemStyle={{ color: chartTooltipText }} labelStyle={{ color: chartTooltipText }} />
+                                        <Legend wrapperStyle={{ color: legendTextColor }} />
                                         <Bar yAxisId="left" dataKey="pnl" name="Net P&L" fill="#8884d8" barSize={20} radius={[4, 4, 0, 0]}>
                                             {tagMetrics.map((entry, index) => (
                                                 <Cell key={`cell-${index}`} fill={entry.pnl >= 0 ? '#22c55e' : '#ef4444'} />
@@ -188,10 +195,10 @@ export default function TagsReport({ categories, trades, selectedCategoryId, set
                             <CardContent className="h-[300px] min-w-0 min-h-[300px]">
                                 <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     <BarChart data={tagMetrics} layout="vertical">
-                                        <CartesianGrid strokeDasharray="3 3" opacity={0.1} horizontal={false} />
-                                        <XAxis type="number" domain={[0, 100]} unit="%" fontSize={12} />
-                                        <YAxis dataKey="tagName" type="category" width={100} fontSize={12} tickLine={false} axisLine={false} />
-                                        <RechartsTooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none' }} cursor={{ fill: 'transparent' }} />
+                                        <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} opacity={0.3} horizontal={false} />
+                                        <XAxis type="number" domain={[0, 100]} unit="%" stroke={chartAxisColor} fontSize={12} tickLine={false} axisLine={false} />
+                                        <YAxis dataKey="tagName" type="category" width={100} stroke={chartAxisColor} fontSize={12} tickLine={false} axisLine={false} />
+                                        <RechartsTooltip contentStyle={{ backgroundColor: chartTooltipBackground, border: `1px solid ${chartTooltipBorder}`, color: chartTooltipText }} itemStyle={{ color: chartTooltipText }} labelStyle={{ color: chartTooltipText }} cursor={{ fill: "transparent" }} />
                                         <Bar dataKey="winRate" name="Win %" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
                                     </BarChart>
                                 </ResponsiveContainer>
