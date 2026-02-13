@@ -39,7 +39,7 @@ export function ProfitChart({ trades }: { trades: Trade[] }) {
     }, [trades]);
 
     return (
-        <Card className="col-span-4 min-w-0">
+        <Card className="col-span-4 min-w-0 h-full">
             <CardHeader>
                 <CardTitle>Cumulative Net P&L</CardTitle>
             </CardHeader>
