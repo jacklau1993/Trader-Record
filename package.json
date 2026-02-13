@@ -7,8 +7,9 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint",
-    "pages:build": "npx @cloudflare/next-on-pages"
+    "pages:build": "pnpm exec next-on-pages"
   },
+  "packageManager": "pnpm@10.11.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jacklau1993/Trading-app.git"

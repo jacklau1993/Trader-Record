@@ -82,14 +82,20 @@ npx wrangler r2 bucket create trading-app-images
 3. 在 Pages/Workers 設定環境變數：`BETTER_AUTH_SECRET`、`BETTER_AUTH_URL`（正式網域）、`RESEND_API_KEY`（若啟用驗證信）。
    - Google OAuth 的 Authorized redirect URI 需加入：`https://<你的 BETTER_AUTH_URL 網域>/api/auth/callback/google`
    - 本地開發也需加入：`http://localhost:3000/api/auth/callback/google`
-4. 建置與部署
+4. Cloudflare Pages 建置指令（Dashboard）
+
+- Build command：`pnpm pages:build`
+- Build output directory：`.vercel/output/static`
+- 請避免使用 `npx @cloudflare/next-on-pages`，否則會以 npm 執行並可能觸發依賴解析衝突。
+
+5. 建置與部署
 
 ```bash
 npm run build
 npx wrangler pages deploy .next
 ```
 
-`wrangler.toml` 已設定 `pages_build_output_dir=.next` 與 Edge 相容旗標。
+`wrangler.toml` 已設定 `pages_build_output_dir=.vercel/output/static` 與 Edge 相容旗標。
 
 ## 指令
 
@@ -247,7 +253,13 @@ Access the app at `http://localhost:3000`.
     npx wrangler r2 bucket create trading-app-images
     ```
 
-3.  **Deploy**:
+3.  **Cloudflare Pages Build Settings**:
+
+    - Build command: `pnpm pages:build`
+    - Build output directory: `.vercel/output/static`
+    - Avoid using `npx @cloudflare/next-on-pages` in the Pages build command because it runs via npm and can hit dependency resolution conflicts.
+
+4.  **Deploy**:
 
     ```bash
     npm run build
