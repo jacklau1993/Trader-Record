@@ -57,10 +57,10 @@ const SidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
   const initials = getInitials(user?.name, user?.email);
 
   return (
-    <div className="relative flex h-full flex-col border-r border-white/10 bg-[#0d1420]/95 backdrop-blur-xl">
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-emerald-300/10 via-transparent to-cyan-300/5" />
-      <div className="relative flex h-14 items-center border-b border-white/10 px-6">
-        <span className="text-xl font-bold tracking-wide bg-gradient-to-r from-emerald-200 to-cyan-100 bg-clip-text text-transparent">
+    <div className="relative flex h-full flex-col border-r border-border/80 bg-card/90 backdrop-blur-xl">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-primary/5" />
+      <div className="relative flex h-14 items-center border-b border-border/80 px-6">
+        <span className="text-xl font-bold tracking-wide bg-gradient-to-r from-primary to-foreground bg-clip-text text-transparent">
           TraderRecord
         </span>
       </div>
@@ -83,16 +83,16 @@ const SidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
               className={cn(
                 "group flex items-center rounded-lg border px-3 py-2 text-sm font-medium transition-all",
                 isActive
-                  ? "border-emerald-300/30 bg-emerald-300/12 text-emerald-200 shadow-[0_0_0_1px_rgba(94,242,183,0.14)]"
-                  : "border-transparent text-zinc-300 hover:border-white/10 hover:bg-white/[0.04] hover:text-white",
+                  ? "border-primary/35 bg-primary/10 text-foreground shadow-[0_0_0_1px_rgba(19,157,114,0.14)] dark:shadow-[0_0_0_1px_rgba(94,242,183,0.14)]"
+                  : "border-transparent text-muted-foreground hover:border-border hover:bg-accent/60 hover:text-foreground",
               )}
             >
               <item.icon
                 className={cn(
                   "mr-3 h-5 w-5 flex-shrink-0",
                   isActive
-                    ? "text-emerald-200"
-                    : "text-zinc-500 group-hover:text-zinc-200",
+                    ? "text-primary"
+                    : "text-muted-foreground group-hover:text-foreground",
                 )}
                 aria-hidden="true"
               />
@@ -101,26 +101,26 @@ const SidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
           );
         })}
       </nav>
-      <div className="relative border-t border-white/10 p-4">
+      <div className="relative border-t border-border/80 p-4">
         {isPending ? (
           <div className="flex items-center mb-4">
-            <div className="h-8 w-8 rounded-full bg-white/10 animate-pulse" />
+            <div className="h-8 w-8 rounded-full bg-muted/70 animate-pulse" />
             <div className="ml-3 space-y-1">
-              <div className="h-4 w-20 rounded bg-white/10 animate-pulse" />
-              <div className="h-3 w-16 rounded bg-white/10 animate-pulse" />
+              <div className="h-4 w-20 rounded bg-muted/70 animate-pulse" />
+              <div className="h-3 w-16 rounded bg-muted/70 animate-pulse" />
             </div>
           </div>
         ) : user ? (
           <>
             <div className="flex items-center mb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full border border-emerald-200/30 bg-emerald-200/15 font-bold text-emerald-100">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/35 bg-primary/10 font-bold text-primary">
                 {initials}
               </div>
               <div className="ml-3">
-                <p className="max-w-[140px] truncate text-sm font-medium text-zinc-100">
+                <p className="max-w-[140px] truncate text-sm font-medium text-foreground">
                   {displayName}
                 </p>
-                <p className="max-w-[140px] truncate text-xs text-zinc-400">
+                <p className="max-w-[140px] truncate text-xs text-muted-foreground">
                   {user.email}
                 </p>
               </div>
@@ -132,7 +132,7 @@ const SidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
             href="/sign-in"
             prefetch={false}
             onClick={onNavigate}
-            className="flex w-full items-center gap-2 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-zinc-300 transition-all hover:border-white/10 hover:bg-white/[0.04] hover:text-white"
+            className="flex w-full items-center gap-2 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:border-border hover:bg-accent/60 hover:text-foreground"
           >
             <LogIn className="h-4 w-4" />
             Sign In
@@ -148,7 +148,7 @@ export function Sidebar() {
     <div className="hidden md:flex h-screen w-64 flex-col">
       <Suspense
         fallback={
-          <div className="flex h-full flex-col border-r border-white/10 bg-[#0d1420]/95 animate-pulse" />
+          <div className="flex h-full flex-col border-r border-border/80 bg-card/90 animate-pulse" />
         }
       >
         <SidebarContent />
@@ -161,21 +161,21 @@ export function MobileSidebar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="sticky top-0 z-40 flex h-14 items-center gap-2 border-b border-white/10 bg-[#0d1420]/95 px-4 backdrop-blur-xl pointer-events-auto md:hidden">
+    <div className="sticky top-0 z-40 flex h-14 items-center gap-2 border-b border-border/80 bg-card/90 px-4 backdrop-blur-xl pointer-events-auto md:hidden">
       <button
         type="button"
         aria-label="Open menu"
         onClick={() => setOpen(true)}
-        className="relative z-[60] inline-flex h-9 w-9 items-center justify-center rounded-lg border border-emerald-300/35 bg-emerald-300/12 text-emerald-100 shadow-[0_0_0_1px_rgba(94,242,183,0.12)] transition hover:bg-emerald-300/20 focus:outline-none focus:ring-2 focus:ring-emerald-300/60"
+        className="relative z-[60] inline-flex h-9 w-9 items-center justify-center rounded-lg border border-primary/35 bg-primary/10 text-primary shadow-[0_0_0_1px_rgba(19,157,114,0.12)] dark:shadow-[0_0_0_1px_rgba(94,242,183,0.12)] transition hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/60"
       >
         <Menu className="h-5 w-5" strokeWidth={2.4} />
         <span className="sr-only">Open sidebar</span>
       </button>
-      <div className="font-semibold tracking-wide text-zinc-100">TraderRecord</div>
+      <div className="font-semibold tracking-wide text-foreground">TraderRecord</div>
       <Sheet open={open} onOpenChange={setOpen}>
         <Suspense
           fallback={
-            <div className="h-full border-r border-white/10 bg-[#0d1420]/95 animate-pulse" />
+            <div className="h-full border-r border-border/80 bg-card/90 animate-pulse" />
           }
         >
           <SidebarContent onNavigate={() => setOpen(false)} />

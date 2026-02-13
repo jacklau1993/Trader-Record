@@ -83,6 +83,12 @@ export function TradesListClient({ trades, categories, accounts = [] }: { trades
         return "-";
     };
 
+    const classByValue = (value: string, positiveText: string, negativeText: string) => {
+        if (value === positiveText) return "border border-emerald-500/25 bg-emerald-500/15 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300";
+        if (value === negativeText) return "border border-red-500/25 bg-red-500/15 text-red-700 dark:bg-red-500/15 dark:text-red-300";
+        return "border border-border/60 bg-muted/55 text-muted-foreground";
+    };
+
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -148,21 +154,21 @@ export function TradesListClient({ trades, categories, accounts = [] }: { trades
                     <div className="relative w-full overflow-auto">
                         <table className="w-full caption-bottom text-sm">
                             <thead className="[&_tr]:border-b">
-                                <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Date</th>
-                                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Ticker</th>
-                                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Type</th>
-                                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Price</th>
-                                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Contracts</th>
-                                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">是否符合計劃</th>
-                                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">沒情緒還會否進場</th>
-                                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Grade</th>
-                                    <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Net P&L</th>
+                                <tr className="border-b border-border/80 bg-muted/45">
+                                    <th className="h-12 px-4 text-left align-middle font-semibold text-foreground/80">Date</th>
+                                    <th className="h-12 px-4 text-left align-middle font-semibold text-foreground/80">Ticker</th>
+                                    <th className="h-12 px-4 text-left align-middle font-semibold text-foreground/80">Type</th>
+                                    <th className="h-12 px-4 text-left align-middle font-semibold text-foreground/80">Price</th>
+                                    <th className="h-12 px-4 text-left align-middle font-semibold text-foreground/80">Contracts</th>
+                                    <th className="h-12 px-4 text-left align-middle font-semibold text-foreground/80">是否符合計劃</th>
+                                    <th className="h-12 px-4 text-left align-middle font-semibold text-foreground/80">沒情緒還會否進場</th>
+                                    <th className="h-12 px-4 text-left align-middle font-semibold text-foreground/80">Grade</th>
+                                    <th className="h-12 px-4 text-right align-middle font-semibold text-foreground/80">Net P&L</th>
                                 </tr>
                             </thead>
                             <tbody className="[&_tr:last-child]:border-0">
                                 {filteredTrades.length === 0 ? (
-                                    <tr className="border-b transition-colors hover:bg-muted/50">
+                                    <tr className="border-b border-border/70 transition-colors hover:bg-accent/60">
                                         <td colSpan={9} className="p-4 text-center text-muted-foreground">
                                             {selectedAccountId === "all" ? "No trades found." : "No trades found for this account."}
                                         </td>
@@ -173,13 +179,13 @@ export function TradesListClient({ trades, categories, accounts = [] }: { trades
                                         return (
                                         <tr
                                             key={trade.id}
-                                            className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
+                                            className="border-b border-border/70 transition-colors hover:bg-accent/60 cursor-pointer"
                                             onClick={() => router.push(`/trades/${trade.id}`)}
                                         >
                                             <td className="p-4 align-middle">{format(new Date(trade.date), 'MMM dd, yyyy')}</td>
                                             <td className="p-4 align-middle font-bold">{trade.ticker}</td>
                                             <td className="p-4 align-middle">
-                                                <span className={`px-2 py-1 rounded text-xs ${trade.type === 'Long' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
+                                                <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold border ${trade.type === 'Long' ? 'border-emerald-500/25 bg-emerald-500/15 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300' : 'border-red-500/25 bg-red-500/15 text-red-700 dark:bg-red-500/15 dark:text-red-300'}`}>
                                                     {trade.type}
                                                 </span>
                                             </td>
@@ -187,25 +193,24 @@ export function TradesListClient({ trades, categories, accounts = [] }: { trades
                                             <td className="p-4 align-middle">{trade.contracts || trade.quantity || '-'}</td>
                                             <td className="p-4 align-middle">
                                                 <span className={`px-2 py-1 rounded text-xs ${
-                                                    getTagNameByCategory(trade.tags, "是否符合計劃") === "是" ? "bg-green-500/10 text-green-500" : 
-                                                    getTagNameByCategory(trade.tags, "是否符合計劃") === "否" ? "bg-red-500/10 text-red-500" : "text-muted-foreground"
+                                                    classByValue(getTagNameByCategory(trade.tags, "是否符合計劃"), "是", "否")
                                                 }`}>
                                                     {getTagNameByCategory(trade.tags, "是否符合計劃")}
                                                 </span>
                                             </td>
                                             <td className="p-4 align-middle">
                                                  <span className={`px-2 py-1 rounded text-xs ${
-                                                    getTagNameByCategory(trade.tags, "沒情緒還會否進場") === "會" ? "bg-green-500/10 text-green-500" : 
-                                                    getTagNameByCategory(trade.tags, "沒情緒還會否進場") === "不會" ? "bg-red-500/10 text-red-500" : "text-muted-foreground"
+                                                    classByValue(getTagNameByCategory(trade.tags, "沒情緒還會否進場"), "會", "不會")
                                                 }`}>
                                                     {getTagNameByCategory(trade.tags, "沒情緒還會否進場")}
                                                 </span>
                                             </td>
                                             <td className="p-4 align-middle">
                                                 <span className={`px-2 py-1 rounded text-xs ${
-                                                    trade.rating === 3 ? "bg-green-500/10 text-green-500" :
-                                                    trade.rating === 2 ? "bg-yellow-500/10 text-yellow-500" :
-                                                    trade.rating === 1 ? "bg-red-500/10 text-red-500" : "text-muted-foreground"
+                                                    trade.rating === 3 ? "border border-emerald-500/25 bg-emerald-500/15 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300" :
+                                                    trade.rating === 2 ? "border border-amber-500/25 bg-amber-500/15 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300" :
+                                                    trade.rating === 1 ? "border border-red-500/25 bg-red-500/15 text-red-700 dark:bg-red-500/15 dark:text-red-300" :
+                                                    "border border-border/60 bg-muted/55 text-muted-foreground"
                                                 }`}>
                                                     {ratingToGrade(trade.rating)}
                                                 </span>

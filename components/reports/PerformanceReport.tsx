@@ -17,6 +17,12 @@ interface PerformanceReportProps {
 }
 
 export default function PerformanceReport({ trades }: PerformanceReportProps) {
+    const chartAxisColor = "var(--chart-axis)";
+    const chartGridColor = "var(--chart-grid)";
+    const chartTooltipBackground = "var(--chart-tooltip-bg)";
+    const chartTooltipBorder = "var(--chart-tooltip-border)";
+    const chartTooltipText = "var(--chart-tooltip-text)";
+
     const stats = useMemo(() => {
         if (!trades || trades.length === 0) return null;
 
@@ -190,15 +196,15 @@ export default function PerformanceReport({ trades }: PerformanceReportProps) {
                             <AreaChart data={equityCurveData}>
                                 <defs>
                                     <linearGradient id="colorPnL" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-                                        <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
-                                <XAxis dataKey="date" tickFormatter={(str) => format(parseISO(str), 'MM/dd')} fontSize={12} />
-                                <YAxis fontSize={12} tickFormatter={(val) => `$${val}`} />
-                                <RechartsTooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none' }} />
-                                <Area type="monotone" dataKey="cumulative" stroke="#8884d8" fillOpacity={1} fill="url(#colorPnL)" />
+                                <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} opacity={0.3} />
+                                <XAxis dataKey="date" tickFormatter={(str) => format(parseISO(str), 'MM/dd')} stroke={chartAxisColor} fontSize={12} tickLine={false} axisLine={false} />
+                                <YAxis stroke={chartAxisColor} fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `$${val}`} />
+                                <RechartsTooltip contentStyle={{ backgroundColor: chartTooltipBackground, border: `1px solid ${chartTooltipBorder}`, color: chartTooltipText }} itemStyle={{ color: chartTooltipText }} labelStyle={{ color: chartTooltipText }} />
+                                <Area type="monotone" dataKey="cumulative" stroke="#3b82f6" fillOpacity={1} fill="url(#colorPnL)" />
                             </AreaChart>
                         </ResponsiveContainer>
                     </CardContent>
@@ -256,12 +262,12 @@ export default function PerformanceReport({ trades }: PerformanceReportProps) {
             <Card className="min-w-0">
                 <CardHeader><CardTitle>Daily Net P&L</CardTitle></CardHeader>
                 <CardContent className="h-[300px] min-w-0 min-h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                        <BarChart data={equityCurveData}>
-                            <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
-                            <XAxis dataKey="date" tickFormatter={(str) => format(parseISO(str), 'MM/dd')} fontSize={12} />
-                            <YAxis fontSize={12} tickFormatter={(val) => `$${val}`} />
-                            <RechartsTooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none' }} />
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                            <BarChart data={equityCurveData}>
+                            <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} opacity={0.3} />
+                            <XAxis dataKey="date" tickFormatter={(str) => format(parseISO(str), 'MM/dd')} stroke={chartAxisColor} fontSize={12} tickLine={false} axisLine={false} />
+                            <YAxis stroke={chartAxisColor} fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `$${val}`} />
+                            <RechartsTooltip contentStyle={{ backgroundColor: chartTooltipBackground, border: `1px solid ${chartTooltipBorder}`, color: chartTooltipText }} itemStyle={{ color: chartTooltipText }} labelStyle={{ color: chartTooltipText }} />
                             <Bar dataKey="pnl" name="Daily P&L">
                                 {equityCurveData.map((entry: any, index: number) => (
                                     <Cell key={`cell-${index}`} fill={entry.pnl >= 0 ? '#22c55e' : '#ef4444'} />

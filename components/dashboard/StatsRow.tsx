@@ -20,13 +20,15 @@ interface StatsRowProps {
 }
 
 export function StatsRow({ stats }: StatsRowProps) {
+    const GAUGE_TRACK_COLOR = "var(--chart-track)";
+
     // Data for Win % Gauge (Semi-circle)
     const winData = [
         { name: 'Win', value: stats.winRate },
         { name: 'Loss', value: 100 - stats.winRate }
     ];
-    // Colors: Green for win, dark for loss background
-    const WIN_COLORS = ['#22c55e', '#334155']; 
+    // Colors: Green for win, muted track for remainder
+    const WIN_COLORS = ['#22c55e', GAUGE_TRACK_COLOR];
 
     // Data for Profit Factor (Radial/Ring)
     const pfValue = Math.min(stats.profitFactor, 10); // Cap for visualization
@@ -34,7 +36,7 @@ export function StatsRow({ stats }: StatsRowProps) {
         { name: 'Factor', value: pfValue },
         { name: 'Remaining', value: 10 - pfValue }
     ];
-    const PF_COLORS = ['#22c55e', '#334155'];
+    const PF_COLORS = ['#22c55e', GAUGE_TRACK_COLOR];
 
     // Data for Consistency % Gauge (Semi-circle) - Green if <= 50%, Red if > 50%
     const consistencyValue = stats.consistencyPct ?? 0;
@@ -43,7 +45,7 @@ export function StatsRow({ stats }: StatsRowProps) {
         { name: 'Consistency', value: Math.min(consistencyValue, 100) },
         { name: 'Remaining', value: Math.max(100 - consistencyValue, 0) }
     ];
-    const CONSISTENCY_COLORS = isConsistencyPassing ? ['#22c55e', '#334155'] : ['#ef4444', '#334155'];
+    const CONSISTENCY_COLORS = isConsistencyPassing ? ['#22c55e', GAUGE_TRACK_COLOR] : ['#ef4444', GAUGE_TRACK_COLOR];
 
     return (
         <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
@@ -90,7 +92,7 @@ export function StatsRow({ stats }: StatsRowProps) {
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="px-4 pb-4 flex items-center justify-between">
-                    <div className="text-2xl font-bold text-white">
+                    <div className="text-2xl font-bold text-foreground">
                         {stats.winRate.toFixed(2)}%
                     </div>
                     {/* Small Semi-Circle Chart */}
@@ -137,7 +139,7 @@ export function StatsRow({ stats }: StatsRowProps) {
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="px-4 pb-4 flex items-center justify-between">
-                    <div className="text-2xl font-bold text-white">
+                    <div className="text-2xl font-bold text-foreground">
                         {stats.profitFactor.toFixed(2)}
                     </div>
                     {/* Small Ring Chart */}
@@ -182,7 +184,7 @@ export function StatsRow({ stats }: StatsRowProps) {
                 </CardHeader>
                 <CardContent className="px-4 pb-4">
                     <div className="flex flex-col gap-1">
-                        <div className="text-2xl font-bold text-white">
+                        <div className="text-2xl font-bold text-foreground">
                             {(stats.avgWin / (stats.avgLoss || 1)).toFixed(2)}
                         </div>
                         <div className="flex items-center text-[10px] gap-2">

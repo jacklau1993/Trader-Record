@@ -41,6 +41,12 @@ export default function NoteTagsReport({
     selectedCategoryId, 
     setSelectedCategoryId 
 }: NoteTagsReportProps) {
+    const chartAxisColor = "var(--chart-axis)";
+    const chartGridColor = "var(--chart-grid)";
+    const chartTooltipBackground = "var(--chart-tooltip-bg)";
+    const chartTooltipBorder = "var(--chart-tooltip-border)";
+    const chartTooltipText = "var(--chart-tooltip-text)";
+
     const selectedCategory = noteTagCategories.find(c => c.id === selectedCategoryId);
     
     // Calculate tag metrics
@@ -173,11 +179,13 @@ export default function NoteTagsReport({
                             <CardContent className="h-[300px] min-w-0 min-h-[300px]">
                                 <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     <BarChart data={tagMetrics} layout="vertical">
-                                        <CartesianGrid strokeDasharray="3 3" opacity={0.1} horizontal={false} />
-                                        <XAxis type="number" fontSize={12} />
-                                        <YAxis dataKey="tagName" type="category" width={100} fontSize={12} tickLine={false} axisLine={false} />
+                                        <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} opacity={0.3} horizontal={false} />
+                                        <XAxis type="number" stroke={chartAxisColor} fontSize={12} tickLine={false} axisLine={false} />
+                                        <YAxis dataKey="tagName" type="category" width={100} stroke={chartAxisColor} fontSize={12} tickLine={false} axisLine={false} />
                                         <RechartsTooltip 
-                                            contentStyle={{ backgroundColor: '#1e293b', border: 'none' }} 
+                                            contentStyle={{ backgroundColor: chartTooltipBackground, border: `1px solid ${chartTooltipBorder}`, color: chartTooltipText }}
+                                            itemStyle={{ color: chartTooltipText }}
+                                            labelStyle={{ color: chartTooltipText }}
                                             cursor={{ fill: 'transparent' }}
                                             formatter={(value: any) => [`${value} days`, 'Days']}
                                         />
@@ -212,7 +220,9 @@ export default function NoteTagsReport({
                                             ))}
                                         </Pie>
                                         <RechartsTooltip 
-                                            contentStyle={{ backgroundColor: '#1e293b', border: 'none' }}
+                                            contentStyle={{ backgroundColor: chartTooltipBackground, border: `1px solid ${chartTooltipBorder}`, color: chartTooltipText }}
+                                            itemStyle={{ color: chartTooltipText }}
+                                            labelStyle={{ color: chartTooltipText }}
                                             formatter={(value: any) => [`${value} notes`, 'Notes']}
                                         />
                                     </PieChart>
