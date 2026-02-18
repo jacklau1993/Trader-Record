@@ -32,8 +32,10 @@ export const getAuth = (customOrigin?: string | null) => {
     "https://trader-record.pages.dev",
     "https://traderrecord.uk",
     "http://localhost:3000", // next dev
-    "http://localhost:8788", // wrangler pages dev
+    "http://localhost:8787", // OpenNext + Wrangler preview
+    "http://localhost:8788", // legacy wrangler pages dev
     "http://127.0.0.1:3000",
+    "http://127.0.0.1:8787",
     "http://127.0.0.1:8788",
   ];
 

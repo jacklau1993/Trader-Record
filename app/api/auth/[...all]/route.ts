@@ -2,8 +2,6 @@ import { toNextJsHandler } from "better-auth/next-js";
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "@/lib/auth";
 
-export const runtime = "edge";
-
 // Helper to get origin from request (works for both direct requests and OAuth callbacks)
 function getOriginFromRequest(request: NextRequest): string | null {
     // First try the origin header (for direct requests)

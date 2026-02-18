@@ -7,7 +7,6 @@ import { PropFirmManager } from "@/components/prop-firms/PropFirmManager";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
-export const runtime = "edge";
 
 export default async function PropFirmsPage() {
   let accounts: any[] = [];

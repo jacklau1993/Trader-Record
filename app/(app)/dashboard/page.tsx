@@ -5,8 +5,6 @@ import { redirect } from "next/navigation";
 
 // Force dynamic since we use headers/cookies for auth
 export const dynamic = 'force-dynamic';
-export const runtime = 'edge';
-
 export default async function DashboardPage() {
     let trades: any[] = [];
     let accounts: any[] = [];

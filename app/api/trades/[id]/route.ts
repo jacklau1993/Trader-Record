@@ -5,8 +5,6 @@ import { eq, and } from "drizzle-orm";
 import { auth } from "@/lib/auth"; // Need to check if this imports correctly in route handler context
 import { headers } from "next/headers";
 
-export const runtime = 'edge';
-
 // Helper to get user in API route
 async function getUser() {
     const session = await auth.api.getSession({

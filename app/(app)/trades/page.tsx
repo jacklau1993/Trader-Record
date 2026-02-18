@@ -6,8 +6,6 @@ import { TradesListClient } from "@/components/trades/TradesListClient";
 import { redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
-export const runtime = 'edge';
-
 export default async function TradesListPage() {
     let trades: any[] = [];
     let categories: any[] = [];

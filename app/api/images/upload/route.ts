@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getRequestContext } from "@cloudflare/next-on-pages";
-
-export const runtime = "edge";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 export async function POST(request: NextRequest) {
     try {
-        const ctx = getRequestContext();
+        const ctx = getCloudflareContext();
         const bucket = ctx.env.IMAGES;
 
         if (!bucket) {

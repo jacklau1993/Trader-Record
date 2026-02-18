@@ -3,8 +3,6 @@ import NoteTagsClient from "@/components/note-tags/NoteTagsClient";
 import { redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
-export const runtime = 'edge';
-
 export default async function NoteTagsPage() {
     let categories: any[] = [];
 

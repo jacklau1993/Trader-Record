@@ -1,3 +1,5 @@
+/// <reference types="@cloudflare/workers-types" />
+
 // Type declarations for Cloudflare environment
 interface CloudflareEnv {
     DB: D1Database;
@@ -7,8 +9,8 @@ interface CloudflareEnv {
     RESEND_API_KEY?: string;
 }
 
-declare module "@cloudflare/next-on-pages" {
-    export function getRequestContext(): {
+declare module "@opennextjs/cloudflare" {
+    export function getCloudflareContext(): {
         env: CloudflareEnv;
         cf: unknown;
         ctx: ExecutionContext;
@@ -23,4 +25,3 @@ declare namespace NodeJS {
         BETTER_AUTH_URL?: string;
     }
 }
-
