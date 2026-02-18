@@ -1,63 +1,92 @@
 "use client";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trade } from "@/lib/types";
 import { format } from "date-fns";
 
 export function RecentTrades({ trades }: { trades: Trade[] }) {
-    // Sort trades by date descending and take top 8 for the table
-    const recentTrades = [...trades].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 8);
+    const parseTradeDate = (trade: Trade) => {
+        const timestamp = new Date(`${trade.date}T${trade.exitTime || "00:00"}:00`).getTime();
+        if (Number.isFinite(timestamp)) return timestamp;
+        return new Date(trade.date).getTime();
+    };
+
+    const getRMultiple = (trade: Trade) => {
+        if (typeof trade.realizedRR === "number" && Number.isFinite(trade.realizedRR)) {
+            return trade.realizedRR;
+        }
+
+        if (typeof trade.stopLoss !== "number" || !Number.isFinite(trade.stopLoss)) return null;
+        if (!Number.isFinite(trade.entryPrice) || !Number.isFinite(trade.exitPrice)) return null;
+
+        const riskPerUnit = Math.abs(trade.entryPrice - trade.stopLoss);
+        if (riskPerUnit <= 0) return null;
+
+        const rewardPerUnit = trade.type === "Short"
+            ? trade.entryPrice - trade.exitPrice
+            : trade.exitPrice - trade.entryPrice;
+
+        return rewardPerUnit / riskPerUnit;
+    };
+
+    const recentTrades = [...trades]
+        .filter((trade) => (trade.status || "Closed").toLowerCase() !== "open")
+        .sort((a, b) => parseTradeDate(b) - parseTradeDate(a))
+        .slice(0, 10);
 
     return (
         <Card className="col-span-3 h-full">
             <CardHeader className="px-6 pt-6 pb-2">
-                <Tabs defaultValue="recent" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1">
-                        <TabsTrigger value="recent" className="text-xs">Recent trades</TabsTrigger>
-                        <TabsTrigger value="open" className="text-xs">Open positions</TabsTrigger>
-                    </TabsList>
-                    
-                    <TabsContent value="recent" className="mt-4">
-                        <div className="space-y-1">
-                            <div className="flex items-center justify-between text-[10px] text-muted-foreground px-2 pb-2 uppercase tracking-wider font-semibold">
-                                <span className="w-24">Close Date</span>
-                                <span className="flex-1 text-center">Symbol</span>
-                                <span className="w-20 text-right">Net P&L</span>
-                            </div>
-                            
-                            <div className="space-y-1">
-                                {recentTrades.length === 0 ? (
-                                    <div className="text-sm text-muted-foreground text-center py-8">No recent trades</div>
-                                ) : (
-                                    recentTrades.map(trade => {
-                                        const netPnl = (trade.pnl || 0) - ((trade as any).commission || 0);
-                                        return (
-                                        <div key={trade.id} className="flex items-center justify-between py-2 px-2 hover:bg-muted/30 rounded-md transition-colors text-sm">
-                                            <span className="w-24 text-muted-foreground text-xs">
-                                                {format(new Date(trade.date), 'MM/dd/yyyy')}
-                                            </span>
-                                            <span className="flex-1 text-center font-medium">
-                                                {trade.ticker}
-                                            </span>
-                                            <span className={`w-20 text-right font-mono font-medium ${netPnl > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                                {netPnl > 0 ? "+" : ""}${netPnl.toFixed(0)}
-                                            </span>
-                                        </div>
-                                        );
-                                    })
-                                )}
-                            </div>
-                        </div>
-                    </TabsContent>
-                    
-                    <TabsContent value="open" className="mt-4">
-                        <div className="text-sm text-muted-foreground text-center py-10">
-                            No open positions
-                        </div>
-                    </TabsContent>
-                </Tabs>
+                <h3 className="text-sm font-semibold tracking-tight">Recent closed trades</h3>
             </CardHeader>
+            <CardContent className="px-4 pb-4">
+                {recentTrades.length === 0 ? (
+                    <div className="text-sm text-muted-foreground text-center py-8">No recent trades</div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full min-w-[560px] text-xs">
+                            <thead>
+                                <tr className="text-muted-foreground uppercase tracking-wide border-b border-border">
+                                    <th className="py-2 px-2 text-left font-semibold">Close Date</th>
+                                    <th className="py-2 px-2 text-left font-semibold">Symbol</th>
+                                    <th className="py-2 px-2 text-left font-semibold">Direction</th>
+                                    <th className="py-2 px-2 text-right font-semibold">Entry</th>
+                                    <th className="py-2 px-2 text-right font-semibold">R</th>
+                                    <th className="py-2 px-2 text-right font-semibold">Net P&L</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {recentTrades.map((trade) => {
+                                    const netPnl = (trade.pnl || 0) - (trade.commission || 0);
+                                    const rMultiple = getRMultiple(trade);
+                                    const isLong = trade.type === "Long";
+
+                                    return (
+                                        <tr key={trade.id} className="border-b border-border/50 hover:bg-muted/30">
+                                            <td className="py-2 px-2 text-muted-foreground">
+                                                {format(new Date(trade.date), "MM/dd/yyyy")}
+                                            </td>
+                                            <td className="py-2 px-2 font-medium">{trade.ticker}</td>
+                                            <td className={`py-2 px-2 font-medium ${isLong ? "text-green-500" : "text-red-500"}`}>
+                                                {trade.type}
+                                            </td>
+                                            <td className="py-2 px-2 text-right font-mono">
+                                                {trade.entryPrice.toFixed(2)}
+                                            </td>
+                                            <td className={`py-2 px-2 text-right font-mono ${rMultiple === null ? "text-muted-foreground" : rMultiple >= 0 ? "text-green-500" : "text-red-500"}`}>
+                                                {rMultiple === null ? "—" : `${rMultiple >= 0 ? "+" : ""}${rMultiple.toFixed(2)}R`}
+                                            </td>
+                                            <td className={`py-2 px-2 text-right font-mono font-semibold ${netPnl >= 0 ? "text-green-500" : "text-red-500"}`}>
+                                                {netPnl >= 0 ? "+" : ""}${netPnl.toFixed(0)}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </CardContent>
         </Card>
     );
 }

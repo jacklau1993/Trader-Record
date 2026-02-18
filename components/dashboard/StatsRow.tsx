@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Info, ExternalLink } from "lucide-react";
+import { Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
@@ -13,6 +13,8 @@ interface DashboardStats {
     avgLoss: number;
     totalTrades: number;
     consistencyPct: number | null;
+    expectancyUsd: number;
+    expectancyR: number | null;
 }
 
 interface StatsRowProps {
@@ -216,7 +218,7 @@ export function StatsRow({ stats }: StatsRowProps) {
                                     <Info className="h-3 w-3" />
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    <p>Expected value per trade based on win rate and avg win/loss</p>
+                                    <p>Average net result per trade in both dollars and R</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
@@ -224,8 +226,13 @@ export function StatsRow({ stats }: StatsRowProps) {
 
                 </CardHeader>
                 <CardContent className="px-4 pb-4">
-                    <div className={`text-2xl font-bold ${((stats.winRate / 100 * stats.avgWin) - ((1 - stats.winRate / 100) * stats.avgLoss)) >= 0 ? "text-green-500" : "text-red-500"}`}>
-                        ${((stats.winRate / 100 * stats.avgWin) - ((1 - stats.winRate / 100) * stats.avgLoss)).toFixed(2)}
+                    <div className={`text-2xl font-bold ${stats.expectancyUsd >= 0 ? "text-green-500" : "text-red-500"}`}>
+                        ${stats.expectancyUsd.toFixed(2)}
+                    </div>
+                    <div className={`mt-1 text-xs font-mono ${stats.expectancyR === null ? "text-muted-foreground" : stats.expectancyR >= 0 ? "text-green-500" : "text-red-500"}`}>
+                        {stats.expectancyR === null
+                            ? "R: N/A"
+                            : `R: ${stats.expectancyR >= 0 ? "+" : ""}${stats.expectancyR.toFixed(2)}R`}
                     </div>
                 </CardContent>
             </Card>

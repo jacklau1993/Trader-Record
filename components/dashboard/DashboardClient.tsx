@@ -9,11 +9,11 @@ import { DashboardCalendar } from "@/components/dashboard/DashboardCalendar";
 import { StatsRow } from "@/components/dashboard/StatsRow"; // New component
 import { WinLossChart } from "@/components/dashboard/WinLossChart";
 import { DurationChart } from "@/components/dashboard/DurationChart";
+import { TimeOfDayHeatmap } from "@/components/dashboard/TimeOfDayHeatmap";
 import { AddTradeModal } from "@/components/AddTradeModal";
 import { AccountSwitcher } from "@/components/dashboard/AccountSwitcher";
 import { ImportTradesModal } from "@/components/ImportTradesModal";
 import { MigrationComponent } from "@/components/MigrationComponent";
-import { Button } from "@/components/ui/button";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { DateRange } from "@/lib/date-range";
 import { startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
@@ -88,11 +88,35 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
 
     function calculateStats(data: any[]) {
         if (!data || data.length === 0) return {
-            netPnl: 0, winRate: 0, profitFactor: 0, avgWin: 0, avgLoss: 0, totalTrades: 0, consistencyPct: null
+            netPnl: 0,
+            winRate: 0,
+            profitFactor: 0,
+            avgWin: 0,
+            avgLoss: 0,
+            totalTrades: 0,
+            consistencyPct: null,
+            expectancyUsd: 0,
+            expectancyR: null
         };
+
+        const closedTrades = data.filter((trade) => (trade.status || "Closed").toLowerCase() !== "open");
+        const statsTrades = closedTrades.length > 0 ? closedTrades : data;
 
         // Helper to get Net P&L (Gross - Commission)
         const getNetPnl = (t: any) => (t.pnl || 0) - (t.commission || 0);
+        const getRMultiple = (t: any) => {
+            if (typeof t.realizedRR === "number" && Number.isFinite(t.realizedRR)) return t.realizedRR;
+            if (!Number.isFinite(t.entryPrice) || !Number.isFinite(t.exitPrice) || !Number.isFinite(t.stopLoss)) return null;
+
+            const riskPerUnit = Math.abs(t.entryPrice - t.stopLoss);
+            if (riskPerUnit <= 0) return null;
+
+            const rewardPerUnit = t.type === "Short"
+                ? t.entryPrice - t.exitPrice
+                : t.exitPrice - t.entryPrice;
+
+            return rewardPerUnit / riskPerUnit;
+        };
 
         let totalPnl = 0;
         let wins = 0;
@@ -103,14 +127,20 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
 
         // Group trades by date for consistency calculation
         const dailyPnl: { [key: string]: number } = {};
+        const rValues: number[] = [];
 
-        data.forEach(t => {
+        statsTrades.forEach(t => {
             const netPnl = getNetPnl(t);
             totalPnl += netPnl;
             
             // Group by date for consistency
             const dateKey = t.date?.split('T')[0] || t.date;
             dailyPnl[dateKey] = (dailyPnl[dateKey] || 0) + netPnl;
+
+            const rMultiple = getRMultiple(t);
+            if (typeof rMultiple === "number" && Number.isFinite(rMultiple)) {
+                rValues.push(rMultiple);
+            }
             
             if (netPnl > 0) {
                 wins++;
@@ -122,10 +152,14 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
             }
         });
 
-        const winRate = data.length > 0 ? (wins / data.length) * 100 : 0;
+        const winRate = statsTrades.length > 0 ? (wins / statsTrades.length) * 100 : 0;
         const profitFactor = grossLoss === 0 ? grossProfit : grossProfit / grossLoss;
         const avgWin = wins === 0 ? 0 : winSum / wins;
-        const avgLoss = (data.length - wins) === 0 ? 0 : lossSum / (data.length - wins);
+        const avgLoss = (statsTrades.length - wins) === 0 ? 0 : lossSum / (statsTrades.length - wins);
+        const expectancyUsd = statsTrades.length > 0 ? totalPnl / statsTrades.length : 0;
+        const expectancyR = rValues.length > 0
+            ? rValues.reduce((sum, value) => sum + value, 0) / rValues.length
+            : null;
 
         // Calculate Consistency Percentage
         // Formula: (Largest Single Day Profit / Total Account Profit) * 100
@@ -142,8 +176,10 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
             profitFactor,
             avgWin,
             avgLoss,
-            totalTrades: data.length,
-            consistencyPct
+            totalTrades: statsTrades.length,
+            consistencyPct,
+            expectancyUsd,
+            expectancyR
         };
     }
 
@@ -207,6 +243,9 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
                      </div>
                      <div className="h-auto min-w-0">
                         <DurationChart trades={filteredTrades} />
+                     </div>
+                     <div className="h-auto min-w-0">
+                        <TimeOfDayHeatmap trades={filteredTrades} />
                      </div>
                 </div>
             </div>
