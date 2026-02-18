@@ -4,8 +4,6 @@ import NotebookClient from "@/components/notebook/NotebookClient";
 import { redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
-export const runtime = 'edge';
-
 export default async function NotebookPage() {
     let sections: any[] = [];
     let notes: any[] = [];

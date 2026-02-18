@@ -3,8 +3,6 @@ import TagsClient from "@/components/tags/TagsClient";
 import { redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
-export const runtime = 'edge';
-
 export default async function TagsPage() {
     let categories: any[] = [];
     try {

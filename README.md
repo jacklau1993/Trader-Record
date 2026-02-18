@@ -1,6 +1,6 @@
 # 交易日記應用 (Trading Journal App)
 
-雲端交易日記，涵蓋交易紀錄、標籤分析、報表、富文本筆記與模板、圖片上傳，以及 localStorage → 雲端的遷移。採用 Next.js 16（App Router + Edge runtime）、Drizzle ORM、Cloudflare D1/R2、Better Auth，預設部署 Cloudflare Pages。
+雲端交易日記，涵蓋交易紀錄、標籤分析、報表、富文本筆記與模板、圖片上傳，以及 localStorage → 雲端的遷移。採用 Next.js 16（App Router）、Drizzle ORM、Cloudflare D1/R2、Better Auth，預設部署 Cloudflare Workers（OpenNext）。
 
 ## 功能
 
@@ -20,7 +20,7 @@
 
 ## 技術棧
 
-- 應用：Next.js 16（App Router, Edge）、TypeScript、Cloudflare Pages（`@cloudflare/next-on-pages`）
+- 應用：Next.js 16（App Router）、TypeScript、OpenNext（`@opennextjs/cloudflare`）+ Cloudflare Workers
 - 資料：Drizzle ORM + Cloudflare D1（SQLite，本地使用 `.wrangler/state` SQLite）
 - 儲存：Cloudflare R2 `IMAGES` 綁定（`app/api/images` 提供上傳/讀取）
 - 認證：Better Auth（email/password）
@@ -33,7 +33,7 @@
 - Node.js 18+
 - npm
 - Cloudflare Wrangler CLI（D1/R2 綁定與遷移）
-- Cloudflare 帳號（部署 Pages/D1/R2）
+- Cloudflare 帳號（部署 Workers/D1/R2）
 
 ## 本地開發
 
@@ -63,9 +63,9 @@ npx wrangler d1 migrations apply trading-app-db --local
 npm run dev
 ```
 
-造訪 `http://localhost:3000`。若要本地測圖片，上線 `IMAGES` 綁定（如 `wrangler dev` 模擬 R2 或 Pages 預覽環境）。
+造訪 `http://localhost:3000`。若要本地測圖片，請確認 `IMAGES` 綁定（可用 `npm run preview` / `wrangler dev` 測試 Worker 綁定環境）。
 
-## 部署到 Cloudflare Pages
+## 部署到 Cloudflare Workers（OpenNext）
 
 1. 建立並遷移 D1
 
@@ -79,23 +79,16 @@ npx wrangler d1 migrations apply trading-app-db
 npx wrangler r2 bucket create trading-app-images
 ```
 
-3. 在 Pages/Workers 設定環境變數：`BETTER_AUTH_SECRET`、`BETTER_AUTH_URL`（正式網域）、`RESEND_API_KEY`（若啟用驗證信）。
+3. 在 Cloudflare Workers 設定環境變數：`BETTER_AUTH_SECRET`、`BETTER_AUTH_URL`（正式網域）、`RESEND_API_KEY`（若啟用驗證信）。
    - Google OAuth 的 Authorized redirect URI 需加入：`https://<你的 BETTER_AUTH_URL 網域>/api/auth/callback/google`
    - 本地開發也需加入：`http://localhost:3000/api/auth/callback/google`
-4. Cloudflare Pages 建置指令（Dashboard）
-
-- Build command：`pnpm pages:build`
-- Build output directory：`.vercel/output/static`
-- 請避免使用 `npx @cloudflare/next-on-pages`，否則會以 npm 執行並可能觸發依賴解析衝突。
-
-5. 建置與部署
+4. 建置與部署（OpenNext）
 
 ```bash
-npm run build
-npx wrangler pages deploy .next
+npm run deploy
 ```
 
-`wrangler.toml` 已設定 `pages_build_output_dir=.vercel/output/static` 與 Edge 相容旗標。
+`wrangler.toml` 已設定 `.open-next/worker.js`（main）、`.open-next/assets`（assets）與 D1/R2 綁定。
 
 ## 指令
 
@@ -103,12 +96,14 @@ npx wrangler pages deploy .next
 - `npm run build`：建置（Webpack fallback）
 - `npm run start`：啟動已建置版本
 - `npm run lint`：ESLint
+- `npm run preview`：OpenNext 本地預覽（Wrangler）
+- `npm run deploy`：OpenNext 建置並部署到 Cloudflare Workers
 
 ## 資料與 API
 
 - 認證：`app/api/auth/[...all]`（Better Auth handler）
 - 圖片：`app/api/images/upload` 上傳，`app/api/images/[filename]` 讀取
-- 伺服器動作：`app/actions/*`（交易、標籤、筆記、模板、設定；Drizzle + Edge runtime）
+- 伺服器動作：`app/actions/*`（交易、標籤、筆記、模板、設定；Drizzle + Cloudflare Worker runtime）
 
 ## 授權
 
@@ -120,7 +115,7 @@ ISC（參見 `package.json`）
 
 A professional, cloud-first trading journal application designed for serious traders. **Trader Record** helps you track trades, analyze performance via advanced metrics and charts, manage prop firm accounts, and maintain a rich-text trading notebook.
 
-Built with **Next.js 16 (App Router + Edge Runtime)**, **Drizzle ORM**, and **Cloudflare (Pages, D1, R2)** for high performance and low latency.
+Built with **Next.js 16 (App Router)**, **Drizzle ORM**, and **Cloudflare (Workers, D1, R2)** for high performance and low latency.
 
 ## Key Features
 
@@ -177,14 +172,14 @@ A dedicated module to track your funded trader journey with a **4-tab dashboard*
 
 ## Technical Architecture
 
-The application is architected for the **Edge**, ensuring global low latency and high availability.
+The application is architected for Cloudflare's global Worker runtime, ensuring low latency and high availability.
 
 - **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS, Shadcn UI.
-- **Backend**: Next.js Server Actions (Edge Runtime).
+- **Backend**: Next.js Server Actions (Cloudflare Worker runtime).
 - **Database**: **Cloudflare D1** (SQLite at the Edge) via **Drizzle ORM**.
 - **Object Storage**: **Cloudflare R2** for storing trade screenshots and user uploads.
 - **Authentication**: **Better Auth** (Email/Password) with secure session management.
-- **Deployment**: **Cloudflare Pages** (`@cloudflare/next-on-pages`).
+- **Deployment**: **Cloudflare Workers** via **OpenNext** (`@opennextjs/cloudflare`).
 
 ---
 
@@ -238,7 +233,7 @@ Access the app at `http://localhost:3000`.
 
 ---
 
-## Deployment (Cloudflare Pages)
+## Deployment (Cloudflare Workers + OpenNext)
 
 1.  **Setup Cloudflare D1**:
 
@@ -253,23 +248,16 @@ Access the app at `http://localhost:3000`.
     npx wrangler r2 bucket create trading-app-images
     ```
 
-3.  **Cloudflare Pages Build Settings**:
-
-    - Build command: `pnpm pages:build`
-    - Build output directory: `.vercel/output/static`
-    - Avoid using `npx @cloudflare/next-on-pages` in the Pages build command because it runs via npm and can hit dependency resolution conflicts.
-
-4.  **Deploy**:
+3.  **Build and Deploy with OpenNext**:
 
     ```bash
-    npm run build
-    npx wrangler pages deploy .next
+    npm run deploy
     ```
 
 4.  **Configure Environment**:
-    - Go to Cloudflare Dashboard > Pages > Settings > Environment Variables.
+    - Go to Cloudflare Dashboard > Workers > your worker > Settings > Variables.
     - Add `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` (your production URL), and `RESEND_API_KEY`.
     - In Google Cloud OAuth client settings, add Authorized redirect URI:
       - `https://<your BETTER_AUTH_URL host>/api/auth/callback/google`
       - `http://localhost:3000/api/auth/callback/google` (local dev)
-    - Ensure the **D1 Database** binding (`DB`) and **R2 Bucket** binding (`IMAGES`) are correctly linked in the Pages settings.
+    - Ensure the **D1 Database** binding (`DB`) and **R2 Bucket** binding (`IMAGES`) are correctly linked in worker bindings.

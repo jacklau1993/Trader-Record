@@ -1,7 +1,6 @@
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "../db/schema";
-// Static ESM import - this package only exports ESM, not CommonJS
-import { getRequestContext } from "@cloudflare/next-on-pages";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 export const getDb = (d1?: any) => {
     // 1. If explicitly passed
@@ -9,9 +8,9 @@ export const getDb = (d1?: any) => {
         return drizzle(d1, { schema });
     }
 
-    // 2. Try to get from Cloudflare Context (Production/Edge)
+    // 2. Try to get from Cloudflare Context (Production/Worker)
     try {
-        const ctx = getRequestContext();
+        const ctx = getCloudflareContext();
         if (ctx && ctx.env && ctx.env.DB) {
             console.log("Successfully got D1 binding from context");
             return drizzle(ctx.env.DB, { schema });
@@ -19,8 +18,10 @@ export const getDb = (d1?: any) => {
             console.log("Context available but no DB binding:", ctx?.env ? Object.keys(ctx.env) : "no env");
         }
     } catch (e) {
-        // Context not available (e.g., during build or not in Cloudflare)
-        console.log("getRequestContext failed:", e);
+        // Context not available (e.g., during build or not in Cloudflare).
+        if (process.env.NODE_ENV === "development") {
+            console.log("getCloudflareContext failed:", e);
+        }
     }
 
     // 3. Fallback: Local SQLite (Development only)

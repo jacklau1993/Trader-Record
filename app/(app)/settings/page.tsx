@@ -5,8 +5,6 @@ import { getUserPreferences } from "@/app/actions/settings-actions";
 import { getAccounts } from "@/app/actions/account-actions";
 import SettingsClient from "@/components/settings/SettingsClient";
 
-export const runtime = "edge";
-
 export default async function SettingsPage() {
     const auth = getAuth();
     const headersList = await headers();
