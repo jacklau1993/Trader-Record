@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from "date-fns";
+import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, addDays } from "date-fns";
 import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,14 @@ export function DashboardCalendar({ trades }: DashboardCalendarProps) {
     const days = useMemo(() => {
         const start = startOfWeek(startOfMonth(currentMonth));
         const end = endOfWeek(endOfMonth(currentMonth));
-        return eachDayOfInterval({ start, end });
+        const intervalDays = eachDayOfInterval({ start, end });
+
+        // Always render a full 6-row calendar grid (42 days) to avoid empty space in short months.
+        while (intervalDays.length < 42) {
+            intervalDays.push(addDays(intervalDays[intervalDays.length - 1], 1));
+        }
+
+        return intervalDays;
     }, [currentMonth]);
 
     // Calculate weekly summaries
