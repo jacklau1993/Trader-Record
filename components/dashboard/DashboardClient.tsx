@@ -233,7 +233,7 @@ export default function DashboardClient({ initialTrades, initialAccounts }: { in
             </div>
 
             {/* Row 3: Calendar & Advanced Metrics */}
-            <div className="grid gap-4 grid-cols-1 md:grid-cols-12">
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-12 items-start">
                 <DashboardCalendar trades={filteredTrades} />
                 
                 {/* Right Column: Advanced charts */}

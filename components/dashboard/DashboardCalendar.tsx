@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, getWeek } from "date-fns";
+import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from "date-fns";
 import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -71,7 +71,7 @@ export function DashboardCalendar({ trades }: DashboardCalendarProps) {
     }, [days]);
 
     return (
-        <Card className="md:col-span-8 h-full">
+        <Card className="md:col-span-8 self-start">
             <CardHeader className="px-6 py-4 flex flex-row items-center justify-between">
                 <div className="flex items-center gap-4">
                      <Button variant="outline" size="icon" onClick={prevMonth} className="h-8 w-8">
@@ -129,7 +129,7 @@ export function DashboardCalendar({ trades }: DashboardCalendarProps) {
                                         <div 
                                             key={day.toString()} 
                                             className={`
-                                                min-h-[80px] p-2 flex flex-col justify-between border-b border-r border-border  
+                                                min-h-[92px] lg:min-h-[102px] p-2 flex flex-col justify-between border-b border-r border-border  
                                                 ${bgClass}
                                                 ${!isCurrentMonth ? 'opacity-30' : ''}
                                             `}
@@ -159,7 +159,7 @@ export function DashboardCalendar({ trades }: DashboardCalendarProps) {
                                 {/* Weekly Summary Cell */}
                                 <div 
                                     className={`
-                                        min-h-[80px] p-2 flex flex-col items-center justify-center border-b border-r border-border
+                                        min-h-[92px] lg:min-h-[102px] p-2 flex flex-col items-center justify-center border-b border-r border-border
                                         ${weekSummary.count > 0 
                                             ? weekSummary.pnl >= 0 
                                                 ? 'bg-green-900/30' 
