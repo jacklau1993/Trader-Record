@@ -2,10 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { endOfDay, isWithinInterval, startOfDay } from "date-fns";
 import TagsReport from "./TagsReport";
 import PerformanceReport from "./PerformanceReport";
 import NoteTagsReport from "./NoteTagsReport";
 import { buildAccountLabels } from "@/lib/account-labels";
+import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
+import { DateRange } from "@/lib/date-range";
 
 interface ReportsClientProps {
     categories: any[];
@@ -40,6 +43,7 @@ export default function ReportsClient({
     const [selectedNoteTagCategoryId, setSelectedNoteTagCategoryId] = useState<string>("");
     const [activeTab, setActiveTab] = useState<"performance" | "tradeTags" | "noteTags">("performance");
     const [selectedAccountId, setSelectedAccountId] = useState<string>("all");
+    const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
     const accountLabels = useMemo(() => buildAccountLabels(accounts), [accounts]);
     const validAccountIds = useMemo(() => new Set(accounts.map((account) => account.id)), [accounts]);
     const brokerAccounts = useMemo(() => accounts.filter((account) => account.type === "BROKER"), [accounts]);
@@ -90,42 +94,59 @@ export default function ReportsClient({
     };
 
     const filteredTrades = useMemo(() => {
-        if (selectedAccountId === "all") return trades;
-        return trades.filter((trade) => trade.tradingAccountId === selectedAccountId);
-    }, [selectedAccountId, trades]);
+        return trades.filter((trade) => {
+            const matchesAccount = selectedAccountId === "all" || trade.tradingAccountId === selectedAccountId;
+            if (!matchesAccount) return false;
+
+            if (!dateRange?.from) return true;
+
+            const tradeDate = new Date(trade.date);
+            if (Number.isNaN(tradeDate.getTime())) return false;
+
+            const from = startOfDay(dateRange.from);
+            const to = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
+
+            return isWithinInterval(tradeDate, { start: from, end: to });
+        });
+    }, [selectedAccountId, trades, dateRange]);
 
     return (
         <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
             <div className="flex flex-col gap-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Reports</h2>
-                    {accounts.length > 1 && activeTab !== "noteTags" && (
-                        <select
-                            className="w-full sm:w-[260px] h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                            value={selectedAccountId}
-                            onChange={(e) => handleAccountChange(e.target.value)}
-                        >
-                            <option value="all">All Accounts</option>
-                            {brokerAccounts.length > 0 && (
-                                <optgroup label="Personal Accounts">
-                                    {brokerAccounts.map((account) => (
-                                        <option key={account.id} value={account.id}>
-                                            {accountLabels.get(account.id) || account.name}
-                                        </option>
-                                    ))}
-                                </optgroup>
-                            )}
-                            {propFirmAccounts.length > 0 && (
-                                <optgroup label="Prop Firms">
-                                    {propFirmAccounts.map((account) => (
-                                        <option key={account.id} value={account.id}>
-                                            {accountLabels.get(account.id) || account.name}
-                                        </option>
-                                    ))}
-                                </optgroup>
-                            )}
-                        </select>
-                    )}
+                    <div className="flex w-full sm:w-auto flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        {activeTab !== "noteTags" && (
+                            <DateRangePicker date={dateRange} setDate={setDateRange} />
+                        )}
+                        {accounts.length > 1 && activeTab !== "noteTags" && (
+                            <select
+                                className="w-full sm:w-[260px] h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                                value={selectedAccountId}
+                                onChange={(e) => handleAccountChange(e.target.value)}
+                            >
+                                <option value="all">All Accounts</option>
+                                {brokerAccounts.length > 0 && (
+                                    <optgroup label="Personal Accounts">
+                                        {brokerAccounts.map((account) => (
+                                            <option key={account.id} value={account.id}>
+                                                {accountLabels.get(account.id) || account.name}
+                                            </option>
+                                        ))}
+                                    </optgroup>
+                                )}
+                                {propFirmAccounts.length > 0 && (
+                                    <optgroup label="Prop Firms">
+                                        {propFirmAccounts.map((account) => (
+                                            <option key={account.id} value={account.id}>
+                                                {accountLabels.get(account.id) || account.name}
+                                            </option>
+                                        ))}
+                                    </optgroup>
+                                )}
+                            </select>
+                        )}
+                    </div>
                 </div>
 
                 {/* Main Tab Switcher */}
