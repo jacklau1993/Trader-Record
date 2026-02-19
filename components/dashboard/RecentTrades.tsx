@@ -44,15 +44,14 @@ export function RecentTrades({ trades }: { trades: Trade[] }) {
                     <div className="text-sm text-muted-foreground text-center py-8">No recent trades</div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full min-w-[560px] text-xs">
+                        <table className="w-full text-xs">
                             <thead>
                                 <tr className="text-muted-foreground uppercase tracking-wide border-b border-border">
                                     <th className="py-2 px-2 text-left font-semibold">Close Date</th>
                                     <th className="py-2 px-2 text-left font-semibold">Symbol</th>
                                     <th className="py-2 px-2 text-left font-semibold">Direction</th>
-                                    <th className="py-2 px-2 text-right font-semibold">Entry</th>
                                     <th className="py-2 px-2 text-right font-semibold">R</th>
-                                    <th className="py-2 px-2 text-right font-semibold">Net P&L</th>
+                                    <th className="py-2 px-2 text-right font-semibold">P&L</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -69,9 +68,6 @@ export function RecentTrades({ trades }: { trades: Trade[] }) {
                                             <td className="py-2 px-2 font-medium">{trade.ticker}</td>
                                             <td className={`py-2 px-2 font-medium ${isLong ? "text-green-500" : "text-red-500"}`}>
                                                 {trade.type}
-                                            </td>
-                                            <td className="py-2 px-2 text-right font-mono">
-                                                {trade.entryPrice.toFixed(2)}
                                             </td>
                                             <td className={`py-2 px-2 text-right font-mono ${rMultiple === null ? "text-muted-foreground" : rMultiple >= 0 ? "text-green-500" : "text-red-500"}`}>
                                                 {rMultiple === null ? "—" : `${rMultiple >= 0 ? "+" : ""}${rMultiple.toFixed(2)}R`}
