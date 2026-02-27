@@ -6,6 +6,7 @@ import { getDb } from "@/lib/db";
 import { trades, tradeTags, notes, sections, tradingAccounts } from "@/db/schema";
 import { eq, desc, and, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { CONTRACT_MULTIPLIERS } from "@/lib/constants";
 
 export async function getTrades() {
     const user = await getAuthenticatedUser();
@@ -187,33 +188,859 @@ export async function deleteTrade(id: string) {
     return { success: true };
 }
 
-// Helper to normalize ticker
-function normalizeTicker(rawSymbol: string): string {
-    // Remove month codes (e.g., H6, Z5) and trailing digits
-    // Common futures months: F, G, H, J, K, M, N, Q, U, V, X, Z
-    // Simple heuristic: if it ends with digit, remove digit. Then if ends with known month letter, remove it.
-    // Or, simpler: match against known tickers in CONSTANT.
+type NormalizedTradeImport = {
+    rawSymbol: string;
+    ticker: string;
+    quantity: number;
+    type: "Long" | "Short";
+    entryPrice: number;
+    exitPrice: number;
+    pnl: number;
+    commission: number;
+    profitTarget?: number;
+    stopLoss?: number;
+    entryAt: Date;
+    exitAt: Date;
+    duration?: string;
+    notes?: string;
+};
 
-    // Try to match start of string with known tickers (longest match first)
-    // defined in lib/constants.ts but we can hardcode or import.
-    // Let's import TICKERS if possible, but here we can just do string manipulation.
-    // "MYMH6" -> "MYM"
-    // "NQZ5" -> "NQ"
+type ParseResult = {
+    trades: NormalizedTradeImport[];
+    errors: string[];
+};
 
-    const knownTickers = ['MYM', 'MNQ', 'MGC', 'YM', 'NQ', 'GC'];
+const KNOWN_TICKERS = ["MYM", "MNQ", "MGC", "YM", "NQ", "GC"];
 
-    for (const t of knownTickers) {
-        if (rawSymbol.startsWith(t)) {
-            // Check if the rest is just suffix (1 letter + 1 digit or just digits)
-            // simplified: just return the known ticker if it starts with it?
-            // Be careful with MYM vs M.
-            // "MYMH6" starts with "MYM" -> OK.
-            // "MYM" starts with "MYM" -> OK.
-            return t;
+function cleanCsvValue(value?: string): string {
+    return value ? value.trim().replace(/^"|"$/g, "") : "";
+}
+
+function normalizeHeaderKey(header: string): string {
+    return cleanCsvValue(header).toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function parseCsvText(text: string): string[][] {
+    const rows: string[][] = [];
+    let currentCell = "";
+    let currentRow: string[] = [];
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+
+        if (char === '"') {
+            if (inQuotes && text[i + 1] === '"') {
+                currentCell += '"';
+                i++;
+            } else {
+                inQuotes = !inQuotes;
+            }
+            continue;
+        }
+
+        if (char === "," && !inQuotes) {
+            currentRow.push(currentCell);
+            currentCell = "";
+            continue;
+        }
+
+        if ((char === "\n" || char === "\r") && !inQuotes) {
+            if (char === "\r" && text[i + 1] === "\n") i++;
+            currentRow.push(currentCell);
+            if (currentRow.some((cell) => cell.trim() !== "")) {
+                rows.push(currentRow);
+            }
+            currentRow = [];
+            currentCell = "";
+            continue;
+        }
+
+        currentCell += char;
+    }
+
+    if (currentCell.length > 0 || currentRow.length > 0) {
+        currentRow.push(currentCell);
+        if (currentRow.some((cell) => cell.trim() !== "")) {
+            rows.push(currentRow);
         }
     }
-    // Fallback: return raw if no match
-    return rawSymbol;
+
+    return rows;
+}
+
+function parseNumeric(value?: string): number {
+    const cleaned = cleanCsvValue(value);
+    if (!cleaned) return NaN;
+
+    const negativeFromParentheses = cleaned.includes("(") && cleaned.includes(")");
+    const normalized = cleaned.replace(/[$,()]/g, "");
+    const parsed = Number.parseFloat(normalized);
+
+    if (Number.isNaN(parsed)) return NaN;
+    return negativeFromParentheses ? -Math.abs(parsed) : parsed;
+}
+
+function parseDateTime(value: string, preferredOrder?: "mdy" | "dmy"): Date | null {
+    const cleaned = cleanCsvValue(value);
+    if (!cleaned) return null;
+
+    const withSlash = cleaned.match(
+        /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:,?\s+)(\d{1,2}):(\d{2})(?::(\d{2}))?(?:\s*(AM|PM))?(?:\s*(GMT|UTC))?$/i
+    );
+    if (withSlash) {
+        const a = Number.parseInt(withSlash[1], 10);
+        const b = Number.parseInt(withSlash[2], 10);
+        const year = Number.parseInt(withSlash[3], 10);
+        let hour = Number.parseInt(withSlash[4], 10);
+        const minute = Number.parseInt(withSlash[5], 10);
+        const second = withSlash[6] ? Number.parseInt(withSlash[6], 10) : 0;
+        const ampm = withSlash[7]?.toUpperCase();
+        const timezone = withSlash[8]?.toUpperCase();
+
+        if (ampm === "AM" && hour === 12) hour = 0;
+        if (ampm === "PM" && hour < 12) hour += 12;
+
+        const useDmy = preferredOrder === "dmy" || (preferredOrder !== "mdy" && a > 12);
+        const month = useDmy ? b : a;
+        const day = useDmy ? a : b;
+
+        if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+            const date = timezone
+                ? new Date(Date.UTC(year, month - 1, day, hour, minute, second))
+                : new Date(year, month - 1, day, hour, minute, second);
+            if (!Number.isNaN(date.getTime())) return date;
+        }
+    }
+
+    const fallback = new Date(cleaned);
+    if (!Number.isNaN(fallback.getTime())) return fallback;
+    return null;
+}
+
+function formatDuration(entryAt: Date, exitAt: Date): string {
+    const totalSec = Math.max(0, Math.round((exitAt.getTime() - entryAt.getTime()) / 1000));
+    const min = Math.floor(totalSec / 60);
+    const sec = totalSec % 60;
+    if (min === 0) return `${sec}sec`;
+    return `${min}min ${sec}sec`;
+}
+
+function formatTradeTime(date: Date): string {
+    return date.toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+    });
+}
+
+function getColumnIndex(headerMap: Map<string, number>, aliases: string[]): number {
+    for (const alias of aliases) {
+        const idx = headerMap.get(normalizeHeaderKey(alias));
+        if (idx !== undefined) return idx;
+    }
+    return -1;
+}
+
+function resolveTickerSymbol(rawSymbol: string): string {
+    const cleaned = cleanCsvValue(rawSymbol).toUpperCase();
+    if (!cleaned) return cleaned;
+
+    const withoutExchange = cleaned.includes(":") ? cleaned.split(":").pop() || cleaned : cleaned;
+    const stripped = withoutExchange.replace(/[^A-Z0-9]/g, "");
+
+    for (const ticker of KNOWN_TICKERS) {
+        if (stripped.startsWith(ticker)) return ticker;
+    }
+
+    const futuresRoot = stripped.replace(/[FGHJKMNQUVXZ]\d{1,2}$/i, "");
+    if (futuresRoot) {
+        for (const ticker of KNOWN_TICKERS) {
+            if (futuresRoot.startsWith(ticker)) return ticker;
+        }
+    }
+
+    return stripped;
+}
+
+// Backward-compatible alias used elsewhere in this file.
+function normalizeTicker(rawSymbol: string): string {
+    return resolveTickerSymbol(rawSymbol);
+}
+
+function parseTradovatePerformanceCsv(rows: string[][], headers: string[], commissionRates: Record<string, number>): ParseResult {
+    const errors: string[] = [];
+    const parsedTrades: NormalizedTradeImport[] = [];
+    const headerMap = new Map<string, number>();
+    headers.forEach((header, index) => headerMap.set(normalizeHeaderKey(header), index));
+
+    const idxSymbol = getColumnIndex(headerMap, ["symbol"]);
+    const idxQty = getColumnIndex(headerMap, ["qty", "quantity"]);
+    const idxBuyPrice = getColumnIndex(headerMap, ["buyPrice"]);
+    const idxSellPrice = getColumnIndex(headerMap, ["sellPrice"]);
+    const idxPnl = getColumnIndex(headerMap, ["pnl", "profit"]);
+    const idxBoughtTs = getColumnIndex(headerMap, ["boughtTimestamp", "buyTimestamp", "entryTimestamp"]);
+    const idxSoldTs = getColumnIndex(headerMap, ["soldTimestamp", "sellTimestamp", "exitTimestamp"]);
+    const idxDuration = getColumnIndex(headerMap, ["duration"]);
+
+    if (idxSymbol < 0 || idxQty < 0 || idxBuyPrice < 0 || idxSellPrice < 0 || idxPnl < 0 || idxBoughtTs < 0 || idxSoldTs < 0) {
+        return {
+            trades: [],
+            errors: [
+                `Tradovate format detected, but required columns are missing. Found headers: ${headers.join(", ")}`
+            ]
+        };
+    }
+
+    for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const rowNumber = i + 1;
+
+        const rawSymbol = cleanCsvValue(row[idxSymbol]);
+        const ticker = normalizeTicker(rawSymbol);
+        const qty = parseNumeric(row[idxQty]);
+        const buyPrice = parseNumeric(row[idxBuyPrice]);
+        const sellPrice = parseNumeric(row[idxSellPrice]);
+        const pnl = parseNumeric(row[idxPnl]);
+        const boughtDate = parseDateTime(row[idxBoughtTs] || "", "mdy");
+        const soldDate = parseDateTime(row[idxSoldTs] || "", "mdy");
+
+        if (!boughtDate || !soldDate) {
+            errors.push(`Row ${rowNumber}: Invalid bought/sold timestamps.`);
+            continue;
+        }
+        if (Number.isNaN(qty) || Number.isNaN(buyPrice) || Number.isNaN(sellPrice) || Number.isNaN(pnl)) {
+            errors.push(`Row ${rowNumber}: Invalid numeric values.`);
+            continue;
+        }
+
+        const isLong = boughtDate.getTime() < soldDate.getTime();
+        const entryAt = isLong ? boughtDate : soldDate;
+        const exitAt = isLong ? soldDate : boughtDate;
+        const entryPrice = isLong ? buyPrice : sellPrice;
+        const exitPrice = isLong ? sellPrice : buyPrice;
+        const duration = idxDuration >= 0 ? cleanCsvValue(row[idxDuration]) : formatDuration(entryAt, exitAt);
+        const commissionRate = commissionRates[ticker] || 0;
+        const commission = commissionRate * qty * 2;
+
+        parsedTrades.push({
+            rawSymbol,
+            ticker,
+            quantity: qty,
+            type: isLong ? "Long" : "Short",
+            entryPrice,
+            exitPrice,
+            pnl,
+            commission,
+            entryAt,
+            exitAt,
+            duration,
+            notes: `Imported from Tradovate Performance CSV. Raw Symbol: ${rawSymbol}. Duration: ${duration}`
+        });
+    }
+
+    return { trades: parsedTrades, errors };
+}
+
+function parseTradeseaOrdersCsv(rows: string[][], headers: string[], commissionRates: Record<string, number>): ParseResult {
+    const errors: string[] = [];
+    const parsedTrades: NormalizedTradeImport[] = [];
+    const headerMap = new Map<string, number>();
+    headers.forEach((header, index) => headerMap.set(normalizeHeaderKey(header), index));
+
+    const idxTime = getColumnIndex(headerMap, ["time", "timestamp", "filledTime"]);
+    const idxSymbol = getColumnIndex(headerMap, ["symbol", "instrument", "contract"]);
+    const idxQty = getColumnIndex(headerMap, ["qty", "quantity", "filledQty"]);
+    const idxSide = getColumnIndex(headerMap, ["side", "direction"]);
+    const idxOrderType = getColumnIndex(headerMap, ["orderType", "type"]);
+    const idxLimitPrice = getColumnIndex(headerMap, ["limitPrice", "limit"]);
+    const idxStopPrice = getColumnIndex(headerMap, ["stopPrice", "stop"]);
+    const idxAvgPrice = getColumnIndex(headerMap, ["avgPrice", "averagePrice", "fillPrice", "price"]);
+    const idxCommission = getColumnIndex(headerMap, ["commission", "fees", "fee"]);
+    const idxStatus = getColumnIndex(headerMap, ["status", "orderStatus"]);
+
+    if (idxTime < 0 || idxSymbol < 0 || idxQty < 0 || idxSide < 0 || idxAvgPrice < 0 || idxStatus < 0) {
+        return {
+            trades: [],
+            errors: [
+                `Tradesea format detected, but required columns are missing. Found headers: ${headers.join(", ")}`
+            ]
+        };
+    }
+
+    type ParsedOrder = {
+        rowNumber: number;
+        rawSymbol: string;
+        ticker: string;
+        side: "Buy" | "Sell";
+        qty: number;
+        status: string;
+        orderType: string;
+        avgPrice: number;
+        limitPrice: number;
+        stopPrice: number;
+        commissionPerQty: number;
+        timestamp: Date;
+    };
+
+    type FilledOrder = ParsedOrder & { price: number };
+
+    const allOrders: ParsedOrder[] = [];
+    const filledOrders: FilledOrder[] = [];
+
+    for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const rowNumber = i + 1;
+
+        const status = cleanCsvValue(row[idxStatus]).toLowerCase();
+        const rawSymbol = cleanCsvValue(row[idxSymbol]);
+        const ticker = normalizeTicker(rawSymbol);
+        const qty = parseNumeric(row[idxQty]);
+        const sideRaw = cleanCsvValue(row[idxSide]).toLowerCase();
+        const side: "Buy" | "Sell" | null = sideRaw === "buy" ? "Buy" : sideRaw === "sell" ? "Sell" : null;
+        const orderType = idxOrderType >= 0 ? cleanCsvValue(row[idxOrderType]).toLowerCase() : "";
+        const avgPrice = parseNumeric(row[idxAvgPrice]);
+        const limitPrice = idxLimitPrice >= 0 ? parseNumeric(row[idxLimitPrice]) : NaN;
+        const stopPrice = idxStopPrice >= 0 ? parseNumeric(row[idxStopPrice]) : NaN;
+        const commissionValue = idxCommission >= 0 ? parseNumeric(row[idxCommission]) : NaN;
+        const timestamp = parseDateTime(row[idxTime] || "", "dmy");
+
+        if (!timestamp) {
+            errors.push(`Row ${rowNumber}: Invalid time value.`);
+            continue;
+        }
+        if (!side) {
+            errors.push(`Row ${rowNumber}: Unsupported side "${row[idxSide] || ""}".`);
+            continue;
+        }
+        if (Number.isNaN(qty) || qty <= 0) {
+            errors.push(`Row ${rowNumber}: Invalid qty.`);
+            continue;
+        }
+
+        const safeCommission = Number.isNaN(commissionValue) ? 0 : commissionValue;
+        const parsedOrder: ParsedOrder = {
+            rowNumber,
+            rawSymbol,
+            ticker,
+            side,
+            qty,
+            status,
+            orderType,
+            avgPrice,
+            limitPrice,
+            stopPrice,
+            commissionPerQty: safeCommission / qty,
+            timestamp
+        };
+        allOrders.push(parsedOrder);
+
+        if (!/\bfilled\b/.test(status)) continue;
+
+        if (Number.isNaN(avgPrice)) {
+            errors.push(`Row ${rowNumber}: Filled order is missing avg price.`);
+            continue;
+        }
+
+        filledOrders.push({
+            ...parsedOrder,
+            price: avgPrice
+        });
+    }
+
+    if (filledOrders.length === 0) {
+        return {
+            trades: [],
+            errors: ["No filled orders were found in this Tradesea CSV."]
+        };
+    }
+
+    filledOrders.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+    type OpenLot = {
+        side: "Buy" | "Sell";
+        remainingQty: number;
+        price: number;
+        timestamp: Date;
+        commissionPerQty: number;
+        rawSymbol: string;
+        orderType: string;
+    };
+
+    const openLotsByTicker = new Map<string, OpenLot[]>();
+
+    for (const order of filledOrders) {
+        const lots = openLotsByTicker.get(order.ticker) || [];
+        let remaining = order.qty;
+
+        while (remaining > 1e-9) {
+            const oppositeIndex = lots.findIndex((lot) => lot.remainingQty > 1e-9 && lot.side !== order.side);
+            if (oppositeIndex === -1) {
+                lots.push({
+                    side: order.side,
+                    remainingQty: remaining,
+                    price: order.price,
+                    timestamp: order.timestamp,
+                    commissionPerQty: order.commissionPerQty,
+                    rawSymbol: order.rawSymbol,
+                    orderType: order.orderType
+                });
+                remaining = 0;
+                break;
+            }
+
+            const lot = lots[oppositeIndex];
+            const matchedQty = Math.min(remaining, lot.remainingQty);
+            const type: "Long" | "Short" = lot.side === "Buy" ? "Long" : "Short";
+            const entryPrice = lot.price;
+            const exitPrice = order.price;
+            const multiplier = CONTRACT_MULTIPLIERS[order.ticker] ?? 1;
+            const grossPnl =
+                type === "Long"
+                    ? (exitPrice - entryPrice) * matchedQty * multiplier
+                    : (entryPrice - exitPrice) * matchedQty * multiplier;
+
+            let commission = (lot.commissionPerQty + order.commissionPerQty) * matchedQty;
+            if (!commission || commission < 0) {
+                const commissionRate = commissionRates[order.ticker] || 0;
+                commission = commissionRate * matchedQty * 2;
+            }
+
+            const entryAt = lot.timestamp;
+            const exitAt = order.timestamp;
+            const duration = formatDuration(entryAt, exitAt);
+            let profitTarget: number | undefined;
+            let stopLoss: number | undefined;
+
+            if (order.orderType.includes("limit")) profitTarget = exitPrice;
+            if (order.orderType.includes("stop")) stopLoss = exitPrice;
+
+            parsedTrades.push({
+                rawSymbol: lot.rawSymbol || order.rawSymbol,
+                ticker: order.ticker,
+                quantity: matchedQty,
+                type,
+                entryPrice,
+                exitPrice,
+                pnl: grossPnl,
+                commission,
+                profitTarget,
+                stopLoss,
+                entryAt,
+                exitAt,
+                duration,
+                notes: `Imported from Tradesea Orders CSV (reconstructed from filled orders). Duration: ${duration}`
+            });
+
+            lot.remainingQty -= matchedQty;
+            remaining -= matchedQty;
+
+            if (lot.remainingQty <= 1e-9) {
+                lots.splice(oppositeIndex, 1);
+            }
+        }
+
+        openLotsByTicker.set(order.ticker, lots);
+    }
+
+    const nonFilledOrders = allOrders.filter((order) => !/\bfilled\b/.test(order.status));
+
+    parsedTrades.forEach((trade) => {
+        const closingSide: "Buy" | "Sell" = trade.type === "Long" ? "Sell" : "Buy";
+        const lowerBoundMs = trade.entryAt.getTime() - 2 * 60 * 1000;
+        const upperBoundMs = trade.exitAt.getTime() + 5 * 60 * 1000;
+
+        const candidates = nonFilledOrders.filter((order) => {
+            const t = order.timestamp.getTime();
+            return (
+                order.ticker === trade.ticker &&
+                order.side === closingSide &&
+                t >= lowerBoundMs &&
+                t <= upperBoundMs
+            );
+        });
+
+        const stopCandidates: Array<{ price: number; timestampMs: number }> = [];
+        const targetCandidates: Array<{ price: number; timestampMs: number }> = [];
+
+        for (const candidate of candidates) {
+            const timestampMs = candidate.timestamp.getTime();
+            const orderType = candidate.orderType;
+
+            if (orderType.includes("stop")) {
+                const stopPrice = !Number.isNaN(candidate.stopPrice)
+                    ? candidate.stopPrice
+                    : !Number.isNaN(candidate.avgPrice)
+                        ? candidate.avgPrice
+                        : candidate.limitPrice;
+                if (!Number.isNaN(stopPrice)) {
+                    stopCandidates.push({ price: stopPrice, timestampMs });
+                }
+            }
+
+            if (orderType.includes("limit")) {
+                const targetPrice = !Number.isNaN(candidate.limitPrice)
+                    ? candidate.limitPrice
+                    : !Number.isNaN(candidate.avgPrice)
+                        ? candidate.avgPrice
+                        : candidate.stopPrice;
+                if (!Number.isNaN(targetPrice)) {
+                    targetCandidates.push({ price: targetPrice, timestampMs });
+                }
+            }
+        }
+
+        const pickClosestToExit = (items: Array<{ price: number; timestampMs: number }>): number | undefined => {
+            if (items.length === 0) return undefined;
+            const exitMs = trade.exitAt.getTime();
+            const sorted = [...items].sort(
+                (a, b) => Math.abs(a.timestampMs - exitMs) - Math.abs(b.timestampMs - exitMs)
+            );
+            return sorted[0].price;
+        };
+
+        if (trade.stopLoss === undefined) {
+            trade.stopLoss = pickClosestToExit(stopCandidates);
+        }
+        if (trade.profitTarget === undefined) {
+            trade.profitTarget = pickClosestToExit(targetCandidates);
+        }
+    });
+
+    openLotsByTicker.forEach((lots, ticker) => {
+        const openQty = lots.reduce((sum: number, lot: OpenLot) => sum + lot.remainingQty, 0);
+        if (openQty > 1e-9) {
+            errors.push(`Info: ${ticker} has ${openQty.toFixed(2)} unmatched open quantity. Open positions were skipped.`);
+        }
+    });
+
+    return { trades: parsedTrades, errors };
+}
+
+function parseTradovateOrdersCsv(rows: string[][], headers: string[], commissionRates: Record<string, number>): ParseResult {
+    const errors: string[] = [];
+    const parsedTrades: NormalizedTradeImport[] = [];
+    const headerMap = new Map<string, number>();
+    headers.forEach((header, index) => headerMap.set(normalizeHeaderKey(header), index));
+
+    const idxSide = getColumnIndex(headerMap, ["B/S", "side", "direction"]);
+    const idxSymbol = getColumnIndex(headerMap, ["contract", "product", "symbol"]);
+    const idxStatus = getColumnIndex(headerMap, ["status"]);
+    const idxOrderType = getColumnIndex(headerMap, ["type", "orderType"]);
+    const idxFillTime = getColumnIndex(headerMap, ["fillTime", "time", "timestamp"]);
+    const idxTimestamp = getColumnIndex(headerMap, ["timestamp", "time"]);
+    const idxFilledQty = getColumnIndex(headerMap, ["filledQty", "filledquantity", "filled qty"]);
+    const idxQty = getColumnIndex(headerMap, ["quantity", "qty"]);
+    const idxAvgPrice = getColumnIndex(headerMap, ["avgFillPrice", "avgPrice", "averagePrice", "fillPrice", "price"]);
+    const idxLimitPrice = getColumnIndex(headerMap, ["limitPrice", "limit"]);
+    const idxStopPrice = getColumnIndex(headerMap, ["stopPrice", "stop"]);
+
+    if (idxSide < 0 || idxSymbol < 0 || idxStatus < 0 || idxOrderType < 0 || idxAvgPrice < 0 || (idxFillTime < 0 && idxTimestamp < 0)) {
+        return {
+            trades: [],
+            errors: [
+                `Tradovate Orders format detected, but required columns are missing. Found headers: ${headers.join(", ")}`
+            ]
+        };
+    }
+
+    type ParsedOrder = {
+        rowNumber: number;
+        rawSymbol: string;
+        ticker: string;
+        side: "Buy" | "Sell";
+        qty: number;
+        status: string;
+        orderType: string;
+        avgPrice: number;
+        limitPrice: number;
+        stopPrice: number;
+        commissionPerQty: number;
+        timestamp: Date;
+    };
+
+    type FilledOrder = ParsedOrder & { price: number };
+
+    const allOrders: ParsedOrder[] = [];
+    const filledOrders: FilledOrder[] = [];
+
+    for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const rowNumber = i + 1;
+
+        const status = cleanCsvValue(row[idxStatus]).toLowerCase();
+        const rawSymbol = cleanCsvValue(row[idxSymbol]);
+        const ticker = normalizeTicker(rawSymbol);
+        const sideRaw = cleanCsvValue(row[idxSide]).toLowerCase();
+        const side: "Buy" | "Sell" | null = sideRaw === "buy" ? "Buy" : sideRaw === "sell" ? "Sell" : null;
+        const orderType = cleanCsvValue(row[idxOrderType]).toLowerCase();
+        const qtyFromFilled = idxFilledQty >= 0 ? parseNumeric(row[idxFilledQty]) : NaN;
+        const qtyFromOrder = idxQty >= 0 ? parseNumeric(row[idxQty]) : NaN;
+        const qty = Number.isNaN(qtyFromFilled) ? qtyFromOrder : qtyFromFilled;
+        const avgPrice = parseNumeric(row[idxAvgPrice]);
+        const limitPrice = idxLimitPrice >= 0 ? parseNumeric(row[idxLimitPrice]) : NaN;
+        const stopPrice = idxStopPrice >= 0 ? parseNumeric(row[idxStopPrice]) : NaN;
+        const timestampValue = (idxFillTime >= 0 ? row[idxFillTime] : "") || (idxTimestamp >= 0 ? row[idxTimestamp] : "");
+        const timestamp = parseDateTime(timestampValue || "", "mdy");
+
+        if (!timestamp) {
+            errors.push(`Row ${rowNumber}: Invalid timestamp/fill time.`);
+            continue;
+        }
+        if (!side) {
+            errors.push(`Row ${rowNumber}: Unsupported side "${row[idxSide] || ""}".`);
+            continue;
+        }
+        if (Number.isNaN(qty) || qty <= 0) {
+            errors.push(`Row ${rowNumber}: Invalid quantity.`);
+            continue;
+        }
+
+        const parsedOrder: ParsedOrder = {
+            rowNumber,
+            rawSymbol,
+            ticker,
+            side,
+            qty,
+            status,
+            orderType,
+            avgPrice,
+            limitPrice,
+            stopPrice,
+            commissionPerQty: 0,
+            timestamp
+        };
+        allOrders.push(parsedOrder);
+
+        if (!/\bfilled\b/.test(status)) continue;
+
+        if (Number.isNaN(avgPrice)) {
+            errors.push(`Row ${rowNumber}: Filled order is missing avg price.`);
+            continue;
+        }
+
+        filledOrders.push({
+            ...parsedOrder,
+            price: avgPrice
+        });
+    }
+
+    if (filledOrders.length === 0) {
+        return {
+            trades: [],
+            errors: ["No filled orders were found in this Tradovate Orders CSV."]
+        };
+    }
+
+    filledOrders.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+    type OpenLot = {
+        side: "Buy" | "Sell";
+        remainingQty: number;
+        price: number;
+        timestamp: Date;
+        commissionPerQty: number;
+        rawSymbol: string;
+    };
+
+    const openLotsByTicker = new Map<string, OpenLot[]>();
+
+    for (const order of filledOrders) {
+        const lots = openLotsByTicker.get(order.ticker) || [];
+        let remaining = order.qty;
+
+        while (remaining > 1e-9) {
+            const oppositeIndex = lots.findIndex((lot) => lot.remainingQty > 1e-9 && lot.side !== order.side);
+            if (oppositeIndex === -1) {
+                lots.push({
+                    side: order.side,
+                    remainingQty: remaining,
+                    price: order.price,
+                    timestamp: order.timestamp,
+                    commissionPerQty: order.commissionPerQty,
+                    rawSymbol: order.rawSymbol
+                });
+                remaining = 0;
+                break;
+            }
+
+            const lot = lots[oppositeIndex];
+            const matchedQty = Math.min(remaining, lot.remainingQty);
+            const type: "Long" | "Short" = lot.side === "Buy" ? "Long" : "Short";
+            const entryPrice = lot.price;
+            const exitPrice = order.price;
+            const multiplier = CONTRACT_MULTIPLIERS[order.ticker] ?? 1;
+            const grossPnl =
+                type === "Long"
+                    ? (exitPrice - entryPrice) * matchedQty * multiplier
+                    : (entryPrice - exitPrice) * matchedQty * multiplier;
+
+            const commissionRate = commissionRates[order.ticker] || 0;
+            const commission = commissionRate * matchedQty * 2;
+
+            const entryAt = lot.timestamp;
+            const exitAt = order.timestamp;
+            const duration = formatDuration(entryAt, exitAt);
+            let profitTarget: number | undefined;
+            let stopLoss: number | undefined;
+
+            if (order.orderType.includes("limit")) profitTarget = exitPrice;
+            if (order.orderType.includes("stop")) stopLoss = exitPrice;
+
+            parsedTrades.push({
+                rawSymbol: lot.rawSymbol || order.rawSymbol,
+                ticker: order.ticker,
+                quantity: matchedQty,
+                type,
+                entryPrice,
+                exitPrice,
+                pnl: grossPnl,
+                commission,
+                profitTarget,
+                stopLoss,
+                entryAt,
+                exitAt,
+                duration,
+                notes: `Imported from Tradovate Orders CSV (reconstructed from filled orders). Duration: ${duration}`
+            });
+
+            lot.remainingQty -= matchedQty;
+            remaining -= matchedQty;
+
+            if (lot.remainingQty <= 1e-9) {
+                lots.splice(oppositeIndex, 1);
+            }
+        }
+
+        openLotsByTicker.set(order.ticker, lots);
+    }
+
+    const nonFilledOrders = allOrders.filter((order) => !/\bfilled\b/.test(order.status));
+
+    parsedTrades.forEach((trade) => {
+        const closingSide: "Buy" | "Sell" = trade.type === "Long" ? "Sell" : "Buy";
+        const lowerBoundMs = trade.entryAt.getTime() - 2 * 60 * 1000;
+        const upperBoundMs = trade.exitAt.getTime() + 5 * 60 * 1000;
+
+        const candidates = nonFilledOrders.filter((order) => {
+            const t = order.timestamp.getTime();
+            return (
+                order.ticker === trade.ticker &&
+                order.side === closingSide &&
+                t >= lowerBoundMs &&
+                t <= upperBoundMs
+            );
+        });
+
+        const stopCandidates: Array<{ price: number; timestampMs: number }> = [];
+        const targetCandidates: Array<{ price: number; timestampMs: number }> = [];
+
+        for (const candidate of candidates) {
+            const timestampMs = candidate.timestamp.getTime();
+            const orderType = candidate.orderType;
+
+            if (orderType.includes("stop")) {
+                const stopPrice = !Number.isNaN(candidate.stopPrice)
+                    ? candidate.stopPrice
+                    : !Number.isNaN(candidate.avgPrice)
+                        ? candidate.avgPrice
+                        : candidate.limitPrice;
+                if (!Number.isNaN(stopPrice)) {
+                    stopCandidates.push({ price: stopPrice, timestampMs });
+                }
+            }
+
+            if (orderType.includes("limit")) {
+                const targetPrice = !Number.isNaN(candidate.limitPrice)
+                    ? candidate.limitPrice
+                    : !Number.isNaN(candidate.avgPrice)
+                        ? candidate.avgPrice
+                        : candidate.stopPrice;
+                if (!Number.isNaN(targetPrice)) {
+                    targetCandidates.push({ price: targetPrice, timestampMs });
+                }
+            }
+        }
+
+        const pickClosestToExit = (items: Array<{ price: number; timestampMs: number }>): number | undefined => {
+            if (items.length === 0) return undefined;
+            const exitMs = trade.exitAt.getTime();
+            const sorted = [...items].sort(
+                (a, b) => Math.abs(a.timestampMs - exitMs) - Math.abs(b.timestampMs - exitMs)
+            );
+            return sorted[0].price;
+        };
+
+        if (trade.stopLoss === undefined) {
+            trade.stopLoss = pickClosestToExit(stopCandidates);
+        }
+        if (trade.profitTarget === undefined) {
+            trade.profitTarget = pickClosestToExit(targetCandidates);
+        }
+    });
+
+    openLotsByTicker.forEach((lots, ticker) => {
+        const openQty = lots.reduce((sum: number, lot: OpenLot) => sum + lot.remainingQty, 0);
+        if (openQty > 1e-9) {
+            errors.push(`Info: ${ticker} has ${openQty.toFixed(2)} unmatched open quantity. Open positions were skipped.`);
+        }
+    });
+
+    return { trades: parsedTrades, errors };
+}
+
+function parseTradesFromCsvText(csvText: string, commissionRates: Record<string, number>): ParseResult {
+    const rows = parseCsvText(csvText);
+    if (rows.length < 2) {
+        return { trades: [], errors: ["Empty CSV"] };
+    }
+
+    const headers = rows[0].map((header) => cleanCsvValue(header));
+    const normalizedHeaders = new Set(headers.map((header) => normalizeHeaderKey(header)));
+
+    const hasTradovateShape =
+        normalizedHeaders.has("symbol") &&
+        normalizedHeaders.has("qty") &&
+        normalizedHeaders.has("buyprice") &&
+        normalizedHeaders.has("sellprice") &&
+        normalizedHeaders.has("pnl") &&
+        normalizedHeaders.has("boughttimestamp") &&
+        normalizedHeaders.has("soldtimestamp");
+
+    if (hasTradovateShape) {
+        return parseTradovatePerformanceCsv(rows, headers, commissionRates);
+    }
+
+    const hasTradeseaShape =
+        normalizedHeaders.has("time") &&
+        normalizedHeaders.has("symbol") &&
+        normalizedHeaders.has("qty") &&
+        normalizedHeaders.has("side") &&
+        normalizedHeaders.has("avgprice") &&
+        normalizedHeaders.has("status");
+
+    if (hasTradeseaShape) {
+        return parseTradeseaOrdersCsv(rows, headers, commissionRates);
+    }
+
+    const hasTradovateOrdersShape =
+        normalizedHeaders.has("bs") &&
+        normalizedHeaders.has("contract") &&
+        normalizedHeaders.has("status") &&
+        normalizedHeaders.has("type") &&
+        normalizedHeaders.has("filltime") &&
+        normalizedHeaders.has("avgprice");
+
+    if (hasTradovateOrdersShape) {
+        return parseTradovateOrdersCsv(rows, headers, commissionRates);
+    }
+
+    return {
+        trades: [],
+        errors: [
+            `Unsupported CSV format. Found headers: ${headers.join(", ")}`
+        ]
+    };
 }
 
 export async function importTradesFromCsv(formData: FormData) {
@@ -238,65 +1065,17 @@ export async function importTradesFromCsv(formData: FormData) {
     }
 
     const text = await file.text();
-    const lines = text.split(/\r?\n/);
-
-    // Header: symbol,_priceFormat,_priceFormatType,_tickSize,buyFillId,sellFillId,qty,buyPrice,sellPrice,pnl,boughtTimestamp,soldTimestamp,duration
-    // We expect header at line 0
-    if (lines.length < 2) return { success: false, message: "Empty CSV" };
-
-    // Helper to parse CSV line respecting quotes
-    const parseCSVLine = (line: string): string[] => {
-        const result: string[] = [];
-        let current = '';
-        let inQuote = false;
-
-        for (let i = 0; i < line.length; i++) {
-            const char = line[i];
-
-            if (char === '"') {
-                // If we are in a quote and see another quote, check if it's escaped (double quote)
-                // However, standard CSV usually escapes quotes by doubling them.
-                // For simplicity here, we toggle inQuote.
-                if (inQuote && line[i + 1] === '"') {
-                    current += '"';
-                    i++; // skip next quote
-                } else {
-                    inQuote = !inQuote;
-                }
-            } else if (char === ',' && !inQuote) {
-                result.push(current);
-                current = '';
-            } else {
-                current += char;
-            }
-        }
-        result.push(current);
-        return result;
-    }
-
-    // Parse header using helper
-    const headerCols = parseCSVLine(lines[0]);
-    const headers = headerCols.map(h => h.trim().replace(/^"|"$/g, ''));
-
-    // Simple index mapping
-    const getIdx = (name: string) => headers.indexOf(name);
-
-    // Verify necessary headers
-    const idxSymbol = 0;
-    const idxQty = getIdx("qty");
-    const idxBuyPrice = getIdx("buyPrice");
-    const idxSellPrice = getIdx("sellPrice");
-    const idxPnl = getIdx("pnl");
-    const idxBoughtTs = getIdx("boughtTimestamp");
-    const idxSoldTs = getIdx("soldTimestamp");
-    const idxDuration = getIdx("duration");
-
-    if (idxBoughtTs === -1 || idxSoldTs === -1) {
-        return { success: false, message: `Missing timestamp columns. Found: ${headers.join(', ')}` };
+    const parsed = parseTradesFromCsvText(text, commissionRates);
+    if (parsed.trades.length === 0) {
+        return {
+            success: false,
+            message: parsed.errors[0] || "No importable trades found in CSV.",
+            errors: parsed.errors.slice(0, 10)
+        };
     }
 
     let importedCount = 0;
-    let errors: string[] = [];
+    const errors: string[] = [...parsed.errors];
 
     // Fetch or create "Trade Notes" section
     let tradeSections = await db.select().from(sections).where(and(eq(sections.userId, user.id), eq(sections.name, "Trade Notes")));
@@ -312,130 +1091,31 @@ export async function importTradesFromCsv(formData: FormData) {
         });
     }
 
-    // Helper to clean CSV value
-    const clean = (val: string) => val ? val.trim().replace(/^"|"$/g, '') : "";
-
-    // Helper for date parsing: "MM/DD/YYYY HH:mm:ss" -> Date object
-    const parseDate = (str: string) => {
-        if (!str) return null;
-        const cleaned = clean(str);
+    for (const parsedTrade of parsed.trades) {
         try {
-            // Try standard Date constructor first if it matches standard ISO or supported formats
-            const dSimple = new Date(cleaned);
-            if (!isNaN(dSimple.getTime())) return dSimple;
-
-            // Fallback to manual parsing for MM/DD/YYYY HH:mm:ss
-            const [datePart, timePart] = cleaned.split(' ');
-            if (!datePart) return null;
-            const [month, day, year] = datePart.split('/');
-
-            // If time is missing, default to 00:00:00
-            let hours = 0, minutes = 0, seconds = 0;
-            if (timePart) {
-                const parts = timePart.split(':');
-                hours = parseInt(parts[0]) || 0;
-                minutes = parseInt(parts[1]) || 0;
-                seconds = parseInt(parts[2]) || 0;
-            }
-
-            // Note: Month is 0-indexed in JS Date
-            const d = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), hours, minutes, seconds);
-            if (isNaN(d.getTime())) return null;
-            return d;
-        } catch (e) {
-            return null;
-        }
-    };
-
-    for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-
-        try {
-            const cols = parseCSVLine(line);
-
-            // Check if we have enough columns. 
-            // Note: cols.length should match headers.length ideally, or at least be enough to cover our indices.
-            const maxIdx = Math.max(idxSymbol, idxQty, idxBuyPrice, idxSellPrice, idxPnl, idxBoughtTs, idxSoldTs, idxDuration);
-            if (cols.length <= maxIdx) {
-                errors.push(`Line ${i}: Not enough columns (Found ${cols.length}, required > ${maxIdx})`);
-                continue;
-            }
-
-            const rawSymbol = clean(cols[idxSymbol]);
-            const ticker = normalizeTicker(rawSymbol);
-
-            const qty = parseFloat(clean(cols[idxQty]));
-            const buyPrice = parseFloat(clean(cols[idxBuyPrice]));
-            const sellPrice = parseFloat(clean(cols[idxSellPrice]));
-
-            // start/end timestamp check
-            const boughtTsStr = cols[idxBoughtTs];
-            const soldTsStr = cols[idxSoldTs];
-
-            const boughtDate = parseDate(boughtTsStr);
-            const soldDate = parseDate(soldTsStr);
-
-            if (!boughtDate || !soldDate) {
-                errors.push(`Row ${i + 1}: Invalid dates. Bought: "${boughtTsStr}", Sold: "${soldTsStr}"`);
-                continue;
-            }
-
-            // PnL processing
-            let pnlStr = clean(cols[idxPnl] || "0");
-
-            // Detect negative parenthesis format e.g. (100), $(100), ($100)
-            const isNegativeParenthesis = pnlStr.includes('(') && pnlStr.includes(')');
-
-            // Remove characters that are not digits, dot, or minus
-            // We remove $, ( ) and commas
-            pnlStr = pnlStr.replace(/[$,()]/g, "");
-
-            let pnl = parseFloat(pnlStr);
-
-            if (isNegativeParenthesis) {
-                pnl = -Math.abs(pnl);
-            }
-
-            const isLong = boughtDate.getTime() < soldDate.getTime();
-            const type = isLong ? "Long" : "Short";
-
-            const entryPrice = isLong ? buyPrice : sellPrice;
-            const exitPrice = isLong ? sellPrice : buyPrice;
-
-            // Date string YYYY-MM-DD
-            const entryDateObj = isLong ? boughtDate : soldDate;
-            const exitDateObj = isLong ? soldDate : boughtDate;
-            const dateStr = exitDateObj.toISOString().split('T')[0]; // Use Exit Date as the main Date (Close Date)
-            const entryDateStr = entryDateObj.toISOString().split('T')[0];
-
-            const entryTime = entryDateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-            const exitTime = exitDateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-
-            const duration = clean(cols[idxDuration]);
+            const dateStr = parsedTrade.exitAt.toISOString().split("T")[0];
+            const entryDateStr = parsedTrade.entryAt.toISOString().split("T")[0];
 
             const tradeId = `trade_${Date.now()}_${importedCount}`;
-
-            // Calculate commission: rate × quantity × 2 (both sides)
-            const commissionRate = commissionRates[ticker] || 0;
-            const commission = commissionRate * (isNaN(qty) ? 0 : qty) * 2;
 
             const tradeData = {
                 id: tradeId,
                 date: dateStr,
-                ticker: ticker,
-                type: type as "Long" | "Short",
-                entryPrice: isNaN(entryPrice) ? 0 : entryPrice,
-                exitPrice: isNaN(exitPrice) ? 0 : exitPrice,
-                quantity: isNaN(qty) ? 0 : qty,
-                pnl: isNaN(pnl) ? 0 : pnl,
-                commission: commission,
+                ticker: parsedTrade.ticker,
+                type: parsedTrade.type,
+                entryPrice: parsedTrade.entryPrice,
+                exitPrice: parsedTrade.exitPrice,
+                quantity: parsedTrade.quantity,
+                pnl: parsedTrade.pnl,
+                commission: parsedTrade.commission,
+                profitTarget: parsedTrade.profitTarget,
+                stopLoss: parsedTrade.stopLoss,
                 status: "Closed",
-                notes: `Imported from CSV. Raw Symbol: ${rawSymbol}. Duration: ${duration}`,
+                notes: parsedTrade.notes || `Imported from CSV. Raw Symbol: ${parsedTrade.rawSymbol}`,
                 tradingAccountId: accountId,
                 entryDate: entryDateStr,
-                entryTime: entryTime,
-                exitTime: exitTime,
+                entryTime: formatTradeTime(parsedTrade.entryAt),
+                exitTime: formatTradeTime(parsedTrade.exitAt),
                 userId: user.id,
                 createdAt: new Date(),
                 updatedAt: new Date()
@@ -446,13 +1126,17 @@ export async function importTradesFromCsv(formData: FormData) {
             const noteContent = `
 # Trade Details
 
-## Ticker: ${ticker}
-## Direction: ${type}
+## Ticker: ${parsedTrade.ticker}
+## Direction: ${parsedTrade.type}
 ## Date: ${dateStr}
-## Net P&L: $${(isNaN(pnl) ? 0 : pnl).toFixed(2)}
+## Gross P&L: $${parsedTrade.pnl.toFixed(2)}
+## Commission: $${parsedTrade.commission.toFixed(2)}
+## Net P&L: $${(parsedTrade.pnl - parsedTrade.commission).toFixed(2)}
+${parsedTrade.profitTarget !== undefined ? `## Profit Target: ${parsedTrade.profitTarget}` : ""}
+${parsedTrade.stopLoss !== undefined ? `## Stop Loss: ${parsedTrade.stopLoss}` : ""}
 
 ## Notes
-- Imported from CSV. Raw Symbol: ${rawSymbol}. Duration: ${duration}
+- ${parsedTrade.notes || `Imported from CSV. Raw Symbol: ${parsedTrade.rawSymbol}`}
 
 ## Review
 `;
@@ -462,7 +1146,7 @@ export async function importTradesFromCsv(formData: FormData) {
             await db.insert(notes).values({
                 id: uniqueNoteId,
                 sectionId: sectionId,
-                title: `${ticker} ${type} (${dateStr})`,
+                title: `${parsedTrade.ticker} ${parsedTrade.type} (${dateStr})`,
                 content: noteContent,
                 date: dateStr,
                 tradeId: tradeId,
@@ -473,8 +1157,8 @@ export async function importTradesFromCsv(formData: FormData) {
 
             importedCount++;
         } catch (err: any) {
-            console.error(`Error processing line ${i}:`, err);
-            errors.push(`Line ${i}: Error - ${err.message || String(err)}`);
+            console.error("Error processing imported trade:", err);
+            errors.push(`Error importing parsed trade: ${err.message || String(err)}`);
         }
     }
 
