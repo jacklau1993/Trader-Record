@@ -63,7 +63,10 @@ export function ImportTradesModal({ accounts = [], defaultAccountId }: { account
             <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
                 <h2 className="text-xl font-bold mb-4">Import Trades from CSV</h2>
                 <div className="mb-4 text-sm text-muted-foreground">
-                    <p>Upload your <code>Performance.csv</code> file to import trades.</p>
+                    <p>
+                        Upload a supported broker export, such as <code>Performance.csv</code> or <code>Orders.csv</code> (Tradovate),
+                        or <code>orders.csv</code> (Tradesea).
+                    </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
