@@ -110,6 +110,7 @@ export default function LandingPage() {
               src="/favicon.png"
               width={34}
               height={34}
+              unoptimized
               alt="TraderRecord"
               className="rounded-lg"
             />
@@ -369,6 +370,7 @@ export default function LandingPage() {
               src="/favicon.png"
               width={22}
               height={22}
+              unoptimized
               alt="TraderRecord"
               className="rounded"
             />
