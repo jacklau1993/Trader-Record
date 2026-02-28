@@ -109,6 +109,7 @@ export default function PerformanceReport({ trades }: PerformanceReportProps) {
     const chartTooltipBackground = "var(--chart-tooltip-bg)";
     const chartTooltipBorder = "var(--chart-tooltip-border)";
     const chartTooltipText = "var(--chart-tooltip-text)";
+    const chartCursorFill = "var(--chart-cursor)";
 
     const stats = useMemo<PerformanceStats | null>(() => {
         if (!trades || trades.length === 0) return null;
@@ -594,6 +595,7 @@ export default function PerformanceReport({ trades }: PerformanceReportProps) {
                                 }}
                                 itemStyle={{ color: chartTooltipText }}
                                 labelStyle={{ color: chartTooltipText }}
+                                cursor={{ fill: chartCursorFill, opacity: 0.22 }}
                             />
                             <Bar dataKey="pnl" name="Daily P&L">
                                 {stats.dailyPnlBarData.map((entry: any, index: number) => (
