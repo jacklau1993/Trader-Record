@@ -5,7 +5,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { endOfDay, isWithinInterval, startOfDay } from "date-fns";
 import TagsReport from "./TagsReport";
 import PerformanceReport from "./PerformanceReport";
-import NoteTagsReport from "./NoteTagsReport";
 import { buildAccountLabels } from "@/lib/account-labels";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { DateRange } from "@/lib/date-range";
@@ -13,10 +12,6 @@ import { DateRange } from "@/lib/date-range";
 interface ReportsClientProps {
     categories: any[];
     trades: any[];
-    notes: any[];
-    noteTagCategories: any[];
-    noteTagMap: Record<string, string[]>;
-    tagMap: Record<string, any>;
     accounts?: any[];
 }
 
@@ -30,18 +25,13 @@ function normalizeAccountSelection(value: string | null | undefined, validAccoun
 export default function ReportsClient({ 
     categories, 
     trades,
-    notes,
-    noteTagCategories,
-    noteTagMap,
-    tagMap,
     accounts = []
 }: ReportsClientProps) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
-    const [selectedNoteTagCategoryId, setSelectedNoteTagCategoryId] = useState<string>("");
-    const [activeTab, setActiveTab] = useState<"performance" | "tradeTags" | "noteTags">("performance");
+    const [activeTab, setActiveTab] = useState<"performance" | "tradeTags">("performance");
     const [selectedAccountId, setSelectedAccountId] = useState<string>("all");
     const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
     const accountLabels = useMemo(() => buildAccountLabels(accounts), [accounts]);
@@ -55,12 +45,6 @@ export default function ReportsClient({
             setSelectedCategoryId(categories[0].id);
         }
     }, [categories, selectedCategoryId]);
-
-    useEffect(() => {
-        if (noteTagCategories.length > 0 && !selectedNoteTagCategoryId) {
-            setSelectedNoteTagCategoryId(noteTagCategories[0].id);
-        }
-    }, [noteTagCategories, selectedNoteTagCategoryId]);
 
     useEffect(() => {
         const fromQuery = normalizeAccountSelection(queryAccount, validAccountIds);
@@ -116,10 +100,8 @@ export default function ReportsClient({
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Reports</h2>
                     <div className="flex w-full sm:w-auto flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                        {activeTab !== "noteTags" && (
-                            <DateRangePicker date={dateRange} setDate={setDateRange} />
-                        )}
-                        {accounts.length > 1 && activeTab !== "noteTags" && (
+                        <DateRangePicker date={dateRange} setDate={setDateRange} />
+                        {accounts.length > 1 && (
                             <select
                                 className="w-full sm:w-[260px] h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                                 value={selectedAccountId}
@@ -169,36 +151,18 @@ export default function ReportsClient({
                     >
                         Trade Tags
                     </button>
-                    <button
-                        onClick={() => setActiveTab("noteTags")}
-                        className={`px-3 md:px-4 py-1.5 text-sm font-medium rounded-md transition-all ${activeTab === "noteTags"
-                                ? "bg-background text-foreground shadow-sm"
-                                : "text-muted-foreground hover:text-foreground"
-                            }`}
-                    >
-                        Note Tags
-                    </button>
                 </div>
             </div>
 
 
             {activeTab === "performance" ? (
                 <PerformanceReport trades={filteredTrades} />
-            ) : activeTab === "tradeTags" ? (
+            ) : (
                 <TagsReport
                     categories={categories}
                     trades={filteredTrades}
                     selectedCategoryId={selectedCategoryId}
                     setSelectedCategoryId={setSelectedCategoryId}
-                />
-            ) : (
-                <NoteTagsReport
-                    noteTagCategories={noteTagCategories}
-                    notes={notes}
-                    noteTagMap={noteTagMap}
-                    tagMap={tagMap}
-                    selectedCategoryId={selectedNoteTagCategoryId}
-                    setSelectedCategoryId={setSelectedNoteTagCategoryId}
                 />
             )}
         </div>

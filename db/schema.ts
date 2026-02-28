@@ -232,63 +232,6 @@ export const notes = sqliteTable("note", {
     .$defaultFn(() => new Date()),
 });
 
-// DEPRECATED: This table incorrectly uses shared 'tags' - keeping for migration
-export const noteTags = sqliteTable("note_tag", {
-  noteId: text("note_id")
-    .notNull()
-    .references(() => notes.id, { onDelete: "cascade" }),
-  tagId: text("tag_id")
-    .notNull()
-    .references(() => tags.id, { onDelete: "cascade" }),
-});
-
-// --- NOTE TAGS SYSTEM (Separate from Trade Tags) ---
-
-// Note Tag Categories (parallel to 'categories' for trade tags)
-export const noteTagCategories = sqliteTable("note_tag_category", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  color: text("color").default("blue").notNull(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
-  updatedAt: integer("updated_at", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
-});
-
-// Note Tag Definitions (parallel to 'tags' for trade tags)
-export const noteTagDefinitions = sqliteTable("note_tag_definition", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  color: text("color"),
-  categoryId: text("category_id")
-    .notNull()
-    .references(() => noteTagCategories.id, { onDelete: "cascade" }),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
-  updatedAt: integer("updated_at", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
-});
-
-// Note Tag Assignments (replaces the deprecated 'noteTags' above)
-export const noteTagAssignments = sqliteTable("note_tag_assignment", {
-  noteId: text("note_id")
-    .notNull()
-    .references(() => notes.id, { onDelete: "cascade" }),
-  tagId: text("tag_id")
-    .notNull()
-    .references(() => noteTagDefinitions.id, { onDelete: "cascade" }),
-});
-
 export const templates = sqliteTable("template", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),

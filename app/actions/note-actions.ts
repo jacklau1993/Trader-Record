@@ -2,7 +2,7 @@
 
 import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { getDb } from "@/lib/db";
-import { notes, sections, noteTags } from "@/db/schema";
+import { notes, sections } from "@/db/schema";
 import { eq, desc, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 

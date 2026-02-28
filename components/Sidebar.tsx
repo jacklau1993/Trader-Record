@@ -25,7 +25,6 @@ const navigation = [
   { name: "Notebook", href: "/notebook", icon: Book },
   { name: "Reports", href: "/reports", icon: BarChart2 },
   { name: "Trade Tags", href: "/tags", icon: Tags },
-  { name: "Note Tags", href: "/note-tags", icon: Tags },
   { name: "Prop Firms", href: "/prop-firms", icon: Briefcase },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
